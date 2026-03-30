@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "历史上的今天 2026-03-31"
+title: "today-history"
 date: 2026-03-31
 categories: history
 ---
