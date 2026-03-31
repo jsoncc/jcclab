@@ -8,7 +8,7 @@
 </div>
 
 ## 🔗 项目预览
-[https://jsoncc.github.io/today-history/](https://jsoncc.github.io/today-history/){:target="_blank"}
+<a href="https://jsoncc.github.io/today-history/" target="_blank" rel="noopener noreferrer">https://jsoncc.github.io/today-history/</a>
 
 ## 📁 项目结构
 - `history-YYYY-MM-DD.md`：每日历史事件归档
