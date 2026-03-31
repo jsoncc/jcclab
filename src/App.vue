@@ -14,7 +14,7 @@
     </div>
 
     <!-- 点击日期后，渲染对应 md 内容 -->
-    <MarkdownViewer v-if="currentMdUrl" :mdUrl="currentMdUrl" />
+    <MarkdownViewer v-if="currentMdUrl" :mdUrl="currentMdUrl" @close="closeHistory" />
   </div>
 </template>
 
@@ -24,6 +24,7 @@ import MarkdownViewer from './components/MarkdownViewer.vue'
 
 // 日期列表（和你原 md 文件名一一对应）
 const dateList = ref([
+  { date: '2026-04-01' },
   { date: '2026-03-31' },
   { date: '2026-03-30' }
 ])
@@ -33,8 +34,11 @@ const currentMdUrl = ref('')
 // 点击日期，加载对应 md 文件
 const goToHistory = (date) => {
   currentMdUrl.value = `/today-history/history/history-${date}.md`
-  // 滚动到内容区
-  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+}
+
+// 关闭历史详情弹窗
+const closeHistory = () => {
+  currentMdUrl.value = ''
 }
 </script>
 
