@@ -3,7 +3,10 @@
     <div class="markdown-modal">
       <div class="modal-header">
         <h3 class="modal-title">详情</h3>
-        <button class="close-btn" @click="closeModal">&times;</button>
+        <div class="header-buttons">
+          <button class="copy-all-btn" @click="copyAllContent">复制</button>
+          <button class="close-btn" @click="closeModal">&times;</button>
+        </div>
       </div>
       <div class="modal-body">
         <div class="markdown-content" v-html="htmlContent"></div>
@@ -23,6 +26,23 @@ const htmlContent = ref('')
 // 关闭弹窗
 const closeModal = () => {
   emit('close')
+}
+
+// 复制所有内容
+const copyAllContent = async () => {
+  try {
+    // 提取纯文本内容
+    const textContent = props.mdContent.replace(/^---[\s\S]*?---\s*/, '')
+    
+    // 复制到剪贴板
+    await navigator.clipboard.writeText(textContent)
+    
+    // 显示复制成功提示
+    alert('内容已复制到剪贴板')
+  } catch (err) {
+    console.error('复制失败:', err)
+    alert('复制失败，请手动复制')
+  }
 }
 
 // 处理 markdown 内容
@@ -89,6 +109,28 @@ watch(() => props.mdContent, () => {
   font-size: 20px;
   color: #1f2937;
   font-weight: 600;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.copy-all-btn {
+  background: #0969da;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copy-all-btn:hover {
+  background: #0954b3;
 }
 
 .close-btn {
