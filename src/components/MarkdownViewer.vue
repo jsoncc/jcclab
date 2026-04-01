@@ -2,7 +2,7 @@
   <div class="markdown-modal-overlay" @click.self="closeModal">
     <div class="markdown-modal">
       <div class="modal-header">
-        <h3 class="modal-title">历史详情</h3>
+        <h3 class="modal-title">详情</h3>
         <button class="close-btn" @click="closeModal">&times;</button>
       </div>
       <div class="modal-body">
