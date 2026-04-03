@@ -1,9 +1,5 @@
 
 
-```markdown
-# today-history 项目 Git 标准操作文档
-适用于 Vue + Vite 项目、GitHub Actions 自动化部署、版本 Tag 管理
-
 ## 一、查看分支（常用）
 ```bash
 # 查看本地所有分支
