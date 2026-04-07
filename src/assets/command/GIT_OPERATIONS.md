@@ -126,40 +126,6 @@ git remote set-url origin 新仓库地址
 git remote remove origin
 ```
 
-## 版本发布（打 Tag + 功能描述）
-
-### 1. 创建带描述的 Tag
-
-```bash
-git tag -a v1.0.0 -m "v1.0.0 正式发布
-✅ 完成 GitHub Actions 自动化部署
-✅ 修复页面空白 404 问题
-✅ 实现 Markdown 文章展示
-✅ 配置 Vite 正确打包路径"
-```
-
-### 2. 推送 Tag 到 GitHub
-
-```bash
-git push origin v1.0.0
-```
-
-### 3. Tag 管理
-
-```bash
-# 查看所有本地 Tag
-git tag
-
-# 查看 Tag 详情（含描述）
-git show v1.0.0
-
-# 删除本地 Tag
-git tag -d v1.0.0
-
-# 删除远程 Tag
-git push origin --delete v1.0.0
-```
-
 ## 分支操作
 
 ```bash
@@ -174,22 +140,4 @@ git checkout main
 git merge dev
 ```
 
-
-## 标准发版流程（完整版）
-
-```bash
-# 1. 提交代码
-git add .
-git commit -m "feat: 发布 v1.0.0 版本"
-git push
-
-# 2. 创建带描述的版本 Tag
-git tag -a v1.0.0 -m "v1.0.0 正式发布
-✅ 新增功能
-✅ 修复问题
-✅ 优化配置"
-
-# 3. 推送 Tag
-git push origin v1.0.0
-```
 
