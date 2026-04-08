@@ -14,65 +14,46 @@
       </a>
     </p>
     
-    <div class="module-container">
-      <!-- 历史上的今天模块 -->
-      <div class="list-card">
-        <h2 class="module-title">历史上的今天</h2>
-        <div class="list-item" v-for="item in dateList" :key="item.date">
-          <a 
-            :href="`#/history/${item.date}`" 
-            class="date-link"
-            @click.prevent="goToHistory(item.date)"
+    <div class="content-layout">
+      <aside class="module-sidebar">
+        <div class="sidebar-nav">
+          <button
+            v-for="tab in moduleTabs"
+            :key="tab.key"
+            type="button"
+            class="sidebar-item"
+            :class="{ active: activeModule === tab.key }"
+            @click="activeModule = tab.key"
           >
-            {{ item.date }}
-          </a>
+            {{ tab.label }}
+          </button>
         </div>
-      </div>
+      </aside>
 
-      <!-- 博客模块 -->
-      <div class="list-card">
-        <h2 class="module-title">博客</h2>
-        <div class="list-item" v-for="item in blogList" :key="item.path">
-          <a 
-            :href="`#/blog/${item.name}`" 
-            class="date-link"
-            @click.prevent="goToBlog(item.path)"
-          >
-            {{ item.name }}
-          </a>
+      <div class="module-container" :class="{ 'single-view': activeModule !== 'all' }">
+      <template v-for="module in listModules" :key="module.key">
+        <div v-if="showModule(module.key)" class="list-card">
+          <h2 class="module-title">{{ module.title }}</h2>
+          <div v-if="module.key === 'vpn' && activeModule === 'vpn'" class="inline-md">
+            <h3 v-if="latestVpnTitle" class="inline-md-title">{{ latestVpnTitle }}</h3>
+            <div class="inline-md-content" v-html="latestVpnHtml" />
+          </div>
+          <template v-else>
+            <div class="list-item" v-for="item in module.items" :key="item.key">
+              <a
+                :href="item.href"
+                class="date-link"
+                @click.prevent="openModuleItem(module.key, item.value)"
+              >
+                {{ item.label }}
+              </a>
+            </div>
+          </template>
         </div>
-      </div>
-
-      <!-- 命令模块 -->
-      <div class="list-card">
-        <h2 class="module-title">命令</h2>
-        <div class="list-item" v-for="item in commandList" :key="item.path">
-          <a 
-            :href="`#/command/${item.name}`" 
-            class="date-link"
-            @click.prevent="goToCommand(item.path)"
-          >
-            {{ item.name }}
-          </a>
-        </div>
-      </div>
-
-      <!-- VPN模块 -->
-      <div class="list-card">
-        <h2 class="module-title">科学上网</h2>
-        <div class="list-item" v-for="item in vpnList" :key="item.path">
-          <a 
-            :href="`#/vpn/${item.name}`" 
-            class="date-link"
-            @click.prevent="goToVpn(item.path)"
-          >
-            {{ item.name }}
-          </a>
-        </div>
-      </div>
+      </template>
 
       <!-- 翻译模块 -->
-      <div class="list-card translate-card">
+      <div v-if="showModule('translate')" class="list-card translate-card">
         <h2 class="module-title">翻译</h2>
         <p class="translate-hint">自动识别左侧为中文或英文，点击翻译后在右侧显示另一种语言</p>
         <div class="translate-toolbar">
@@ -121,6 +102,7 @@
         </div>
         <p v-if="translateError" class="translate-error">{{ translateError }}</p>
       </div>
+      </div>
     </div>
 
     <!-- 点击后，渲染对应 md 内容 -->
@@ -131,7 +113,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import CryptoJS from 'crypto-js'
+import { marked } from 'marked'
 import MarkdownViewer from './components/MarkdownViewer.vue'
+import blogMeta from './assets/blog/blog-meta.json'
 
 // 使用 import.meta.glob 自动读取 assets/history 目录下的所有 md 文件（作为原始文本）
 const historyFiles = import.meta.glob('./assets/history/*.md', { eager: true, query: '?raw', import: 'default' })
@@ -162,13 +146,21 @@ const dateList = computed(() => {
 
 // 从文件路径中提取博客文件名并生成 blogList
 const blogList = computed(() => {
+  const meta = blogMeta || {}
   const blogs = Object.keys(blogFiles)
     .map(path => {
       // 从路径 ./assets/blog/文件名.md 中提取文件名
       const match = path.match(/\/([^/]+)\.md$/)
-      return match ? { name: match[1], path } : null
+      return match
+        ? {
+            name: match[1],
+            path,
+            updatedAt: Number(meta[path] || 0)
+          }
+        : null
     })
     .filter(blog => blog !== null)
+    .sort((a, b) => b.updatedAt - a.updatedAt)
   
   return blogs
 })
@@ -195,12 +187,35 @@ const vpnList = computed(() => {
       return match ? { name: match[1], path } : null
     })
     .filter(vpn => vpn !== null)
+    .sort((a, b) => b.name.localeCompare(a.name))
   
   return vpns
 })
 
+const latestVpnTitle = computed(() => vpnList.value[0]?.name || '')
+
+const latestVpnHtml = computed(() => {
+  const latestPath = vpnList.value[0]?.path
+  if (!latestPath || !vpnFiles[latestPath]) return '<p>暂无文档内容</p>'
+  const rawMd = vpnFiles[latestPath].default || vpnFiles[latestPath]
+  const cleaned = String(rawMd).replace(/^---[\s\S]*?---\s*/, '')
+  return marked.parse(cleaned)
+})
+
 const currentMdContent = ref('')
 const showViewer = ref(false)
+const activeModule = ref('all')
+
+const moduleTabs = [
+  { key: 'all', label: '全部' },
+  { key: 'history', label: '历史上的今天' },
+  { key: 'blog', label: '博客' },
+  { key: 'command', label: '命令' },
+  { key: 'vpn', label: '科学上网' },
+  { key: 'translate', label: '翻译' }
+]
+
+const showModule = (moduleKey) => activeModule.value === 'all' || activeModule.value === moduleKey
 
 // 点击日期，加载对应 md 文件
 const goToHistory = (date) => {
@@ -232,6 +247,68 @@ const goToVpn = (path) => {
   if (vpnFiles[path]) {
     currentMdContent.value = vpnFiles[path].default || vpnFiles[path]
     showViewer.value = true
+  }
+}
+
+const listModules = computed(() => [
+  {
+    key: 'history',
+    title: '历史上的今天',
+    items: dateList.value.map(item => ({
+      key: item.date,
+      label: item.date,
+      value: item.date,
+      href: `#/history/${item.date}`
+    }))
+  },
+  {
+    key: 'blog',
+    title: '博客',
+    items: blogList.value.map(item => ({
+      key: item.path,
+      label: item.name,
+      value: item.path,
+      href: `#/blog/${item.name}`
+    }))
+  },
+  {
+    key: 'command',
+    title: '命令',
+    items: commandList.value.map(item => ({
+      key: item.path,
+      label: item.name,
+      value: item.path,
+      href: `#/command/${item.name}`
+    }))
+  },
+  {
+    key: 'vpn',
+    title: '科学上网',
+    items: vpnList.value.map(item => ({
+      key: item.path,
+      label: item.name,
+      value: item.path,
+      href: `#/vpn/${item.name}`
+    }))
+  }
+])
+
+const openModuleItem = (moduleKey, value) => {
+  switch (moduleKey) {
+    case 'history':
+      goToHistory(value)
+      break
+    case 'blog':
+      goToBlog(value)
+      break
+    case 'command':
+      goToCommand(value)
+      break
+    case 'vpn':
+      goToVpn(value)
+      break
+    default:
+      break
   }
 }
 
@@ -370,211 +447,4 @@ const runTranslate = async () => {
 }
 </script>
 
-<style scoped>
-.home {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
-
-.module-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 30px;
-}
-
-.list-card {
-  flex: 1;
-  min-width: calc(50% - 10px);
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  max-height: 360px;
-  overflow-y: auto;
-}
-.page-title {
-  text-align: center;
-  font-size: 32px;
-  margin-bottom: 10px;
-  color: #1f2937;
-  font-weight: 700;
-}
-
-.page-subtitle {
-  text-align: center;
-  font-size: 16px;
-  color: #6b7280;
-  margin-bottom: 40px;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-}
-
-.repo-cta {
-  margin: -24px 0 28px;
-  text-align: center;
-  color: #4b5563;
-  font-size: 15px;
-}
-
-.repo-link {
-  color: #0969da;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.repo-link:hover {
-  text-decoration: underline;
-}
-
-.module-title {
-  font-size: 20px;
-  margin: 0 0 20px 0;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 8px;
-}
-.list-item {
-  padding: 16px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-.list-item:last-child {
-  border-bottom: none;
-}
-.date-link {
-  font-size: 18px;
-  color: #0969da;
-  text-decoration: none;
-  font-weight: 500;
-}
-.date-link:hover {
-  text-decoration: underline;
-}
-
-.translate-card {
-  flex: 1 1 100%;
-  min-width: 100%;
-  max-height: none;
-}
-
-.translate-hint {
-  margin: -8px 0 16px;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.translate-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.translate-detect {
-  margin: 0;
-  flex: 1;
-  min-width: 200px;
-  font-size: 14px;
-  color: #6b7280;
-  line-height: 1.5;
-}
-
-.translate-detect.warn {
-  color: #b45309;
-}
-
-.translate-submit {
-  padding: 8px 20px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  background: #0969da;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.translate-submit:hover:not(:disabled) {
-  background: #0558b8;
-}
-
-.translate-submit:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.translate-panels {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 0;
-  min-height: 220px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #fafafa;
-}
-
-.translate-panel {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  background: #fff;
-}
-
-.panel-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #6b7280;
-  padding: 10px 14px 6px;
-}
-
-.translate-textarea {
-  flex: 1;
-  width: 100%;
-  min-height: 200px;
-  padding: 12px 14px 16px;
-  border: none;
-  resize: vertical;
-  font-size: 15px;
-  line-height: 1.55;
-  color: #1f2937;
-  font-family: inherit;
-  box-sizing: border-box;
-}
-
-.translate-textarea:focus {
-  outline: none;
-}
-
-.translate-output {
-  background: #f9fafb;
-  color: #111827;
-}
-
-.translate-divider {
-  width: 1px;
-  background: #e5e7eb;
-  min-height: 100%;
-}
-
-.translate-error {
-  margin: 12px 0 0;
-  font-size: 14px;
-  color: #b91c1c;
-}
-
-@media (max-width: 640px) {
-  .translate-panels {
-    grid-template-columns: 1fr;
-  }
-
-  .translate-divider {
-    width: 100%;
-    height: 1px;
-    min-height: 0;
-  }
-}
-</style>
+<style scoped src="./App.css"></style>

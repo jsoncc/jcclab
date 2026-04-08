@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node generate-blog-meta.mjs",
     "dev": "vite",
+    "prebuild": "node generate-blog-meta.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },
