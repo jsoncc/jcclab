@@ -2,6 +2,17 @@
   <div class="home">
     <h1 class="page-title">主页</h1>
     <p class="page-subtitle">作者：JsonCC · 每天都有新内容</p>
+    <p class="repo-cta">
+      项目源码与更新：
+      <a
+        href="https://github.com/jsoncc/today-history"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="repo-link"
+      >
+        GitHub - jsoncc/today-history
+      </a>
+    </p>
     
     <div class="module-container">
       <!-- 历史上的今天模块 -->
@@ -398,6 +409,23 @@ const runTranslate = async () => {
   margin-bottom: 40px;
   font-weight: 400;
   letter-spacing: 0.5px;
+}
+
+.repo-cta {
+  margin: -24px 0 28px;
+  text-align: center;
+  color: #4b5563;
+  font-size: 15px;
+}
+
+.repo-link {
+  color: #0969da;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.repo-link:hover {
+  text-decoration: underline;
 }
 
 .module-title {
