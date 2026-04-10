@@ -131,8 +131,8 @@ const formatUuid = (value) => {
 }
 
 const genUuid = () => {
+  // Prefer native crypto UUID when available; fallback keeps v4 layout for older browsers.
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID()
-  // Fallback: RFC4122 v4-ish using crypto.getRandomValues
   const bytes = new Uint8Array(16)
   globalThis.crypto.getRandomValues(bytes)
   bytes[6] = (bytes[6] & 0x0f) | 0x40

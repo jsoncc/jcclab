@@ -34,6 +34,7 @@
               >
                 {{ tab.label }}
               </button>
+              <!-- Menu is teleported to body so it won't be clipped by the nav's scroll/overflow. -->
               <Teleport to="body">
                 <div
                   v-show="toolsMenuOpen"
@@ -44,6 +45,7 @@
                   @mouseenter="openToolsMenu"
                   @mouseleave="closeToolsMenu"
                 >
+                  <!-- Keep menu open while hovering the panel itself. -->
                   <button
                     type="button"
                     class="sidebar-dropdown-item"
@@ -308,6 +310,7 @@ const updateToolsMenuPosition = () => {
   const isNarrowTopNav = window.matchMedia('(max-width: 960px)').matches
 
   if (isNarrowTopNav) {
+    // Top nav: open downward, aligned to the anchor.
     const left = Math.max(10, Math.min(rect.left, window.innerWidth - 260))
     const width = Math.max(220, Math.min(rect.width, window.innerWidth - 20))
     toolsMenuStyle.value = {
@@ -320,7 +323,7 @@ const updateToolsMenuPosition = () => {
     return
   }
 
-  // Left sidebar layout: open to the right of the anchor.
+  // Left sidebar: open to the right so it doesn't cover the nav list.
   const desiredWidth = 260
   const width = Math.max(220, Math.min(desiredWidth, window.innerWidth - 20))
   const left = Math.max(10, Math.min(rect.right + 10, window.innerWidth - width - 10))
@@ -343,6 +346,7 @@ const openToolsMenu = () => {
 
 const closeToolsMenu = () => {
   if (toolsMenuTimer.value) window.clearTimeout(toolsMenuTimer.value)
+  // Delay close slightly so moving the mouse doesn't collapse the menu.
   toolsMenuTimer.value = window.setTimeout(() => {
     toolsMenuOpen.value = false
   }, 240)
@@ -354,6 +358,7 @@ const onWindowRelayout = () => {
 }
 
 onMounted(() => {
+  // Re-position the menu when the page/layout scrolls or resizes.
   window.addEventListener('scroll', onWindowRelayout, true)
   window.addEventListener('resize', onWindowRelayout)
 })

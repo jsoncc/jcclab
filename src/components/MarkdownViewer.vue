@@ -19,8 +19,8 @@
 import { ref, watch } from 'vue'
 import { marked } from 'marked'
 
-const props = defineProps(['mdContent']) // 传入 md 文件的内容
-const emit = defineEmits(['close']) // 定义关闭事件
+const props = defineProps(['mdContent'])
+const emit = defineEmits(['close'])
 const htmlContent = ref('')
 const imageFiles = import.meta.glob('../assets/images/**/*', { eager: true, import: 'default' })
 
@@ -40,21 +40,14 @@ const resolveMarkdownImage = (rawUrl) => {
   return imageFiles[key] || url
 }
 
-// 关闭弹窗
 const closeModal = () => {
   emit('close')
 }
 
-// 复制所有内容
 const copyAllContent = async () => {
   try {
-    // 提取纯文本内容
     const textContent = props.mdContent.replace(/^---[\s\S]*?---\s*/, '')
-    
-    // 复制到剪贴板
     await navigator.clipboard.writeText(textContent)
-    
-    // 显示复制成功提示
     alert('内容已复制到剪贴板')
   } catch (err) {
     console.error('复制失败:', err)
@@ -62,14 +55,12 @@ const copyAllContent = async () => {
   }
 }
 
-// 处理 markdown 内容
 const processMarkdown = () => {
   if (!props.mdContent) {
     htmlContent.value = ''
     return
   }
   
-  // 去掉 YAML front matter (--- 之间的内容)
   let mdText = props.mdContent.replace(/^---[\s\S]*?---\s*/, '')
 
   // 解析 Markdown 相对图片路径（支持带空格路径与 <...> 包裹写法）到 Vite 资源 URL
