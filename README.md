@@ -1,111 +1,125 @@
 # JsonCC Lab
 
-（仓库目录名仍为 `today-history`，部署地址不变。）
-
-一个基于 Vue 3 + Vite 的静态站点 **JsonCC Lab**，用于维护和展示：
-
-- 历史上的今天（按日期 Markdown）
-- 博客文档（Markdown）
-- 命令文档（Markdown）
-- VPN 记录（Markdown）
-- 中英文翻译工具（百度翻译 API）
-- 左侧模块导航（支持「全部 / 单模块」切换）
+个人静态站点 **JsonCC Lab**（仓库目录名仍为 `today-history`，线上路径不变）。基于 **Vue 3 + TypeScript + Vite** 构建，Markdown 内容随仓库维护，部署在 GitHub Pages。
 
 在线地址：<https://jsoncc.github.io/today-history/>
 
 ---
 
-## 技术栈
+## 功能一览
 
-- `vue@3` + `typescript`
-- `vite@5`
-- `marked`（Markdown 渲染）
-- `crypto-js`（百度翻译签名 MD5）
-- GitHub Actions + GitHub Pages（自动部署）
+| 模块 | 说明 |
+|------|------|
+| 历史上的今天 | `src/assets/history/` 下按日期的 `.md`，首页按日期倒序列出 |
+| 博客 / 命令 / VPN | 对应 `blog`、`command`、`vpn` 目录扫描 `.md`；博客列表按 Git 最后提交时间排序 |
+| 翻译 | 百度翻译通用 API；开发走 Vite 代理，生产需可访问的转发地址（如 Cloudflare Worker） |
+| 工具集合 | JSON 格式化校验、UUID 批量生成 |
+| 导航 | 左侧「全部 / 单模块」切换；单模块时主区域拉高便于阅读 |
 
 ---
 
-## 目录结构
+## 技术栈
+
+- **前端**：Vue 3、TypeScript、Vite 5、`@vitejs/plugin-vue`
+- **Markdown**：`marked`
+- **翻译签名**：`crypto-js`（MD5）
+- **构建前脚本**：`tsx` 执行 `scripts/generate-blog-meta.ts`，生成博客更新时间元数据
+- **可选边缘**：`workers/baidu-proxy.ts` + Wrangler（生产环境转发翻译请求，解决 CORS）
+- **CI/CD**：GitHub Actions → GitHub Pages（见 `.github/workflows/deploy.yml`）
+
+---
+
+## 仓库结构
 
 ```text
 .
+├─ index.html                 # 入口 HTML，挂载 src/main.ts
+├─ package.json
+├─ vite.config.ts             # Vite：base 相对路径（GitHub Pages）；开发期 /baidu-fanyi 代理
+├─ tsconfig.json              # 含 src、scripts、workers、vite.config
 ├─ scripts/
-│  └─ generate-blog-meta.ts    # 生成博客更新时间元数据（基于 Git 提交时间）
+│  └─ generate-blog-meta.ts   # 生成 src/assets/blog/blog-meta.json（Git 时间 / mtime 兜底）
 ├─ src/
-│  ├─ App.vue
-│  ├─ App.css
-│  ├─ main.ts
-│  ├─ env.d.ts
+│  ├─ main.ts                 # createApp 入口
+│  ├─ env.d.ts                # Vite 环境变量、*.vue 类型
+│  ├─ App.vue / App.css       # 页面布局与全局样式
 │  ├─ components/
-│  │  ├─ MarkdownViewer.vue
+│  │  ├─ MarkdownViewer.vue   # Markdown 弹窗阅读、图片路径解析
 │  │  ├─ JsonFormatValidator.vue
 │  │  └─ UuidGenerator.vue
 │  └─ assets/
-│     ├─ history/      # 历史内容：history-YYYY-MM-DD.md
-│     ├─ blog/         # 博客内容：*.md
-│     │  └─ blog-meta.json     # 自动生成：博客更新时间（path -> unix 时间戳）
-│     ├─ command/      # 命令文档：*.md
-│     ├─ vpn/          # VPN 文档：*.md
-│     └─ images/       # Markdown 内图片资源
+│     ├─ history/             # history-YYYY-MM-DD.md
+│     ├─ blog/                # *.md；blog-meta.json 勿手改（脚本生成）
+│     ├─ command/
+│     ├─ vpn/
+│     └─ images/              # 文内引用 ./images/...
 ├─ workers/
-│  ├─ baidu-proxy.ts   # Cloudflare Worker 转发百度翻译接口
+│  ├─ baidu-proxy.ts          # Cloudflare Worker：POST 转发百度翻译
 │  └─ wrangler.toml
-├─ .github/workflows/
-│  └─ deploy.yml       # GitHub Pages 部署流程
-├─ vite.config.ts
-├─ tsconfig.json
-└─ .env.example
+├─ .github/workflows/deploy.yml
+└─ .env.example               # 本地/CI 环境变量模板
 ```
 
 ---
 
-## 本地开发
+## 快速开始
 
-### 1) 安装依赖
+### 1. 安装依赖
 
 ```bash
 npm install
 ```
 
-### 2) 配置环境变量
+### 2. 环境变量
 
-复制 `.env.example` 为 `.env`，填写：
+复制 `.env.example` 为 `.env`，按需填写：
 
 ```env
-VITE_BAIDU_APP_ID=你的百度翻译APP_ID
+VITE_BAIDU_APP_ID=你的百度翻译_APP_ID
 VITE_BAIDU_SECRET=你的百度翻译密钥
-# 可选：本地通常不填。若你要本地模拟生产，可填 Worker 地址
+# 可选：本地模拟生产时填已部署的 Worker 根地址（不要末尾多余斜杠也可）
 # VITE_BAIDU_TRANSLATE_URL=https://xxx.workers.dev
 ```
 
-### 3) 启动
+### 3. 本地开发
 
 ```bash
 npm run dev
 ```
 
-> `npm run dev` / `npm run build` 前会自动执行 `scripts/generate-blog-meta.ts`（经 `tsx`），用于刷新博客更新时间排序数据。
+`predev` 会先执行 `generate-blog-meta.ts`，再启动 Vite（默认端口见 `vite.config.ts`，一般为 3000）。
+
+### 4. 生产构建与预览
+
+```bash
+npm run build    # 先类型检查（vue-tsc），再 vite build，产出 dist/
+npm run preview  # 本地预览 dist（与 dev 相同可使用 /baidu-fanyi 代理配置）
+```
 
 ---
 
-## 首页导航改版后
+## npm 脚本
 
-![首页导航改版后](./src/assets/images/home/home-nav-redesign.png)
+| 脚本 | 作用 |
+|------|------|
+| `npm run dev` | `tsx` 刷新博客元数据 → 启动开发服务器 |
+| `npm run build` | `tsx` 刷新博客元数据 → `vue-tsc --noEmit` → `vite build` |
+| `npm run preview` | 预览 `dist` |
+| `npm run typecheck` | 仅运行 `vue-tsc --noEmit`，不打包 |
+
+手动只刷新博客元数据（通常不必，`dev`/`build` 已自动跑）：
+
+```bash
+npx tsx scripts/generate-blog-meta.ts
+```
 
 ---
 
-## 翻译模块说明（百度翻译）
+## 翻译与生产环境
 
-### 请求链路
+**开发**：浏览器请求同源路径 `/baidu-fanyi`，由 Vite 代理到 `https://fanyi-api.baidu.com`，避免 CORS。
 
-- 开发环境：前端请求 `/baidu-fanyi`，由 Vite 代理到百度接口
-- 生产环境（GitHub Pages）：前端请求 `VITE_BAIDU_TRANSLATE_URL`（建议 Cloudflare Worker），再由 Worker 转发到百度接口
-
-### 为什么生产要 Worker
-
-GitHub Pages 是纯静态托管，无法使用 Vite 代理；浏览器也不能直接跨域调用百度翻译 API，所以必须有一个可访问的转发层。
-
-### Worker 快速部署
+**生产（GitHub Pages）**：静态托管没有 Node 代理；浏览器不能直接跨域调百度接口。需把 **`VITE_BAIDU_TRANSLATE_URL`** 设为可公网访问的转发服务地址（推荐本仓库 `workers/baidu-proxy.ts` 部署到 Cloudflare）。
 
 ```bash
 cd workers
@@ -113,78 +127,61 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-部署后拿到 `https://xxx.workers.dev`，用于配置 `VITE_BAIDU_TRANSLATE_URL`。
+Worker **不保存**你的 appid/secret；签名仍由前端用环境变量计算，与当前实现一致。
 
 ---
 
-## GitHub Pages 自动部署
+## GitHub Pages 部署
 
-推送到 `main` 后，`.github/workflows/deploy.yml` 会自动构建并发布。
+推送到 **`main`** 时，`.github/workflows/deploy.yml` 会 `npm ci`、注入 Secrets 后 `npm run build`，并发布到 Pages。
 
-请在仓库 `Settings -> Secrets and variables -> Actions` 配置：
+在仓库 **Settings → Secrets and variables → Actions** 中建议配置：
 
 - `VITE_BAIDU_APP_ID`
 - `VITE_BAIDU_SECRET`
-- `VITE_BAIDU_TRANSLATE_URL`（Worker 地址）
+- `VITE_BAIDU_TRANSLATE_URL`（Worker 或其它转发 URL）
 
 ---
 
-## 内容维护规则
+## 内容维护
 
-### 历史内容
+### 历史上的今天
 
 - 目录：`src/assets/history/`
-- 文件名：`history-YYYY-MM-DD.md`（例如 `history-2026-04-07.md`）
-- 首页会自动按日期倒序读取并展示
+- 文件名：`history-YYYY-MM-DD.md`
+- 首页按日期**新→旧**展示
 
-### 博客 / 命令 / VPN
+### 博客、命令、VPN
 
-- 目录分别为：
-  - `src/assets/blog/`
-  - `src/assets/command/`
-  - `src/assets/vpn/`
-- 文件名使用可读名称（`.md`）
-- 首页自动扫描并展示
-- 博客列表按“文档最后一次 Git 提交时间”倒序显示（最新更新在最上）
-- 科学上网模块在左侧切换到单模块时，会直接展示最新一篇文档正文
+- 目录：`src/assets/blog/`、`command/`、`vpn/`
+- 任意可读文件名 + `.md` 即可被扫描到
+- **博客排序**：依赖 `blog-meta.json`（路径 → Unix 秒），由 `scripts/generate-blog-meta.ts` 根据 **Git 最后一次提交该文件的时间** 生成；无 Git 信息时用文件修改时间
+- **科学上网**单模块视图：内联展示列表**第一项**的正文（列表与内联均按文件名字符串**降序**排列，非按文件日期）
 
-### 首页导航说明
+### 文内图片
 
-- 左侧导航支持切换：
-  - `全部`：展示所有模块
-  - `历史上的今天 / 博客 / 命令 / 科学上网 / 翻译`：只展示对应模块
-- 在单模块模式下，卡片高度会提升到接近视口高度，便于阅读长内容
+- 资源放在 `src/assets/images/...`
+- Markdown 中写法：`./images/...`（如 `![示例](./images/blog/demo.png)`）
+- 弹窗阅读器会把相对路径解析为打包后的资源 URL
 
-### Markdown 图片引用（项目内相对路径）
+### 导航与布局
 
-- 图片放到：`src/assets/images/...`
-- 在 Markdown 中引用：`./images/...`
-- 示例：`![示例图](./images/blog/demo/image.png)`
-
-项目内已对 Markdown 图片路径做解析，便于在本地与打包后显示。
+- **全部**：各模块卡片同时出现
+- **单模块**：只显示当前模块；主区域高度加大，适合长文
+- **工具集合**：悬停展开子菜单（JSON 工具 / UUID），避免侧栏裁切会挂到 `body`
 
 ---
 
-## 常用命令
+## 界面预览
 
-```bash
-# 开发
-npm run dev
-
-# 构建
-npm run build
-
-# 预览构建产物
-npm run preview
-
-# 手动刷新博客更新时间元数据（一般不需要，dev/build 会自动执行）
-npx tsx scripts/generate-blog-meta.ts
-```
+![首页导航](./src/assets/images/home/1.png)
+![首页导航](./src/assets/images/home/2.png)
+![首页导航](./src/assets/images/home/3.png)
 
 ---
 
 ## 安全提示
 
-- `.env` 不要提交到仓库
-- `.env.example` 仅保留变量名，不放真实密钥
-- 若密钥曾在公开渠道泄露，请立即在百度翻译开放平台重置
+- 勿将 `.env` 提交进仓库
+- `.env.example` 只保留变量名说明，不要写真实密钥
+- 密钥若曾泄露，请在百度翻译开放平台重置

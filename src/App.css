@@ -1,4 +1,9 @@
+/**
+ * --layout-sticky-header-height：与 .page-header 吸顶后的视口占位高度一致（约等于实测 height）。
+ * 左侧 .module-sidebar 也是 sticky，其 top 必须 ≥ 该高度，否则会贴到视口顶端、被顶栏盖住。
+ */
 .home {
+  --layout-sticky-header-height: 104px;
   flex: 1 0 auto;
   width: 100%;
   max-width: 1200px;
@@ -95,13 +100,18 @@
   align-items: start;
 }
 
+/**
+ * 侧栏 sticky：top 必须落在顶栏之下（见 .home --layout-sticky-header-height），否则滚动后「全部」等会压在 header 下面。
+ * z-index 高于主内容、低于 .page-header(60)。
+ */
 .module-sidebar {
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   padding: 16px 14px;
   position: sticky;
-  top: 20px;
+  top: calc(var(--layout-sticky-header-height) + 12px);
+  z-index: 10;
 }
 
 .sidebar-nav {
@@ -169,10 +179,13 @@
   font-weight: 600;
 }
 
+/** 主内容堆叠低于 .module-sidebar(10)，避免带 overflow 的卡片滚动时盖住左侧导航 */
 .module-container {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .list-card {
@@ -243,6 +256,11 @@
 }
 
 @media (max-width: 720px) {
+  .home {
+    /* 顶栏改为单列居中后易折行，占位更高，避免侧栏/横滑导航仍顶在 0 被盖住 */
+    --layout-sticky-header-height: 168px;
+  }
+
   .page-header {
     grid-template-columns: 1fr;
     row-gap: 10px;
@@ -467,7 +485,7 @@
 
   .module-sidebar {
     position: sticky;
-    top: 0;
+    top: calc(var(--layout-sticky-header-height) + 8px);
     z-index: 50;
     padding: 10px 10px;
     border-radius: 12px;
