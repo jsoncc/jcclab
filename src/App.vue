@@ -2,7 +2,7 @@
   <div class="home">
     <header class="page-header">
       <div class="header-left">
-        <h1 class="page-title">主页</h1>
+        <h1 class="page-title">JsonCC Lab</h1>
         <p class="repo-cta">
           项目源码与更新：
           <a
@@ -172,7 +172,14 @@
 
     <footer class="page-footer">
       <div class="page-footer-inner">
+        <p class="footer-brand">JsonCC Lab</p>
         <p class="page-subtitle">作者：JsonCC · 每天都有新内容</p>
+        <p class="footer-emails">
+          邮箱：
+          <a href="mailto:13233768245@163.com">13233768245@163.com</a>
+          ，
+          <a href="mailto:896415482@qq.com">896415482@qq.com</a>
+        </p>
       </div>
     </footer>
 

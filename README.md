@@ -1,6 +1,8 @@
-# today-history
+# JsonCC Lab
 
-一个基于 Vue 3 + Vite 的静态站点，用于维护和展示：
+（仓库目录名仍为 `today-history`，部署地址不变。）
+
+一个基于 Vue 3 + Vite 的静态站点 **JsonCC Lab**，用于维护和展示：
 
 - 历史上的今天（按日期 Markdown）
 - 博客文档（Markdown）
