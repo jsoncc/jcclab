@@ -21,6 +21,8 @@ npx wrangler login
 npm run workers:kv-bind
 ```
 
+（实现为项目根下的 **`scripts/worker-kv-bind.ts`**，通过 **`tsx`** 运行，与 `generate-blog-meta` 等脚本一致。）
+
 **部署 Worker**（读取 `workers/wrangler.toml`）：
 
 ```bash

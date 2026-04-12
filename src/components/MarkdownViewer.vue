@@ -56,8 +56,7 @@ const copyAllContent = async () => {
     const textContent = (props.mdContent ?? '').replace(/^---[\s\S]*?---\s*/, '')
     await navigator.clipboard.writeText(textContent)
     alert('内容已复制到剪贴板')
-  } catch (err) {
-    console.error('复制失败:', err)
+  } catch {
     alert('复制失败，请手动复制')
   }
 }
@@ -85,7 +84,6 @@ watch(() => props.mdContent, () => {
 </script>
 
 <style scoped>
-/* 遮罩层 */
 .markdown-modal-overlay {
   position: fixed;
   top: 0;
@@ -100,7 +98,6 @@ watch(() => props.mdContent, () => {
   padding: 20px;
 }
 
-/* 弹窗容器 */
 .markdown-modal {
   background: #fff;
   border-radius: 12px;
@@ -113,7 +110,6 @@ watch(() => props.mdContent, () => {
   overflow: hidden;
 }
 
-/* 弹窗头部 */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -174,7 +170,6 @@ watch(() => props.mdContent, () => {
   color: #374151;
 }
 
-/* 弹窗内容区 */
 .modal-body {
   padding: 24px;
   overflow-y: auto;
@@ -186,7 +181,6 @@ watch(() => props.mdContent, () => {
   color: #333;
 }
 
-/* 还原 Markdown 原生样式 */
 .markdown-content h1 {
   margin: 0 0 20px 0;
   font-size: 28px;

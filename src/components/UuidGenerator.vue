@@ -133,8 +133,8 @@ const formatUuid = (value: string) => {
   return noHyphen.value ? cased.replaceAll('-', '') : cased
 }
 
+/** 优先 randomUUID；无则 getRandomValues 拼出符合 v4 形态的串 */
 const genUuid = () => {
-  // Prefer native crypto UUID when available; fallback keeps v4 layout for older browsers.
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID()
   const bytes = new Uint8Array(16)
   globalThis.crypto.getRandomValues(bytes)

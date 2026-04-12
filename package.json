@@ -12,7 +12,7 @@
     "typecheck": "vue-tsc --noEmit",
     "workers:dev": "wrangler dev --config workers/wrangler.toml",
     "workers:deploy": "wrangler deploy --config workers/wrangler.toml",
-    "workers:kv-bind": "node scripts/worker-kv-bind.mjs"
+    "workers:kv-bind": "tsx scripts/worker-kv-bind.ts"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",

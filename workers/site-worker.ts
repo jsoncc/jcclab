@@ -3,8 +3,8 @@
  * - POST /（或任意路径的 POST，兼容原百度翻译客户端）：转发百度翻译 API
  * - GET /stats：总 PV/UV（KV），CORS + Cookie 访客标记
  *
- * 部署：cd workers && npx wrangler login && npx wrangler deploy
- * 将 Worker 根 URL 写入 VITE_BAIDU_TRANSLATE_URL；统计接口为 同根 + /stats
+ * 部署：项目根执行 npx wrangler login 后 npm run workers:deploy
+ * Worker 根 URL 写入 VITE_BAIDU_TRANSLATE_URL；统计为同根 + /stats
  */
 import { handleStats, type StatsEnv } from './stats'
 

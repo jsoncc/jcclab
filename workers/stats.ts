@@ -82,6 +82,7 @@ export async function handleStats(request: Request, env: StatsEnv): Promise<Resp
   }
 }
 
+/** OPTIONS 预检 → GET 校验 Origin → 读改 KV → 必要时 Set-Cookie（UV） */
 async function handleStatsInner(request: Request, env: StatsEnv): Promise<Response> {
   const allowOrigin = pickAllowOrigin(request, env)
   const baseCors: Record<string, string> = {

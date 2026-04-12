@@ -129,7 +129,7 @@ npx wrangler login
 npm run workers:deploy
 ```
 
-（统计用 KV：若尚未写入 `workers/wrangler.toml`，可先 `npm run workers:kv-bind`。）详见 `workers/README.md`。
+（统计用 KV：若尚未写入 `workers/wrangler.toml`，可先 `npm run workers:kv-bind`；该命令用 **`tsx`** 执行 **`scripts/worker-kv-bind.ts`**。）详见 `workers/README.md`。
 
 Worker **不保存**你的 appid/secret；签名仍由前端用环境变量计算，与当前实现一致。
 

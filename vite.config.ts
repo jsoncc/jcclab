@@ -26,6 +26,7 @@ const baiduTranslateProxy = {
     changeOrigin: true,
     rewrite: () => '/stats',
     configure(proxy: ProxyWithError) {
+      // Wrangler 未启动时避免未捕获代理错误把 dev server 打成 500，改为可读 503 提示
       proxy.on('error', (err, _req, res) => {
         type MaybeRes = {
           headersSent?: boolean

@@ -1,0 +1,10 @@
+---
+description: Prefer TypeScript over JavaScript for all first-party code
+alwaysApply: true
+---
+
+# 语言：优先 TypeScript
+
+- **业务与工具脚本**：新增或改写代码时使用 **`.ts`**（Vue 单文件用 **`.vue` + `<script lang="ts">`**）。不要用 **`.js` / `.mjs` / `.cjs`** 写仓库自有逻辑。
+- **运行 Node 脚本**：用 **`tsx`** 执行（与 `scripts/generate-blog-meta.ts`、`scripts/worker-kv-bind.ts` 一致），并在 `tsconfig.json` 的 `include` 中覆盖 `scripts/**/*.ts`。
+- **例外**：第三方依赖、`node_modules`、构建产物、以及工具强制要求的配置文件（如部分 `*.config.js`）保持原样；若可改为 `vite.config.ts` 等 TS 配置，优先 TS。

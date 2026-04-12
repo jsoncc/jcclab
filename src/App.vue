@@ -19,6 +19,7 @@
         <span class="header-time-icon" aria-hidden="true" />
         {{ nowText }}
       </p>
+      <!-- 顶栏三列网格：占位右侧 1fr，与时间列、左侧标题区对齐 -->
       <div class="header-right" aria-hidden="true" />
     </header>
 
@@ -228,6 +229,12 @@ const rawFromGlob = (mod: GlobRawModule | undefined): string => {
   return mod.default ?? ''
 }
 
+/** 从 glob 的 key（如 `./assets/blog/标题.md`）取出不含扩展名的文件名 */
+const stemFromMdGlobPath = (globKey: string): string | null => {
+  const m = globKey.match(/\/([^/]+)\.md$/)
+  return m ? m[1] : null
+}
+
 type ModuleTabKey = 'all' | 'history' | 'blog' | 'command' | 'vpn' | 'formatCheck' | 'translate'
 type ActiveToolKey = 'formatCheck' | 'uuid'
 
@@ -273,50 +280,39 @@ const dateList = computed(() => {
   return dates
 })
 
-const blogList = computed(() => {
+type BlogListItem = { name: string; path: string; updatedAt: number }
+type MdStemItem = { name: string; path: string }
+
+const blogList = computed((): BlogListItem[] => {
   const meta = blogMetaMap
-  const blogs = Object.keys(blogFiles)
-    .map(path => {
-      // 从路径 ./assets/blog/文件名.md 中提取文件名
-      const match = path.match(/\/([^/]+)\.md$/)
-      return match
-        ? {
-            name: match[1],
-            path,
-            updatedAt: Number(meta[path] || 0)
-          }
-        : null
+  return Object.keys(blogFiles)
+    .map((path) => {
+      const name = stemFromMdGlobPath(path)
+      if (!name) return null
+      return { name, path, updatedAt: Number(meta[path] || 0) }
     })
-    .filter(blog => blog !== null)
+    .filter((item): item is BlogListItem => item !== null)
     .sort((a, b) => b.updatedAt - a.updatedAt)
-  
-  return blogs
 })
 
-const commandList = computed(() => {
-  const commands = Object.keys(commandFiles)
-    .map(path => {
-      // 从路径 ./assets/command/文件名.md 中提取文件名
-      const match = path.match(/\/([^/]+)\.md$/)
-      return match ? { name: match[1], path } : null
+const commandList = computed((): MdStemItem[] =>
+  Object.keys(commandFiles)
+    .map((path) => {
+      const name = stemFromMdGlobPath(path)
+      return name ? { name, path } : null
     })
-    .filter(command => command !== null)
-  
-  return commands
-})
+    .filter((item): item is MdStemItem => item !== null)
+)
 
-const vpnList = computed(() => {
-  const vpns = Object.keys(vpnFiles)
-    .map(path => {
-      // 从路径 ./assets/vpn/文件名.md 中提取文件名
-      const match = path.match(/\/([^/]+)\.md$/)
-      return match ? { name: match[1], path } : null
+const vpnList = computed((): MdStemItem[] =>
+  Object.keys(vpnFiles)
+    .map((path) => {
+      const name = stemFromMdGlobPath(path)
+      return name ? { name, path } : null
     })
-    .filter(vpn => vpn !== null)
+    .filter((item): item is MdStemItem => item !== null)
     .sort((a, b) => b.name.localeCompare(a.name))
-  
-  return vpns
-})
+)
 
 /** 「科学上网」单模块视图下：默认展开排序后的第一篇（列表按名称排，首项即展示内容） */
 const latestVpnTitle = computed(() => vpnList.value[0]?.name || '')
@@ -450,6 +446,7 @@ const formatNow = () => {
 /** 页脚全站 PV/UV：请求 Cloudflare Worker GET /stats（与翻译可共用同一 Worker） */
 const footerStatsText = ref('全站访问统计加载中…')
 
+/** 统计 URL 优先级：VITE_SITE_STATS_URL → VITE_BAIDU_TRANSLATE_URL + /stats → 开发环境 /site-stats（Vite 代理） */
 const buildStatsEndpoint = (): string | null => {
   const custom = import.meta.env.VITE_SITE_STATS_URL?.trim()
   if (custom) {
@@ -531,6 +528,7 @@ interface ListModule {
   items: { key: string; label: string; value: string; href: string }[]
 }
 
+/** 侧栏四块列表的数据：history / blog / command / vpn（vpn 单开模块时另有内联展示） */
 const listModules = computed((): ListModule[] => [
   {
     key: 'history',
