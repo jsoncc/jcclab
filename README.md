@@ -1,8 +1,8 @@
 # JsonCC Lab
 
-个人静态站点 **JsonCC Lab**（仓库目录名仍为 `today-history`，线上路径不变）。基于 **Vue 3 + TypeScript + Vite** 构建，Markdown 内容随仓库维护，部署在 GitHub Pages。
+个人静态站点 **JsonCC Lab**（仓库目录名仍为 `jcclab`，线上路径不变）。基于 **Vue 3 + TypeScript + Vite** 构建，Markdown 内容随仓库维护，部署在 GitHub Pages。
 
-在线地址：<https://jsoncc.github.io/today-history/>
+在线地址：<https://jsoncc.github.io/jcclab/>
 
 ---
 
