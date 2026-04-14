@@ -3,12 +3,12 @@
  * 左侧 .module-sidebar 也是 sticky，其 top 必须 ≥ 该高度，否则会贴到视口顶端、被顶栏盖住。
  */
 .home {
-  --layout-sticky-header-height: 104px;
+  --layout-sticky-header-height: 92px;
   flex: 1 0 auto;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px 0;
+  padding: 8px 20px 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -24,7 +24,7 @@
   top: 0;
   z-index: 60;
   background: #f6f8fa;
-  padding: 10px 0;
+  padding: 6px 0;
 }
 
 .header-left {
@@ -42,12 +42,12 @@
 
 .page-main {
   flex: 1 1 auto;
-  margin-top: 30px;
+  margin-top: 4px;
   min-height: 0;
 }
 
 .page-footer {
-  margin-top: 40px;
+  margin-top: 20px;
   color: rgba(255, 255, 255, 0.88);
   background: linear-gradient(165deg, #3d7fd4 0%, #4a90e5 45%, #3d7ec9 100%);
   box-shadow: 0 0 0 100vmax #4a90e5;
@@ -57,17 +57,27 @@
 .page-footer-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 28px 24px 26px;
-  text-align: center;
+  padding: 10px 20px 8px;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 8px 12px;
 }
 
 .footer-head {
-  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0;
+  text-align: left;
 }
 
 .footer-brand {
-  margin: 0 0 10px;
-  font-size: 18px;
+  margin: 0;
+  font-size: 17px;
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.06em;
@@ -81,10 +91,11 @@
   align-items: center;
   justify-content: center;
   gap: 6px 10px;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 12px;
+  line-height: 1.35;
   color: rgba(255, 255, 255, 0.82);
   font-weight: 400;
+  text-align: center;
 }
 
 .footer-tagline-sep {
@@ -94,17 +105,17 @@
 
 .footer-contact {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  justify-content: center;
-  gap: 12px 18px;
-  margin-top: 22px;
-  padding-top: 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  justify-content: flex-end;
+  gap: 8px 12px;
+  margin-top: 0;
+  padding-top: 0;
+  text-align: right;
 }
 
 .footer-contact-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -114,15 +125,15 @@
 .footer-mail-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
 }
 
 .footer-mail {
   display: inline-flex;
   align-items: center;
-  padding: 7px 14px;
-  font-size: 12px;
+  padding: 4px 10px;
+  font-size: 11px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.95);
   text-decoration: none;
@@ -142,23 +153,35 @@
 }
 
 .footer-stats {
-  margin: 20px 0 0;
-  padding-top: 18px;
+  margin: 8px 0 0;
+  padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.16);
-  font-size: 12px;
+  font-size: 11px;
   color: rgba(255, 255, 255, 0.68);
-  line-height: 1.65;
-  max-width: 42rem;
-  margin-left: auto;
-  margin-right: auto;
+  line-height: 1.35;
+  max-width: 100%;
+  text-align: center;
 }
 
 @media (max-width: 520px) {
   .page-footer-inner {
-    padding: 24px 16px 22px;
+    padding: 8px 12px 6px;
+  }
+
+  .footer-top {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .footer-head {
+    display: flex;
+    justify-content: center;
+    text-align: center;
   }
 
   .footer-tagline {
+    justify-content: center;
     flex-direction: column;
     gap: 4px;
   }
@@ -169,7 +192,10 @@
 
   .footer-contact {
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 10px;
+    text-align: center;
   }
 
   .footer-mail-list {
@@ -350,7 +376,7 @@
 @media (max-width: 720px) {
   .home {
     /* 顶栏改为单列居中后易折行，占位更高，避免侧栏/横滑导航仍顶在 0 被盖住 */
-    --layout-sticky-header-height: 168px;
+    --layout-sticky-header-height: 152px;
   }
 
   .page-header {
