@@ -110,6 +110,14 @@
                     >
                       在线Base64编解码
                     </button>
+                    <button
+                      type="button"
+                      class="sidebar-dropdown-item"
+                      :class="{ active: activeModule === 'formatCheck' && activeTool === 'base64ToFile' }"
+                      @click="openTool('base64ToFile')"
+                    >
+                      在线Base64转文件
+                    </button>
                   </div>
                 </Teleport>
               </div>
@@ -205,7 +213,8 @@
           <JsonFormatValidator v-if="activeTool === 'formatCheck'" />
           <UuidGenerator v-else-if="activeTool === 'uuid'" />
           <MyBatisSqlFormatter v-else-if="activeTool === 'mybatisSql'" />
-          <Base64Decoder v-else />
+          <Base64Decoder v-else-if="activeTool === 'base64Decode'" />
+          <Base64ToFileTool v-else />
         </div>
         </div>
       </div>
@@ -304,6 +313,7 @@ import JsonFormatValidator from './components/JsonFormatValidator.vue'
 import UuidGenerator from './components/UuidGenerator.vue'
 import MyBatisSqlFormatter from './components/MyBatisSqlFormatter.vue'
 import Base64Decoder from './components/Base64Decoder.vue'
+import Base64ToFileTool from './components/Base64ToFileTool.vue'
 import blogMeta from './assets/blog/blog-meta.json'
 import homeQrcodeImg from './assets/images/home/qrcode.png'
 
@@ -324,7 +334,7 @@ const stemFromMdGlobPath = (globKey: string): string | null => {
 }
 
 type ModuleTabKey = 'all' | 'history' | 'blog' | 'command' | 'vpn' | 'formatCheck' | 'translate'
-type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode'
+type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode' | 'base64ToFile'
 
 // —— Markdown 原始文件（构建期打包；key 为形如 ./assets/... 的路径）——
 const historyFiles = import.meta.glob('./assets/history/*.md', {
@@ -461,6 +471,7 @@ const toolsTitle = computed(() => {
   if (activeTool.value === 'uuid') return 'UUID在线生成'
   if (activeTool.value === 'mybatisSql') return 'MyBatis SQL日志格式化'
   if (activeTool.value === 'base64Decode') return '在线Base64编解码工具'
+  if (activeTool.value === 'base64ToFile') return '在线Base64转文件工具'
   return 'JSON格式化校验'
 })
 
@@ -772,6 +783,13 @@ const headerSearchCandidates = computed<HeaderSearchItem[]>(() => [
     meta: '工具集合',
     tags: ['base64', '解码', '编码', 'base64解码', 'base64编码', '在线base64编解码工具', '工具'],
     action: () => toTool('base64Decode')
+  },
+  {
+    key: 'tool-base64-file',
+    title: '工具：在线Base64转文件工具',
+    meta: '工具集合',
+    tags: ['base64', '文件', '转文件', 'pdf', '下载', '在线base64转文件工具', '工具'],
+    action: () => toTool('base64ToFile')
   },
   ...dateList.value.slice(0, 30).map((item) => ({
     key: `history-${item.date}`,
