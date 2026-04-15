@@ -25,7 +25,7 @@
             v-model="headerSearchKeyword"
             class="header-search-input"
             type="search"
-            placeholder="全站速查：历史/博客/命令/科学上网/工具"
+            placeholder="搜索站内内容、文档与工具"
             @focus="onHeaderSearchFocus"
             @blur="onHeaderSearchBlur"
             @keydown.enter.prevent="runHeaderSearchEnter"
@@ -101,6 +101,14 @@
                       @click="openTool('mybatisSql')"
                     >
                       MyBatis SQL日志格式化
+                    </button>
+                    <button
+                      type="button"
+                      class="sidebar-dropdown-item"
+                      :class="{ active: activeModule === 'formatCheck' && activeTool === 'base64Decode' }"
+                      @click="openTool('base64Decode')"
+                    >
+                      在线Base64解码
                     </button>
                   </div>
                 </Teleport>
@@ -196,7 +204,8 @@
           <h2 class="module-title">{{ toolsTitle }}</h2>
           <JsonFormatValidator v-if="activeTool === 'formatCheck'" />
           <UuidGenerator v-else-if="activeTool === 'uuid'" />
-          <MyBatisSqlFormatter v-else />
+          <MyBatisSqlFormatter v-else-if="activeTool === 'mybatisSql'" />
+          <Base64Decoder v-else />
         </div>
         </div>
       </div>
@@ -294,6 +303,7 @@ import MarkdownViewer from './components/MarkdownViewer.vue'
 import JsonFormatValidator from './components/JsonFormatValidator.vue'
 import UuidGenerator from './components/UuidGenerator.vue'
 import MyBatisSqlFormatter from './components/MyBatisSqlFormatter.vue'
+import Base64Decoder from './components/Base64Decoder.vue'
 import blogMeta from './assets/blog/blog-meta.json'
 import homeQrcodeImg from './assets/images/home/qrcode.png'
 
@@ -314,7 +324,7 @@ const stemFromMdGlobPath = (globKey: string): string | null => {
 }
 
 type ModuleTabKey = 'all' | 'history' | 'blog' | 'command' | 'vpn' | 'formatCheck' | 'translate'
-type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql'
+type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode'
 
 // —— Markdown 原始文件（构建期打包；key 为形如 ./assets/... 的路径）——
 const historyFiles = import.meta.glob('./assets/history/*.md', {
@@ -450,6 +460,7 @@ const openTool = (toolKey: ActiveToolKey) => {
 const toolsTitle = computed(() => {
   if (activeTool.value === 'uuid') return 'UUID在线生成'
   if (activeTool.value === 'mybatisSql') return 'MyBatis SQL日志格式化'
+  if (activeTool.value === 'base64Decode') return '在线Base64解码工具'
   return 'JSON格式化校验'
 })
 
@@ -754,6 +765,13 @@ const headerSearchCandidates = computed<HeaderSearchItem[]>(() => [
     meta: '工具集合',
     tags: ['mybatis', 'sql', '日志', '工具'],
     action: () => toTool('mybatisSql')
+  },
+  {
+    key: 'tool-base64',
+    title: '工具：在线Base64解码工具',
+    meta: '工具集合',
+    tags: ['base64', '解码', 'base64解码', '在线base64解码工具', '工具'],
+    action: () => toTool('base64Decode')
   },
   ...dateList.value.slice(0, 30).map((item) => ({
     key: `history-${item.date}`,

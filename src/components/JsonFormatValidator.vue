@@ -234,7 +234,7 @@ const run = () => {
   border-radius: 2px;
   overflow: hidden;
   min-height: 340px;
-  height: min(60vh, 520px);
+  height: min(70vh, 620px);
 }
 
 .jfv-gutter {
@@ -351,8 +351,8 @@ const run = () => {
 .jfv-result {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
+  gap: 10px;
+  padding: 8px 12px;
   border: 1px solid #e6e6e6;
   border-top: none;
   background: #fff;
@@ -367,13 +367,13 @@ const run = () => {
 }
 
 .jfv-result-icon {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 900;
   color: #fff;
   background: #bdbdbd;
@@ -389,13 +389,13 @@ const run = () => {
 }
 
 .jfv-result-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: #333;
 }
 
 .jfv-result-sub {
-  margin-top: 4px;
+  margin-top: 2px;
   font-size: 12px;
   color: #666;
 }
