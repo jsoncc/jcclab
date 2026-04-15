@@ -19,8 +19,31 @@
         <span class="header-time-icon" aria-hidden="true" />
         {{ nowText }}
       </p>
-      <!-- 顶栏三列网格：占位右侧 1fr，与时间列、左侧标题区对齐 -->
-      <div class="header-right" aria-hidden="true" />
+      <div class="header-right">
+        <div class="header-search">
+          <input
+            v-model="headerSearchKeyword"
+            class="header-search-input"
+            type="search"
+            placeholder="全站速查：历史/博客/命令/科学上网/工具"
+            @focus="onHeaderSearchFocus"
+            @blur="onHeaderSearchBlur"
+            @keydown.enter.prevent="runHeaderSearchEnter"
+          />
+          <div v-if="showHeaderSearchPanel" class="header-search-panel" role="listbox" aria-label="全站速查建议">
+            <button
+              v-for="item in headerSearchResults"
+              :key="item.key"
+              type="button"
+              class="header-search-item"
+              @mousedown.prevent="applyHeaderSearchItem(item)"
+            >
+              <span class="header-search-item-title">{{ item.title }}</span>
+              <span class="header-search-item-meta">{{ item.meta }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </header>
 
     <main class="page-main">
@@ -609,6 +632,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   if (clockTimer) window.clearInterval(clockTimer)
+  if (headerSearchBlurTimer.value) window.clearTimeout(headerSearchBlurTimer.value)
   window.removeEventListener('scroll', onWindowScroll, true)
   window.removeEventListener('resize', onWindowRelayout)
 })
@@ -627,6 +651,14 @@ interface ListModule {
   key: ListModuleKey
   title: string
   items: { key: string; label: string; value: string; href: string }[]
+}
+
+type HeaderSearchItem = {
+  key: string
+  title: string
+  meta: string
+  tags: string[]
+  action: () => void
 }
 
 /** 侧栏四块列表的数据：history / blog / command / vpn（vpn 单开模块时另有内联展示） */
@@ -690,6 +722,104 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
     default:
       break
   }
+}
+
+const headerSearchKeyword = ref('')
+const headerSearchFocused = ref(false)
+const headerSearchBlurTimer = ref(0)
+
+const toTool = (tool: ActiveToolKey) => {
+  activeModule.value = 'formatCheck'
+  activeTool.value = tool
+}
+
+const headerSearchCandidates = computed<HeaderSearchItem[]>(() => [
+  {
+    key: 'tool-json',
+    title: '工具：JSON格式化校验',
+    meta: '工具集合',
+    tags: ['json', '格式化', '校验', '工具'],
+    action: () => toTool('formatCheck')
+  },
+  {
+    key: 'tool-uuid',
+    title: '工具：UUID在线生成',
+    meta: '工具集合',
+    tags: ['uuid', '工具', '生成'],
+    action: () => toTool('uuid')
+  },
+  {
+    key: 'tool-mybatis',
+    title: '工具：MyBatis SQL日志格式化',
+    meta: '工具集合',
+    tags: ['mybatis', 'sql', '日志', '工具'],
+    action: () => toTool('mybatisSql')
+  },
+  ...dateList.value.slice(0, 30).map((item) => ({
+    key: `history-${item.date}`,
+    title: `历史上的今天：${item.date}`,
+    meta: '历史模块',
+    tags: ['历史', 'history', item.date],
+    action: () => openModuleItem('history', item.date)
+  })),
+  ...blogList.value.slice(0, 40).map((item) => ({
+    key: `blog-${item.path}`,
+    title: `博客：${item.name}`,
+    meta: '博客模块',
+    tags: ['博客', 'blog', item.name],
+    action: () => openModuleItem('blog', item.path)
+  })),
+  ...commandList.value.slice(0, 40).map((item) => ({
+    key: `command-${item.path}`,
+    title: `命令：${item.name}`,
+    meta: '命令模块',
+    tags: ['命令', 'command', item.name],
+    action: () => openModuleItem('command', item.path)
+  })),
+  ...vpnList.value.slice(0, 40).map((item) => ({
+    key: `vpn-${item.path}`,
+    title: `科学上网：${item.name}`,
+    meta: '科学上网模块',
+    tags: ['科学上网', 'vpn', item.name],
+    action: () => openModuleItem('vpn', item.path)
+  }))
+])
+
+const headerSearchResults = computed(() => {
+  const kw = headerSearchKeyword.value.trim().toLowerCase()
+  if (!kw) return headerSearchCandidates.value.slice(0, 8)
+  return headerSearchCandidates.value
+    .filter((item) => {
+      const bag = [item.title, item.meta, ...item.tags].join(' ').toLowerCase()
+      return bag.includes(kw)
+    })
+    .slice(0, 8)
+})
+
+const showHeaderSearchPanel = computed(
+  () => headerSearchFocused.value && headerSearchResults.value.length > 0
+)
+
+const onHeaderSearchFocus = () => {
+  if (headerSearchBlurTimer.value) window.clearTimeout(headerSearchBlurTimer.value)
+  headerSearchFocused.value = true
+}
+
+const onHeaderSearchBlur = () => {
+  if (headerSearchBlurTimer.value) window.clearTimeout(headerSearchBlurTimer.value)
+  headerSearchBlurTimer.value = window.setTimeout(() => {
+    headerSearchFocused.value = false
+  }, 120)
+}
+
+const applyHeaderSearchItem = (item: HeaderSearchItem) => {
+  item.action()
+  headerSearchFocused.value = false
+}
+
+const runHeaderSearchEnter = () => {
+  const first = headerSearchResults.value[0]
+  if (first) applyHeaderSearchItem(first)
 }
 
 const closeViewer = () => {
