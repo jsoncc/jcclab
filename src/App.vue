@@ -71,6 +71,14 @@
                     >
                       UUID在线生成
                     </button>
+                    <button
+                      type="button"
+                      class="sidebar-dropdown-item"
+                      :class="{ active: activeModule === 'formatCheck' && activeTool === 'mybatisSql' }"
+                      @click="openTool('mybatisSql')"
+                    >
+                      MyBatis SQL日志格式化
+                    </button>
                   </div>
                 </Teleport>
               </div>
@@ -164,7 +172,8 @@
         <div v-if="showModule('formatCheck')" class="list-card format-check-card">
           <h2 class="module-title">{{ toolsTitle }}</h2>
           <JsonFormatValidator v-if="activeTool === 'formatCheck'" />
-          <UuidGenerator v-else />
+          <UuidGenerator v-else-if="activeTool === 'uuid'" />
+          <MyBatisSqlFormatter v-else />
         </div>
         </div>
       </div>
@@ -261,6 +270,7 @@ import { marked } from 'marked'
 import MarkdownViewer from './components/MarkdownViewer.vue'
 import JsonFormatValidator from './components/JsonFormatValidator.vue'
 import UuidGenerator from './components/UuidGenerator.vue'
+import MyBatisSqlFormatter from './components/MyBatisSqlFormatter.vue'
 import blogMeta from './assets/blog/blog-meta.json'
 import homeQrcodeImg from './assets/images/home/qrcode.png'
 
@@ -281,7 +291,7 @@ const stemFromMdGlobPath = (globKey: string): string | null => {
 }
 
 type ModuleTabKey = 'all' | 'history' | 'blog' | 'command' | 'vpn' | 'formatCheck' | 'translate'
-type ActiveToolKey = 'formatCheck' | 'uuid'
+type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql'
 
 // —— Markdown 原始文件（构建期打包；key 为形如 ./assets/... 的路径）——
 const historyFiles = import.meta.glob('./assets/history/*.md', {
@@ -414,7 +424,11 @@ const openTool = (toolKey: ActiveToolKey) => {
   toolsMenuOpen.value = false
 }
 
-const toolsTitle = computed(() => (activeTool.value === 'uuid' ? 'UUID在线生成' : 'JSON格式化校验'))
+const toolsTitle = computed(() => {
+  if (activeTool.value === 'uuid') return 'UUID在线生成'
+  if (activeTool.value === 'mybatisSql') return 'MyBatis SQL日志格式化'
+  return 'JSON格式化校验'
+})
 
 /** 记录「工具集合」按钮的 DOM，用于把下拉菜单对齐到按钮旁 */
 const setToolsAnchor: VNodeRef = (el) => {
