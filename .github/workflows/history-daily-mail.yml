@@ -5,6 +5,11 @@ on:
     # 北京时间 21:30 = UTC 13:30
     - cron: '30 13 * * *'
   workflow_dispatch:
+    inputs:
+      target_date:
+        description: '可选：指定目标日期（YYYY-MM-DD），不填则按北京时间次日'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -26,6 +31,8 @@ jobs:
         run: npm ci
 
       - name: Generate next-day history markdown
+        env:
+          TARGET_DATE: ${{ inputs.target_date }}
         run: npm run history:generate
 
       - name: Commit generated history file
@@ -42,6 +49,7 @@ jobs:
 
       - name: Send history mail
         env:
+          TARGET_DATE: ${{ inputs.target_date }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
