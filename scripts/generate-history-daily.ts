@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { Solar } from 'lunar-javascript'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.join(__dirname, '..')
@@ -70,25 +71,55 @@ function formatChineseDate(isoDate: string): string {
   return `${year}年${month}月${day}日 ${weekday}`
 }
 
-function formatLunarPlaceholder(isoDate: string): string {
-  // 免费方案不依赖外部农历 API，先保留占位信息，保证文档结构稳定。
-  const [year, month, day] = isoDate.split('-')
-  return `${year}年农历待补充（公历 ${month}月${day}日）`
+function formatLunarLine(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-').map(Number)
+  const solar = Solar.fromYmd(year, month, day)
+  const lunar = solar.getLunar()
+  return lunar.toString()
+}
+
+function buildFixedFestivalBody(targetDate: string): string | null {
+  const mmdd = targetDate.slice(5)
+  const festival = FESTIVAL_MAP[mmdd]
+  if (!festival) return null
+  return [festival.name, '', festival.intro].join('\n')
+}
+
+function buildJieQiFestivalBody(isoDate: string): string | null {
+  const [year, month, day] = isoDate.split('-').map(Number)
+  const solar = Solar.fromYmd(year, month, day)
+  const lunar = solar.getLunar()
+  const jieQi = lunar.getJieQi()
+  if (!jieQi) return null
+
+  const introMap: Record<string, string> = {
+    谷雨: '谷雨是春季最后一个节气，意味着降雨增多、万物生长加速，传统上也与农事安排和物候观察密切相关。'
+  }
+
+  const intro =
+    introMap[jieQi] ??
+    `${jieQi}是二十四节气之一，用于指导农事与物候观察，也承载着中国传统时间文化中的节律感。`
+
+  return [`${jieQi}（二十四节气）`, '', intro].join('\n')
+}
+
+function stripBom(text: string): string {
+  return text.charCodeAt(0) === 0xfeff ? text.slice(1) : text
 }
 
 function parseSections(md: string): Record<string, string> {
-  const lines = md.split('\n')
+  const lines = stripBom(md).replace(/\r\n/g, '\n').split('\n')
   const sections: Record<string, string> = {}
   let currentTitle: string | null = null
   let buffer: string[] = []
 
   const flush = (): void => {
     if (!currentTitle) return
-    sections[currentTitle] = buffer.join('\n').trim()
+    sections[currentTitle.trim()] = buffer.join('\n').trim()
   }
 
   for (const line of lines) {
-    const match = line.match(/^##\s+(.+)$/)
+    const match = line.trimStart().match(/^##\s+(.+)$/)
     if (match) {
       flush()
       currentTitle = match[1].trim()
@@ -101,44 +132,63 @@ function parseSections(md: string): Record<string, string> {
   return sections
 }
 
-function pickSectionContent(files: string[], sectionName: string): string {
+function normalizeSectionKey(value: string): string {
+  return value.normalize('NFC').replace(/\s+/g, ' ').trim()
+}
+
+function trimTrailingSeparators(text: string): string {
+  const lines = text.replace(/\r\n/g, '\n').split('\n')
+  while (lines.length > 0) {
+    const last = lines[lines.length - 1]?.trim() ?? ''
+    if (last === '' || last === '---') {
+      lines.pop()
+      continue
+    }
+    break
+  }
+  return lines.join('\n').trimEnd()
+}
+
+function pickSectionContent(files: string[], sectionName: string, excludeFileName?: string): string {
+  const wanted = normalizeSectionKey(sectionName)
   for (let i = files.length - 1; i >= 0; i -= 1) {
+    if (excludeFileName && files[i] === excludeFileName) continue
     const filePath = path.join(historyDir, files[i])
     const content = fs.readFileSync(filePath, 'utf8')
     const sections = parseSections(content)
-    if (sections[sectionName]) return sections[sectionName]
+    const direct = sections[sectionName]
+    if (direct) return trimTrailingSeparators(direct)
+
+    const matchedKey = Object.keys(sections).find((key) => normalizeSectionKey(key) === wanted)
+    if (matchedKey && sections[matchedKey]) return trimTrailingSeparators(sections[matchedKey])
   }
   return '- 暂无可用历史条目，后续将持续补充。'
 }
 
 function buildFestivalSection(targetDate: string): string {
-  const mmdd = targetDate.slice(5)
-  const festival = FESTIVAL_MAP[mmdd]
-  if (!festival) return ''
+  const fixedBody = buildFixedFestivalBody(targetDate)
+  const jieQiBody = buildJieQiFestivalBody(targetDate)
+  if (!fixedBody && !jieQiBody) return ''
 
-  return [
-    '## 🎈 今日节日',
-    '',
-    festival.name,
-    '',
-    festival.intro,
-    '',
-    '---',
-    ''
-  ].join('\n')
+  const blocks = [fixedBody, jieQiBody].filter(Boolean).join('\n\n')
+
+  return ['## 🎈 今日节日', '', blocks, ''].join('\n')
 }
 
-function buildMarkdown(targetDate: string, files: string[]): string {
+function buildMarkdown(targetDate: string, files: string[], excludeFileName?: string): string {
   const headingDate = formatChineseDate(targetDate)
-  const lunarText = formatLunarPlaceholder(targetDate)
+  const lunarText = formatLunarLine(targetDate)
   const festivalSection = buildFestivalSection(targetDate)
-  const sections = SECTION_ORDER.map((name) => {
-    const content = pickSectionContent(files, name)
-    return [`## ${name}`, '', content, '', '---', ''].join('\n')
-  }).join('\n')
+  const sectionBlocks = SECTION_ORDER.map((name) => {
+    const content = pickSectionContent(files, name, excludeFileName)
+    return [`## ${name}`, '', content].join('\n')
+  })
+  const sections = sectionBlocks.join('\n\n---\n\n')
+
+  const festivalBlock = festivalSection ? [festivalSection, '---', ''].join('\n') : ''
 
   return [
-    `${targetDate.replace(/-/g, '年').replace(/年(\d{2})$/, '月$1日')} 历史上的今天`,
+    `【历史上的今天】${targetDate}`,
     '',
     `📅 公历：${headingDate}`,
     '',
@@ -146,9 +196,7 @@ function buildMarkdown(targetDate: string, files: string[]): string {
     '',
     '✨ 每日一则历史回望，读懂时光里的故事',
     '',
-    '---',
-    '',
-    festivalSection,
+    festivalBlock,
     sections,
     '✨ 历史不会重复，但总会惊人地相似 ✨'
   ]
@@ -166,9 +214,11 @@ function main(): void {
   const targetFileName = `history-${targetDate}.md`
   const targetFilePath = path.join(historyDir, targetFileName)
 
-  const overwrite = process.env.OVERWRITE_HISTORY_FILE === 'true'
-  if (fs.existsSync(targetFilePath) && !overwrite) {
-    console.log(`目标文件已存在，跳过生成: ${targetFileName}`)
+  // 默认同定时任务行为：每次按固定结构重新生成；已存在则覆盖，不存在则新建。
+  // 仅在本地需要保留手改稿时设置 SKIP_EXISTING_HISTORY_FILE=true 跳过已存在文件。
+  const skipIfExists = process.env.SKIP_EXISTING_HISTORY_FILE === 'true'
+  if (fs.existsSync(targetFilePath) && skipIfExists) {
+    console.log(`目标文件已存在，跳过生成（SKIP_EXISTING_HISTORY_FILE=true）: ${targetFileName}`)
     return
   }
 
@@ -177,7 +227,7 @@ function main(): void {
     throw new Error('history 目录为空，无法基于历史样例生成内容。')
   }
 
-  const markdown = buildMarkdown(targetDate, files)
+  const markdown = buildMarkdown(targetDate, files, targetFileName)
   fs.writeFileSync(targetFilePath, `${markdown}\n`, 'utf8')
 
   console.log(`已生成历史文件: ${path.relative(rootDir, targetFilePath)}`)

@@ -8,7 +8,10 @@
 - 目录：`src/assets/history/`
 - 命名：`history-YYYY-MM-DD.md`
 - 日期：按北京时间“次日”生成（例如 4 月 19 日执行，生成 4 月 20 日文件）
+- **覆盖策略**：每次执行 `npm run history:generate`（含定时任务）都会按脚本内固定结构生成；若目标日期的文件**已存在则覆盖**，**不存在则新建**。
+- 本地若需保留手改稿、不覆盖已有文件，可设置环境变量：`SKIP_EXISTING_HISTORY_FILE=true`。
 - 节日模块：有节日则展示“今日节日”，无节日则不展示该模块
+- 农历与节气：使用 `lunar-javascript` 计算农历行；节气（如谷雨）会进入“今日节日”模块
 
 ## 2) 必填 GitHub Secrets
 
@@ -17,8 +20,7 @@
 - `SMTP_USER`：发件邮箱（例如 `896415482@qq.com`）
 - `SMTP_PASS`：QQ 邮箱 SMTP 授权码（不是登录密码）
 - `HISTORY_MAIL_TO`：收件邮箱（例如 `896415482@qq.com`）
-- `HISTORY_MAIL_FROM`：发件显示名（可选，默认 `SMTP_USER`）
-- `HISTORY_MAIL_SUBJECT_PREFIX`：邮件标题前缀（可选，默认 `历史上的今天`）
+- `HISTORY_MAIL_FROM`：发件邮箱（可选，默认 `SMTP_USER`）
 
 ## 3) 本地调试命令
 
@@ -39,3 +41,5 @@ TARGET_DATE=2026-04-20 npm run history:daily
 - 定时表达式：`30 13 * * *`（UTC，对应北京时间 21:30）
 - 支持 `workflow_dispatch` 手动触发
 - 当前为“免费方案A”：不依赖 AI 接口，基于 `history` 目录已有内容重组生成次日稿件
+- 生成后会自动 `git commit` 并 `git push`，把新增/更新的 `history-*.md` 写回仓库
+- 邮件标题固定为：`【历史上的今天】YYYY-MM-DD`

@@ -6,6 +6,9 @@ on:
     - cron: '30 13 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   history-daily-mail:
     runs-on: ubuntu-latest
@@ -25,6 +28,18 @@ jobs:
       - name: Generate next-day history markdown
         run: npm run history:generate
 
+      - name: Commit generated history file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/assets/history/history-*.md
+          if git diff --cached --quiet; then
+            echo "No history file changes to commit."
+          else
+            git commit -m "chore(history): generate daily history file"
+            git push
+          fi
+
       - name: Send history mail
         env:
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
@@ -33,5 +48,4 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           HISTORY_MAIL_TO: ${{ secrets.HISTORY_MAIL_TO }}
           HISTORY_MAIL_FROM: ${{ secrets.HISTORY_MAIL_FROM }}
-          HISTORY_MAIL_SUBJECT_PREFIX: ${{ secrets.HISTORY_MAIL_SUBJECT_PREFIX }}
         run: npm run history:send-mail
