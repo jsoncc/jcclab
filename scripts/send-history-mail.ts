@@ -12,7 +12,7 @@ function parseEnvFile(filePath: string): Record<string, string> {
   const out: Record<string, string> = {}
   if (!fs.existsSync(filePath)) return out
   const text = fs.readFileSync(filePath, 'utf8')
-  for (const line of text.split(/\n')) {
+  for (const line of text.split('\n')) {
     const trimmed = line.trim()
     if (!trimmed || trimmed.startsWith('#')) continue
     const eq = trimmed.indexOf('=')
