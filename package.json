@@ -12,7 +12,10 @@
     "typecheck": "vue-tsc --noEmit",
     "workers:dev": "wrangler dev --config workers/wrangler.toml",
     "workers:deploy": "wrangler deploy --config workers/wrangler.toml",
-    "workers:kv-bind": "tsx scripts/worker-kv-bind.ts"
+    "workers:kv-bind": "tsx scripts/worker-kv-bind.ts",
+    "history:generate": "tsx scripts/generate-history-daily.ts",
+    "history:send-mail": "tsx scripts/send-history-mail.ts",
+    "history:daily": "npm run history:generate && npm run history:send-mail"
   },
   "dependencies": {
     "@iconify-icons/mdi": "^1.2.48",
@@ -20,11 +23,13 @@
     "@iconify/vue": "^5.0.0",
     "crypto-js": "^4.2.0",
     "marked": "^17.0.5",
+    "nodemailer": "^7.0.9",
     "vue": "^3.4.0"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^22.10.0",
+    "@types/nodemailer": "^7.0.3",
     "@vitejs/plugin-vue": "^5.0.0",
     "tsx": "^4.19.2",
     "typescript": "~5.7.2",
