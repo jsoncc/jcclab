@@ -21,7 +21,20 @@
         @scroll="syncScroll"
       />
 
-      <button type="button" class="jfv-copy" :disabled="!inputText" @click="copyInput">复制</button>
+      <div class="jfv-editor-actions">
+        <button
+          v-if="showExpandBtn"
+          type="button"
+          class="jfv-editor-btn"
+          title="展开"
+          @click="showExpanded = true"
+        >
+          <Icon :icon="fullscreenIcon" />
+        </button>
+        <button type="button" class="jfv-editor-btn" :disabled="!inputText" @click="copyInput">
+          <Icon :icon="contentCopyIcon" />
+        </button>
+      </div>
       <button type="button" class="jfv-clear" :disabled="!inputText" @click="clearAll">清空</button>
     </div>
 
@@ -49,17 +62,41 @@
       </div>
     </div>
   </div>
+
+  <Teleport to="body">
+    <div v-if="showExpanded" class="jfv-overlay" @click.self="showExpanded = false">
+      <div class="jfv-modal">
+        <div class="jfv-modal-header">
+          <span class="jfv-modal-title">格式化结果</span>
+          <div class="jfv-modal-actions">
+            <button type="button" class="jfv-modal-btn" title="复制" @click="copyInput">
+              <Icon :icon="contentCopyIcon" />
+              <span>复制</span>
+            </button>
+            <button type="button" class="jfv-modal-btn jfv-modal-close" title="关闭" @click="showExpanded = false">
+              <Icon :icon="fullscreenExitIcon" />
+              <span>关闭</span>
+            </button>
+          </div>
+        </div>
+        <pre class="jfv-modal-content"><code>{{ inputText }}</code></pre>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
 /**
  * JSON 格式化 / 校验 / 压缩：左侧行号 gutter 与 textarea 同步滚动；错误时在对应行做浅色高亮。
  */
-import { computed, nextTick, ref, type CSSProperties } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch, type CSSProperties } from 'vue'
 import { Icon } from '@iconify/vue'
 import checkBold from '@iconify-icons/mdi/check-bold'
 import closeThick from '@iconify-icons/mdi/close-thick'
 import informationVariant from '@iconify-icons/mdi/information-variant'
+import fullscreenIcon from '@iconify-icons/mdi/fullscreen'
+import fullscreenExitIcon from '@iconify-icons/mdi/fullscreen-exit'
+import contentCopyIcon from '@iconify-icons/mdi/content-copy'
 
 type StatusKind = 'idle' | 'ok' | 'error'
 
@@ -75,6 +112,9 @@ const statusText = ref('请输入 JSON 后点击“格式化校验”')
 const errorDetail = ref<JsonErrorDetail | null>(null)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const gutterRef = ref<HTMLDivElement | null>(null)
+const showExpanded = ref(false)
+const showExpandBtn = ref(false)
+let resizeObserver: ResizeObserver | null = null
 
 /** 与 gutter 单行高度一致，用于把错误行映射成 textarea 背景高亮条 */
 const LINE_HEIGHT_PX = 22
@@ -188,6 +228,12 @@ const syncScroll = () => {
   gutter.scrollTop = ta.scrollTop
 }
 
+const checkOverflow = () => {
+  const ta = textareaRef.value
+  if (!ta) { showExpandBtn.value = false; return }
+  showExpandBtn.value = ta.scrollHeight > ta.clientHeight && Boolean(inputText.value)
+}
+
 const run = () => {
   const raw = inputText.value
   const trimmed = raw.trim()
@@ -204,7 +250,7 @@ const run = () => {
     inputText.value = JSON.stringify(parsed, null, 2)
     statusKind.value = 'ok'
     statusText.value = '正确的 JSON'
-    nextTick(() => syncScroll())
+    nextTick(() => { syncScroll(); checkOverflow() })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'JSON 解析失败'
     const pos = extractPositionFromErrorMessage(msg)
@@ -226,6 +272,22 @@ const run = () => {
     })
   }
 }
+
+watch(inputText, () => {
+  nextTick(checkOverflow)
+})
+
+onMounted(() => {
+  const ta = textareaRef.value
+  if (ta) {
+    resizeObserver = new ResizeObserver(checkOverflow)
+    resizeObserver.observe(ta)
+  }
+})
+
+onUnmounted(() => {
+  resizeObserver?.disconnect()
+})
 </script>
 
 <style scoped>
@@ -285,21 +347,39 @@ const run = () => {
   background-position: 0 var(--jfv-hl-start, -9999px);
 }
 
-.jfv-copy {
+.jfv-editor-actions {
   position: absolute;
   right: 10px;
   top: 10px;
-  padding: 5px 10px;
-  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.jfv-editor-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 16px;
   color: #666;
   background: #fff;
   border: 1px solid #e6e6e6;
-  border-radius: 2px;
+  border-radius: 4px;
   cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
 }
 
-.jfv-copy:disabled {
-  opacity: 0.45;
+.jfv-editor-btn:hover {
+  opacity: 1;
+  background: #f5f5f5;
+}
+
+.jfv-editor-btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
@@ -407,10 +487,104 @@ const run = () => {
   color: #666;
 }
 
+.jfv-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.jfv-modal {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 900px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.jfv-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e6e6e6;
+  background: #fafafa;
+  flex: 0 0 auto;
+}
+
+.jfv-modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.jfv-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jfv-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #555;
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.jfv-modal-btn:hover {
+  background: #f0f0f0;
+  border-color: #bbb;
+  color: #333;
+}
+
+.jfv-modal-close:hover {
+  background: #fee;
+  border-color: #fcc;
+  color: #c00;
+}
+
+.jfv-modal-content {
+  margin: 0;
+  padding: 18px 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
 @media (max-width: 640px) {
   .jfv-editor {
     grid-template-columns: 42px 1fr;
   }
+
+  .jfv-overlay {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .jfv-modal {
+    max-height: 100vh;
+    border-radius: 0;
+  }
 }
 </style>
-
