@@ -79,7 +79,18 @@
             </button>
           </div>
         </div>
-        <pre class="jfv-modal-content"><code>{{ inputText }}</code></pre>
+        <div class="jfv-modal-content">
+          <div class="jfv-modal-gutter">
+            <div
+              v-for="no in modalLineCount"
+              :key="no"
+              class="jfv-modal-gutter-line"
+            >
+              {{ no }}
+            </div>
+          </div>
+          <pre class="jfv-modal-pre"><code>{{ inputText }}</code></pre>
+        </div>
       </div>
     </div>
   </Teleport>
@@ -122,6 +133,8 @@ const LINE_HEIGHT_PX = 22
 const canRun = computed(() => Boolean(inputText.value.trim()))
 
 const lineCount = computed(() => Math.max(1, String(inputText.value || '').split('\n').length))
+
+const modalLineCount = computed(() => Math.max(1, String(inputText.value || '').split('\n').length))
 
 /** 优先 Clipboard API；非 https 等环境降级为 execCommand */
 const copyTextToClipboard = async (text: string) => {
@@ -569,7 +582,37 @@ onUnmounted(() => {
   word-break: break-word;
   overflow-y: auto;
   flex: 1;
+  display: flex;
   min-height: 0;
+}
+
+.jfv-modal-gutter {
+  flex: 0 0 46px;
+  background: #fbfbfb;
+  border-right: 1px solid #e6e6e6;
+  padding: 0 10px 0 0;
+  text-align: right;
+  user-select: none;
+}
+
+.jfv-modal-gutter-line {
+  height: 22.4px;
+  line-height: 22.4px;
+  font-size: 12px;
+  color: #999;
+  white-space: nowrap;
+}
+
+.jfv-modal-pre {
+  margin: 0;
+  padding: 0 0 0 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.jfv-modal-pre code {
+  white-space: pre;
+  word-break: normal;
 }
 
 @media (max-width: 640px) {
