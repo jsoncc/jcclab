@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Pages 更换地址后翻译与统计失效：原因与修复全流程</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #1f2328;
+  background: #fff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: 600;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d0d7de;
+  color: #1f2328;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 24px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #d0d7de;
+  color: #1f2328;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 20px 0 8px;
+  color: #1f2328;
+}
+
+h4 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  color: #1f2328;
+}
+
+p {
+  margin: 0 0 16px;
+}
+
+a {
+  color: #0969da;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+strong {
+  font-weight: 600;
+}
+
+ul, ol {
+  padding-left: 2em;
+  margin: 0 0 16px;
+}
+
+li {
+  margin: 4px 0;
+}
+
+li > ul, li > ol {
+  margin: 4px 0 0;
+}
+
+blockquote {
+  margin: 0 0 16px;
+  padding: 8px 16px;
+  color: #656d76;
+  border-left: 4px solid #d0d7de;
+  background: #f6f8fa;
+  border-radius: 0 4px 4px 0;
+}
+
+blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875em;
+  padding: 2px 6px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  color: #1f2328;
+}
+
+pre {
+  margin: 0 0 16px;
+  padding: 16px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+pre code {
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.85em;
+  color: #1f2328;
+}
+
+table {
+  width: 100%;
+  margin: 0 0 16px;
+  border-collapse: collapse;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+thead {
+  background: #f6f8fa;
+}
+
+th, td {
+  padding: 8px 14px;
+  text-align: left;
+  border: 1px solid #d0d7de;
+  font-size: 0.95em;
+}
+
+th {
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background: #f6f8fa;
+}
+
+hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid #d0d7de;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+</style>
+</head>
+<body>
+<h1>GitHub Pages 更换地址后翻译与统计失效：原因与修复全流程</h1>
+<blockquote>
+<p>适用场景：<code>GitHub Pages + Cloudflare Worker + 前端 VITE 环境变量</code>。</p>
+</blockquote>
+<hr>
+<h2>一、背景</h2>
+<p>站点从旧路径迁移到新路径：</p>
+<ul>
+<li>旧地址：<code>https://jsoncc.github.io/today-history/</code></li>
+<li>新地址：<code>https://jsoncc.github.io/jcclab/</code></li>
+</ul>
+<p>迁移后出现两个现象：</p>
+<ul>
+<li>翻译模块报错：<code>Failed to fetch</code></li>
+<li>页脚统计报错：<code>全站统计暂时无法加载</code></li>
+</ul>
+<hr>
+<h2>二、为什么会一起失效</h2>
+<p>本项目中，翻译和统计共用同一个 Worker 根地址：</p>
+<ul>
+<li>翻译：请求 <code>VITE_BAIDU_TRANSLATE_URL</code></li>
+<li>统计：默认请求 <code>VITE_BAIDU_TRANSLATE_URL + /stats</code>（若未单独配置 <code>VITE_SITE_STATS_URL</code>）</li>
+</ul>
+<p>所以只要 Worker 地址不可达、配置错误或注入失败，这两个功能会同时异常。</p>
+<hr>
+<h2>三、这次问题的根因</h2>
+<p>根因分两层（同时存在）：</p>
+<ol>
+<li><p><strong>站点路径迁移后，线上接口配置未完全同步</strong></p>
+<ul>
+<li>前端已换到 <code>.../jcclab/</code></li>
+<li>但 Worker 相关地址/白名单/Secrets 未完全与新环境一致</li>
+</ul>
+</li>
+<li><p><strong>Worker 名称仍是旧项目名</strong></p>
+<ul>
+<li>仍为 <code>today-history-baidu-proxy</code></li>
+<li>功能可用但认知不一致，排查时容易误判“是不是还在走旧系统”</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>四、标准修复步骤（按顺序执行）</h2>
+<h3>1）先确认 Worker 已部署且可访问</h3>
+<p>在项目根目录执行：</p>
+<pre><code class="language-bash">npm run workers:deploy
+</code></pre>
+<p>部署成功后记录终端输出的 Worker 根地址，例如：</p>
+<pre><code class="language-text">https://jcclab-baidu-proxy.896415482.workers.dev
+</code></pre>
+<h3>2）更新 GitHub Actions Secrets</h3>
+<p>仓库路径：<code>Settings -&gt; Secrets and variables -&gt; Actions</code></p>
+<p>至少确认以下变量：</p>
+<ul>
+<li><code>VITE_BAIDU_TRANSLATE_URL</code><ul>
+<li>例如：<code>https://jcclab-baidu-proxy.896415482.workers.dev</code></li>
+</ul>
+</li>
+<li><code>VITE_SITE_STATS_URL</code>（可选，但建议显式配置）<ul>
+<li>例如：<code>https://jcclab-baidu-proxy.896415482.workers.dev/stats</code></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>若不配 <code>VITE_SITE_STATS_URL</code>，前端会自动用翻译地址拼 <code>/stats</code>。</p>
+</blockquote>
+<h3>3）触发 GitHub Pages 重新构建</h3>
+<p>因为 <code>VITE_*</code> 是构建期注入，必须重新构建才会生效。</p>
+<p>可通过以下任一方式：</p>
+<ul>
+<li>向 <code>main</code> 推送一次代码（自动触发）</li>
+<li>在 Actions 手动 <code>Re-run</code> <code>Deploy to GitHub Pages</code></li>
+</ul>
+<h3>4）发布后验证（3 项）</h3>
+<ol>
+<li>直接访问：<code>https://&lt;worker-domain&gt;/stats</code> 返回 JSON  </li>
+<li>页面底部统计恢复显示 PV/UV  </li>
+<li>翻译模块不再出现 <code>Failed to fetch</code></li>
+</ol>
+<hr>
+<h2>五、为什么要改 Worker 名称</h2>
+<p>旧名 <code>today-history-baidu-proxy</code> 虽可继续使用，但与当前项目 <code>jcclab</code> 不一致，长期会造成：</p>
+<ul>
+<li>排查混乱（看网络请求像旧项目）</li>
+<li>团队协作成本上升（文档、脚本、Secrets 语义不统一）</li>
+</ul>
+<p>因此将 Worker 名改为：</p>
+<ul>
+<li><code>jcclab-baidu-proxy</code></li>
+</ul>
+<hr>
+<h2>六、修改 Worker 名称的标准做法</h2>
+<h3>1）改配置文件</h3>
+<p>文件：<code>workers/wrangler.toml</code></p>
+<ul>
+<li><code>name = &quot;jcclab-baidu-proxy&quot;</code></li>
+</ul>
+<h3>2）同步脚本中的默认名称</h3>
+<p>文件：<code>scripts/worker-kv-bind.ts</code></p>
+<ul>
+<li>将脚本里写死的旧名称改为新名称常量，避免后续执行脚本时回写旧名</li>
+</ul>
+<h3>3）重新部署 Worker</h3>
+<pre><code class="language-bash">npm run workers:deploy
+</code></pre>
+<p>记录新地址并更新 Secrets（同第四节）。</p>
+<hr>
+<h2>七、最终状态（目标）</h2>
+<p>当下面条件同时成立，说明迁移完成：</p>
+<ul>
+<li>前端地址：<code>https://jsoncc.github.io/jcclab/</code></li>
+<li>Worker 地址：<code>https://jcclab-baidu-proxy.&lt;account&gt;.workers.dev</code></li>
+<li><code>VITE_BAIDU_TRANSLATE_URL</code> 指向新 Worker 根地址</li>
+<li>翻译与统计都正常</li>
+</ul>
+<hr>
+<h2>八、经验总结（可复用）</h2>
+<p>每次“换域名/换路径/换项目名”后，固定检查这 4 项：</p>
+<ol>
+<li>Worker 是否可达（尤其 <code>/stats</code>）</li>
+<li>GitHub Secrets 是否更新</li>
+<li>Pages 是否重建成功</li>
+<li>Worker 名称、脚本默认名、文档是否一致</li>
+</ol>
+<p>做到这四步，类似问题基本可以一次解决。</p>
+
+</body>
+</html>

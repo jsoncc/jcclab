@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "tsx scripts/generate-blog-meta.ts",
+    "predev": "tsx scripts/generate-blog-meta.ts && tsx scripts/convert-md-to-html.ts",
     "dev": "vite",
-    "prebuild": "tsx scripts/generate-blog-meta.ts",
+    "prebuild": "tsx scripts/generate-blog-meta.ts && tsx scripts/convert-md-to-html.ts",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",

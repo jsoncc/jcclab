@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub SSH 密钥配置标准操作文档</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #1f2328;
+  background: #fff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: 600;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d0d7de;
+  color: #1f2328;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 24px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #d0d7de;
+  color: #1f2328;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 20px 0 8px;
+  color: #1f2328;
+}
+
+h4 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  color: #1f2328;
+}
+
+p {
+  margin: 0 0 16px;
+}
+
+a {
+  color: #0969da;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+strong {
+  font-weight: 600;
+}
+
+ul, ol {
+  padding-left: 2em;
+  margin: 0 0 16px;
+}
+
+li {
+  margin: 4px 0;
+}
+
+li > ul, li > ol {
+  margin: 4px 0 0;
+}
+
+blockquote {
+  margin: 0 0 16px;
+  padding: 8px 16px;
+  color: #656d76;
+  border-left: 4px solid #d0d7de;
+  background: #f6f8fa;
+  border-radius: 0 4px 4px 0;
+}
+
+blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875em;
+  padding: 2px 6px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  color: #1f2328;
+}
+
+pre {
+  margin: 0 0 16px;
+  padding: 16px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+pre code {
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.85em;
+  color: #1f2328;
+}
+
+table {
+  width: 100%;
+  margin: 0 0 16px;
+  border-collapse: collapse;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+thead {
+  background: #f6f8fa;
+}
+
+th, td {
+  padding: 8px 14px;
+  text-align: left;
+  border: 1px solid #d0d7de;
+  font-size: 0.95em;
+}
+
+th {
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background: #f6f8fa;
+}
+
+hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid #d0d7de;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+</style>
+</head>
+<body>
+<h1>📄 GitHub SSH 密钥配置标准操作文档</h1>
+<p>解决 HTTPS 推送超时问题，实现免密、稳定的 Git 操作</p>
+<hr>
+<h2>一、前置说明</h2>
+<h3>1. 为什么要配置 SSH 密钥</h3>
+<ul>
+<li><strong>解决网络问题</strong>：彻底告别 HTTPS 代理、防火墙、超时导致的 <code>git push</code> 失败</li>
+<li><strong>免密操作</strong>：一次配置，永久生效，无需每次输入账号密码</li>
+<li><strong>更安全稳定</strong>：SSH 协议比 HTTPS 更适合 Git 远程操作，不受网络环境影响</li>
+</ul>
+<h3>2. 适用环境</h3>
+<ul>
+<li>Windows 系统（PowerShell / CMD / Trae 终端）</li>
+<li>GitHub 个人账号</li>
+<li>已创建的 Git 项目（如 <code>today-history</code>）</li>
+</ul>
+<hr>
+<h2>二、详细操作步骤（全程复制粘贴）</h2>
+<h3>步骤 1：打开终端</h3>
+<p>进入你的项目目录 <code>D:\Projects\today-history</code>，右键选择「在终端中打开」，或直接打开 PowerShell。</p>
+<hr>
+<h3>步骤 2：生成 SSH 密钥</h3>
+<p>执行以下命令，<strong>将邮箱替换为你 GitHub 账号下已验证的邮箱</strong>（推荐主邮箱 <code>896415482@qq.com</code>，也可使用 <code>13233768245@163.com</code>）：</p>
+<pre><code class="language-bash"># 生成 ed25519 算法的 SSH 密钥（推荐，安全性更高）
+ssh-keygen -t ed25519 -C &quot;13233768245@163.com&quot;
+</code></pre>
+<p>执行后会出现 3 次提示，<strong>全部直接按回车</strong>，无需输入任何内容：</p>
+<ol>
+<li><code>Enter file in which to save the key</code>：回车，使用默认保存路径</li>
+<li><code>Enter passphrase</code>：回车，不设置密码（免密操作）</li>
+<li><code>Enter same passphrase again</code>：回车，确认不设置密码</li>
+</ol>
+<p>执行成功后，会输出类似如下内容，代表密钥生成完成：</p>
+<pre><code>Your identification has been saved in C:\Users\你的用户名/.ssh/id_ed25519
+Your public key has been saved in C:\Users\你的用户名/.ssh/id_ed25519.pub
+The key fingerprint is:
+SHA256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 13233768245@163.com
+</code></pre>
+<blockquote>
+<p>若系统不支持 ed25519，可使用 RSA 算法替代：</p>
+<pre><code class="language-bash">ssh-keygen -t rsa -b 4096 -C &quot;13233768245@163.com&quot;
+</code></pre>
+</blockquote>
+<hr>
+<h3>步骤 3：复制公钥</h3>
+<p>Windows 系统直接执行以下命令，<strong>自动复制公钥到剪贴板</strong>：</p>
+<pre><code class="language-bash">cat ~/.ssh/id_ed25519.pub | clip
+</code></pre>
+<blockquote>
+<p>若命令报错，可手动操作：</p>
+<ol>
+<li>打开文件夹 <code>C:\Users\你的用户名\.ssh\</code></li>
+<li>用记事本打开 <code>id_ed25519.pub</code> 文件</li>
+<li>全选内容，手动复制</li>
+</ol>
+</blockquote>
+<hr>
+<h3>步骤 4：在 GitHub 中添加公钥</h3>
+<ol>
+<li>登录 GitHub 账号，点击右上角头像 → <strong>Settings</strong></li>
+<li>在左侧菜单 <code>Access</code> 分类下，点击 <strong>SSH and GPG keys</strong></li>
+<li>点击绿色按钮 <strong>New SSH key</strong></li>
+<li>填写信息：<ul>
+<li><strong>Title</strong>：自定义名称，如 <code>我的 Windows 笔记本</code>（用于标识密钥来源）</li>
+<li><strong>Key type</strong>：保持默认 <code>Authentication key</code></li>
+<li><strong>Key</strong>：粘贴刚才复制的公钥内容</li>
+</ul>
+</li>
+<li>点击 <strong>Add SSH key</strong>，完成添加（可能需要输入 GitHub 账号密码验证）</li>
+</ol>
+<hr>
+<h3>步骤 5：测试 SSH 连接</h3>
+<p>回到终端，执行以下命令，测试与 GitHub 的连通性：</p>
+<pre><code class="language-bash">ssh -T git@github.com
+</code></pre>
+<p>执行后会出现提示：</p>
+<pre><code>The authenticity of host &#39;github.com (IP地址)&#39; can&#39;t be established.
+ED25519 key fingerprint is SHA256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])?
+</code></pre>
+<p>输入 <code>yes</code> 回车，确认连接。</p>
+<p>出现以下内容，代表 SSH 配置成功：</p>
+<pre><code>Hi jsoncc! You&#39;ve successfully authenticated, but GitHub does not provide shell access.
+</code></pre>
+<hr>
+<h3>步骤 6：修改项目远程地址为 SSH</h3>
+<p>在你的项目目录下，执行以下命令，将 HTTPS 地址替换为 SSH 地址：</p>
+<pre><code class="language-bash"># 查看当前远程地址（确认是 HTTPS）
+git remote -v
+
+# 修改为 SSH 地址（直接复制，无需修改）
+git remote set-url origin git@github.com:jsoncc/today-history.git
+
+# 再次查看，确认已改为 SSH
+git remote -v
+</code></pre>
+<p>执行成功后，输出如下：</p>
+<pre><code>origin  git@github.com:jsoncc/today-history.git (fetch)
+origin  git@github.com:jsoncc/today-history.git (push)
+</code></pre>
+<hr>
+<h3>步骤 7：验证推送（可选）</h3>
+<p>执行 <code>git push</code>，测试是否可以正常推送：</p>
+<pre><code class="language-bash">git push
+</code></pre>
+<p>若无需输入密码、直接推送成功，代表配置完全生效。</p>
+<hr>
+<h2>三、常见问题与解决方案</h2>
+<h3>1. 生成密钥时提示「ssh-keygen 不是内部命令」</h3>
+<ul>
+<li>原因：系统未安装 Git 或 Git 未加入环境变量</li>
+<li>解决：重新安装 Git，安装时勾选「Add Git to PATH」，重启终端后重试</li>
+</ul>
+<h3>2. 测试连接时提示「Permission denied」</h3>
+<ul>
+<li>原因：公钥未正确添加到 GitHub，或密钥文件权限错误</li>
+<li>解决：<ol>
+<li>重新复制公钥，确保完整粘贴到 GitHub</li>
+<li>检查 <code>C:\Users\你的用户名\.ssh\</code> 文件夹权限，确保当前用户可读写</li>
+<li>重新生成密钥，重复配置流程</li>
+</ol>
+</li>
+</ul>
+<h3>3. 推送时提示「fatal: Could not read from remote repository」</h3>
+<ul>
+<li>原因：远程地址未正确修改为 SSH</li>
+<li>解决：重新执行 <code>git remote set-url origin git@github.com:jsoncc/today-history.git</code>，确认地址正确</li>
+</ul>
+<h3>4. 忘记密钥密码（若设置了密码）</h3>
+<ul>
+<li>解决：重新生成无密码的密钥，重复配置流程（推荐不设置密码，方便日常操作）</li>
+</ul>
+<hr>
+<h2>四、常用 SSH 相关命令</h2>
+<pre><code class="language-bash"># 查看本地 SSH 密钥列表
+ls ~/.ssh
+
+# 重新复制公钥
+cat ~/.ssh/id_ed25519.pub | clip
+
+# 测试 GitHub 连接
+ssh -T git@github.com
+
+# 查看项目远程地址
+git remote -v
+
+# 修改远程地址为 SSH
+git remote set-url origin git@github.com:jsoncc/today-history.git
+
+# 删除本地 SSH 密钥（如需重新配置）
+rm ~/.ssh/id_ed25519 ~/.ssh/id_ed25519.pub
+</code></pre>
+
+</body>
+</html>

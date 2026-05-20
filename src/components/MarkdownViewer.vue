@@ -9,7 +9,10 @@
         </div>
       </div>
       <div class="modal-body">
-        <div class="markdown-content" v-html="htmlContent"></div>
+        <!-- 博客 HTML 模式：含独立样式 -->
+        <div v-if="blogHtml" class="blog-html-wrapper" v-html="fullBlogHtml" />
+        <!-- Markdown 模式：marked 渲染 + 组件 scoped 样式 -->
+        <div v-else class="markdown-content" v-html="htmlContent" />
       </div>
     </div>
   </div>
@@ -17,18 +20,33 @@
 
 <script setup lang="ts">
 /**
- * 全屏弹窗：把 Markdown 渲染成 HTML；支持把 md 里 images/ 相对路径换成 Vite 打包后的资源 URL。
+ * 全屏弹窗，支持两种内容来源：
+ *   - blogHtml：博客预生成的完整 HTML，自带内联样式
+ *   - mdContent：Markdown 原文，由 marked 动态渲染
  */
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { marked } from 'marked'
 
-const props = defineProps<{ mdContent?: string }>()
+const props = defineProps<{
+  mdContent?: string
+  blogHtml?: string
+}>()
 const emit = defineEmits<{ close: [] }>()
 const htmlContent = ref('')
 const imageFiles = import.meta.glob('../assets/images/**/*', {
   eager: true,
   import: 'default'
 }) as Record<string, string>
+
+/** 提取 body + style，合并为一段可直接 v-html 的片段 */
+const fullBlogHtml = computed(() => {
+  if (!props.blogHtml) return ''
+  const styleMatch = props.blogHtml.match(/<style[^>]*>([\s\S]*)<\/style>/i)
+  const bodyMatch = props.blogHtml.match(/<body[^>]*>([\s\S]*)<\/body>/i)
+  const styles = styleMatch ? `<style>${styleMatch[1]}</style>` : ''
+  const body = bodyMatch ? bodyMatch[1] : props.blogHtml
+  return styles + body
+})
 
 /** 外链、data:、# 保持原样；仅处理 images/ 开头的相对路径 */
 const resolveMarkdownImage = (rawUrl: string) => {
@@ -53,8 +71,16 @@ const closeModal = () => {
 
 const copyAllContent = async () => {
   try {
-    const textContent = (props.mdContent ?? '').replace(/^---[\s\S]*?---\s*/, '')
-    await navigator.clipboard.writeText(textContent)
+    if (props.blogHtml) {
+      // 从 HTML 中提取纯文本（去掉标签）
+      const tmp = document.createElement('div')
+      tmp.innerHTML = props.blogHtml
+      const text = tmp.textContent || tmp.innerText || ''
+      await navigator.clipboard.writeText(text)
+    } else {
+      const textContent = (props.mdContent ?? '').replace(/^---[\s\S]*?---\s*/, '')
+      await navigator.clipboard.writeText(textContent)
+    }
     alert('内容已复制到剪贴板')
   } catch {
     alert('复制失败，请手动复制')
@@ -208,5 +234,12 @@ watch(() => props.mdContent, () => {
 
 .markdown-content p {
   margin: 12px 0;
+}
+</style>
+
+<style>
+/** 博客 HTML 独立样式：作用于 v-html 注入的内容 */
+.blog-html-wrapper {
+  color: #1f2328;
 }
 </style>

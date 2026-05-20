@@ -1,0 +1,151 @@
+/**
+ * 博客 HTML 的完整样式，与 MarkdownViewer 共享。
+ * 从 scripts/convert-md-to-html.ts 中提取，供 Viewer 和独立 HTML 文件一同使用。
+ */
+
+.markdown-content {
+  line-height: 1.8;
+  color: #333;
+}
+
+.markdown-content h1 {
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  font-size: 2em;
+  font-weight: 600;
+  color: #1f2328;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.markdown-content h2 {
+  margin: 24px 0 8px;
+  padding-bottom: 6px;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: #1f2328;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.markdown-content h3 {
+  margin: 20px 0 8px;
+  font-size: 1.25em;
+  font-weight: 600;
+  color: #1f2328;
+}
+
+.markdown-content h4 {
+  margin: 16px 0 8px;
+  font-size: 1em;
+  font-weight: 600;
+  color: #1f2328;
+}
+
+.markdown-content p {
+  margin: 0 0 16px;
+}
+
+.markdown-content a {
+  color: #0969da;
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+.markdown-content strong {
+  font-weight: 600;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 2em;
+  margin: 0 0 16px;
+}
+
+.markdown-content li {
+  margin: 4px 0;
+}
+
+.markdown-content li > ul,
+.markdown-content li > ol {
+  margin: 4px 0 0;
+}
+
+.markdown-content blockquote {
+  margin: 0 0 16px;
+  padding: 8px 16px;
+  color: #656d76;
+  border-left: 4px solid #d0d7de;
+  background: #f6f8fa;
+  border-radius: 0 4px 4px 0;
+}
+
+.markdown-content blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875em;
+  padding: 2px 6px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  color: #1f2328;
+}
+
+.markdown-content pre {
+  margin: 0 0 16px;
+  padding: 16px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.markdown-content pre code {
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.85em;
+}
+
+.markdown-content table {
+  width: 100%;
+  margin: 0 0 16px;
+  border-collapse: collapse;
+  border: 1px solid #d0d7de;
+}
+
+.markdown-content thead {
+  background: #f6f8fa;
+}
+
+.markdown-content th,
+.markdown-content td {
+  padding: 8px 14px;
+  text-align: left;
+  border: 1px solid #d0d7de;
+  font-size: 0.95em;
+}
+
+.markdown-content th {
+  font-weight: 600;
+}
+
+.markdown-content tr:nth-child(even) {
+  background: #f6f8fa;
+}
+
+.markdown-content hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid #d0d7de;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+}

@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenCode + OpenRouter + OpenCode Go 完整配置与选型指南</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #1f2328;
+  background: #fff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: 600;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d0d7de;
+  color: #1f2328;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 24px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #d0d7de;
+  color: #1f2328;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 20px 0 8px;
+  color: #1f2328;
+}
+
+h4 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  color: #1f2328;
+}
+
+p {
+  margin: 0 0 16px;
+}
+
+a {
+  color: #0969da;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+strong {
+  font-weight: 600;
+}
+
+ul, ol {
+  padding-left: 2em;
+  margin: 0 0 16px;
+}
+
+li {
+  margin: 4px 0;
+}
+
+li > ul, li > ol {
+  margin: 4px 0 0;
+}
+
+blockquote {
+  margin: 0 0 16px;
+  padding: 8px 16px;
+  color: #656d76;
+  border-left: 4px solid #d0d7de;
+  background: #f6f8fa;
+  border-radius: 0 4px 4px 0;
+}
+
+blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875em;
+  padding: 2px 6px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  color: #1f2328;
+}
+
+pre {
+  margin: 0 0 16px;
+  padding: 16px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+pre code {
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.85em;
+  color: #1f2328;
+}
+
+table {
+  width: 100%;
+  margin: 0 0 16px;
+  border-collapse: collapse;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+thead {
+  background: #f6f8fa;
+}
+
+th, td {
+  padding: 8px 14px;
+  text-align: left;
+  border: 1px solid #d0d7de;
+  font-size: 0.95em;
+}
+
+th {
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background: #f6f8fa;
+}
+
+hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid #d0d7de;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+</style>
+</head>
+<body>
+<h1>OpenCode + OpenRouter + OpenCode Go 完整配置与选型指南</h1>
+<hr>
+<h2>一、先搞懂三者的关系</h2>
+<p>很多人会把 <strong>OpenCode</strong>、<strong>OpenRouter</strong>、<strong>OpenCode Go</strong> 混在一起。先用一张图建立直觉：</p>
+<pre><code class="language-text">                    ┌─────────────────────────────────┐
+                    │         OpenCode（软件）          │
+                    │  终端 AI 编程助手（你装的 opencode）│
+                    │  /connect  /models  /init  …     │
+                    └───────────────┬─────────────────┘
+                                    │
+            「模型从哪来」= 选一个 Provider（提供商）
+                                    │
+        ┌───────────────┬───────────┼───────────┬───────────────┐
+        ▼               ▼           ▼           ▼               ▼
+   OpenRouter      OpenCode Go   OpenCode Zen   OpenAI      GitHub Copilot
+   （第三方平台）    （官方月订）   （官方按量）   （ChatGPT）    …
+        │               │           │
+        ▼               ▼           ▼
+   openrouter.ai    opencode.ai   opencode.ai
+</code></pre>
+<h3>1.1 分别是什么</h3>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>是什么</th>
+<th>谁做的</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>OpenCode</strong></td>
+<td>终端里的 AI 编程助手（TUI、CLI、可选桌面版）</td>
+<td><a href="https://github.com/anomalyco/opencode">anomalyco/opencode</a></td>
+</tr>
+<tr>
+<td><strong>OpenRouter</strong></td>
+<td>独立的 AI API 平台：一个 Key 访问多家模型</td>
+<td><a href="https://openrouter.ai">openrouter.ai</a>（<strong>不是</strong> OpenCode 子公司）</td>
+</tr>
+<tr>
+<td><strong>OpenCode Go</strong></td>
+<td>OpenCode 官方的低价<strong>月订</strong>套餐，含一批开源/国产向模型</td>
+<td><a href="https://opencode.ai">opencode.ai</a></td>
+</tr>
+<tr>
+<td><strong>OpenCode Zen</strong></td>
+<td>OpenCode 官方的<strong>按量充值</strong>网关，模型经官方筛选</td>
+<td>同上（opencode.ai）</td>
+</tr>
+</tbody></table>
+<h3>1.2 核心结论（务必记住）</h3>
+<p>用三种生活类比理解三者关系（<strong>编程</strong>那一行最贴本指南场景）：</p>
+<table>
+<thead>
+<tr>
+<th>类比</th>
+<th>OpenCode</th>
+<th>OpenRouter</th>
+<th>OpenCode Go</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>手机</td>
+<td>手机系统 + App</td>
+<td>移动/联通之一</td>
+<td>另一种流量包</td>
+</tr>
+<tr>
+<td>外卖</td>
+<td>外卖 App</td>
+<td>餐厅 A</td>
+<td>官方月卡套餐 B</td>
+</tr>
+<tr>
+<td>编程</td>
+<td>VS Code / Cursor 类 Agent</td>
+<td>一个 API 批发商</td>
+<td>OpenCode 自家便宜月卡</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>OpenRouter 和 OpenCode Go 互不隶属</strong>，只是都能在 OpenCode 里通过 <code>/connect</code> 接入。</li>
+<li><strong>订了 Go 不等于有了 OpenRouter</strong>；<strong>连了 OpenRouter 也不用订 Go</strong>。各付各的钱。</li>
+<li>你给的旧仓库 <a href="https://github.com/opencode-ai/opencode">opencode-ai/opencode</a> 已归档，请用新版 <a href="https://github.com/anomalyco/opencode">anomalyco/opencode</a>。</li>
+</ul>
+<h3>1.3 和 Claude Code 的区别</h3>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Claude Code</strong></td>
+<td>Anthropic <strong>官方</strong>终端编程工具，需 Claude 订阅/API</td>
+</tr>
+<tr>
+<td><strong>OpenCode + OpenRouter 上的 Claude</strong></td>
+<td>第三方工具经 OpenRouter 调用 Claude 模型</td>
+</tr>
+<tr>
+<td><strong>OpenCode + Claude Pro 订阅登录</strong></td>
+<td>官方<strong>不推荐</strong>在 OpenCode 里蹭 Claude 订阅</td>
+</tr>
+</tbody></table>
+<p>「不推荐 Claude Code」是误解——我们讨论的是<strong>别在 OpenCode 里绑 Claude 订阅</strong>，不是别用 Claude Code 本身。</p>
+<hr>
+<h2>二、安装 OpenCode（Windows）</h2>
+<p>任选一种方式：</p>
+<pre><code class="language-powershell"># 方式 1：Scoop（推荐）
+scoop install opencode
+
+# 方式 2：Chocolatey
+choco install opencode
+
+# 方式 3：npm
+npm install -g opencode-ai
+
+# 方式 4：官方安装脚本（Git Bash / WSL）
+curl -fsSL https://opencode.ai/install | bash
+</code></pre>
+<p>验证安装：</p>
+<pre><code class="language-powershell">opencode --version
+</code></pre>
+<p>也可从 <a href="https://github.com/anomalyco/opencode/releases">GitHub Releases</a> 下载桌面版。</p>
+<h3>2.1 配置文件位置（Windows）</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全局配置</td>
+<td><code>%USERPROFILE%\.config\opencode\opencode.json</code></td>
+</tr>
+<tr>
+<td>API 凭证</td>
+<td><code>%USERPROFILE%\.local\share\opencode\auth.json</code></td>
+</tr>
+<tr>
+<td>项目配置</td>
+<td>项目根目录 <code>opencode.json</code>（可提交 Git）</td>
+</tr>
+</tbody></table>
+<p>配置会<strong>多层合并</strong>，后加载的覆盖冲突项。详见 <a href="https://dev.opencode.ai/docs/config/">Config 文档</a>。</p>
+<hr>
+<h2>三、OpenRouter 完整配置</h2>
+<h3>3.1 准备 OpenRouter 账号</h3>
+<ol>
+<li>注册/登录：<a href="https://openrouter.ai/">https://openrouter.ai/</a></li>
+<li>创建 API Key：<a href="https://openrouter.ai/keys">https://openrouter.ai/keys</a>（格式一般为 <code>sk-or-...</code>）</li>
+<li><strong>充值</strong>：进入 <a href="https://openrouter.ai/settings/credits">Credits</a> 购买额度</li>
+</ol>
+<h4>充值方式与费用说明</h4>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>计费模式</td>
+<td><strong>预充值按量</strong>，无包月套餐</td>
+</tr>
+<tr>
+<td>扣费方式</td>
+<td>按模型标价扣 input/output token</td>
+</tr>
+<tr>
+<td>平台费</td>
+<td>充值时约 <strong>5.5%</strong> 手续费（最低约 $0.80）</td>
+</tr>
+<tr>
+<td>模型标价</td>
+<td>OpenRouter <strong>不 markup</strong> 厂商价，与厂商官网一致</td>
+</tr>
+<tr>
+<td>消费查看</td>
+<td><a href="https://openrouter.ai/activity">Activity 仪表盘</a></td>
+</tr>
+<tr>
+<td>预算控制</td>
+<td>可设自动充值或手动充值，自己定月预算</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>为什么没有包月？</strong> OpenRouter 定位是开发者 API 聚合，不是 ChatGPT Plus 那种 C 端订阅。</p>
+</blockquote>
+<h3>3.2 在 OpenCode 里连接 OpenRouter（交互式，推荐）</h3>
+<pre><code class="language-powershell">cd D:\projects\jcclab   # 换成你的项目目录
+opencode
+</code></pre>
+<p>在 TUI 中依次操作：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>输入 <code>/connect</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>选择 <strong>OpenRouter</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>粘贴 <code>sk-or-...</code> API Key</td>
+</tr>
+<tr>
+<td>4</td>
+<td>输入 <code>/models</code> 选择模型</td>
+</tr>
+<tr>
+<td>5</td>
+<td>（可选）输入 <code>/init</code> 生成 <code>AGENTS.md</code></td>
+</tr>
+</tbody></table>
+<h4><code>/connect</code> 之后出现模型列表怎么办？</h4>
+<p>这说明 <strong>OpenRouter 已连接成功</strong>，当前界面是<strong>选模型</strong>，不是报错。</p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>↑</code> / <code>↓</code></td>
+<td>在列表中移动</td>
+</tr>
+<tr>
+<td>输入文字</td>
+<td>在 Search 中过滤（如 <code>claude sonnet</code>、<code>gemini flash</code>）</td>
+</tr>
+<tr>
+<td><code>Enter</code></td>
+<td>确认选中当前高亮模型</td>
+</tr>
+<tr>
+<td><code>Esc</code></td>
+<td>关闭列表</td>
+</tr>
+<tr>
+<td><code>Ctrl+F</code></td>
+<td>收藏当前模型</td>
+</tr>
+</tbody></table>
+<p><strong>不要直接回车</strong>除非你真的要用默认高亮项（如 Aion-1.0）。编程推荐搜：</p>
+<ul>
+<li><code>claude sonnet</code> → Sonnet 4.x / Sonnet Latest</li>
+<li><code>gemini 2.5 flash</code> → 性价比首选</li>
+<li><code>deepseek</code> → 偏代码</li>
+</ul>
+<p><strong>避免使用 Auto Router</strong> 做主力开发——质量不稳定，账单不透明。</p>
+<h3>3.3 配置文件方式（可选）</h3>
+<p>全局 <code>%USERPROFILE%\.config\opencode\opencode.json</code>：</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;model&quot;: &quot;google/gemini-2.5-flash&quot;,
+  &quot;enabled_providers&quot;: [&quot;openrouter&quot;],
+  &quot;provider&quot;: {
+    &quot;openrouter&quot;: {
+      &quot;models&quot;: {
+        &quot;google/gemini-2.5-flash&quot;: {},
+        &quot;anthropic/claude-sonnet-4&quot;: {}
+      }
+    }
+  }
+}
+</code></pre>
+<p>API Key 建议通过 <code>/connect</code> 写入 <code>auth.json</code>，<strong>不要明文提交到 Git</strong>。</p>
+<p>也可用环境变量：</p>
+<pre><code class="language-powershell">[System.Environment]::SetEnvironmentVariable(&quot;OPENROUTER_API_KEY&quot;, &quot;sk-or-xxx&quot;, &quot;User&quot;)
+</code></pre>
+<h3>3.4 OpenRouter 模型定价参考（写代码常用）</h3>
+<p>价格单位：<strong>每百万 token（$/M）</strong>，<strong>输出通常比输入贵得多</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>输入</th>
+<th>输出</th>
+<th>代码能力档</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Claude Sonnet 4.x</td>
+<td>$3</td>
+<td>$15</td>
+<td>S 档（最强之一）</td>
+</tr>
+<tr>
+<td>Gemini 2.5 Flash</td>
+<td>$0.30</td>
+<td>$2.50</td>
+<td>A- 档（性价比首选）</td>
+</tr>
+<tr>
+<td>Gemini 2.5 Flash Lite</td>
+<td>$0.10</td>
+<td>$0.40</td>
+<td>B+ 档（更省）</td>
+</tr>
+<tr>
+<td>Auto Router</td>
+<td>不定</td>
+<td>不定</td>
+<td>C～A 飘（不推荐主力）</td>
+</tr>
+</tbody></table>
+<p>粗算：一次中等会话（50k 输入 + 20k 输出）—— Sonnet 约 <strong>$0.45</strong>，Flash 约 <strong>$0.065</strong>。</p>
+<hr>
+<h2>四、OpenCode Go 完整订阅与使用</h2>
+<h3>4.1 Go 是什么</h3>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>月费</td>
+<td>首月约 <strong>$5</strong>，之后 <strong>$10/月</strong></td>
+</tr>
+<tr>
+<td>定位</td>
+<td>低价月订 + 可靠访问一批开源/国产向编程模型</td>
+</tr>
+<tr>
+<td>模型</td>
+<td>GLM、Kimi、Qwen、DeepSeek、MiniMax、MiMo 等</td>
+</tr>
+<tr>
+<td>API 入口</td>
+<td><code>https://opencode.ai/zen/go/...</code></td>
+</tr>
+<tr>
+<td>状态</td>
+<td>目前为 <strong>Beta</strong></td>
+</tr>
+</tbody></table>
+<h3>4.2 订阅步骤（网页端）</h3>
+<h4>步骤 1：打开订阅入口</h4>
+<ul>
+<li><a href="https://opencode.ai/go">https://opencode.ai/go</a> → 点 <strong>Subscribe to Go</strong></li>
+<li>或直接：<a href="https://opencode.ai/auth">https://opencode.ai/auth</a></li>
+</ul>
+<h4>步骤 2：登录账号</h4>
+<p>在 auth 页面选择：</p>
+<ul>
+<li><strong>Continue with GitHub</strong>，或</li>
+<li><strong>Continue with Google</strong></li>
+</ul>
+<h5>GitHub 与 Google 登录有区别吗？</h5>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>GitHub</th>
+<th>Google</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>订 Go / 拿 Key</td>
+<td>✅ 都可以</td>
+<td>✅ 都可以</td>
+</tr>
+<tr>
+<td>套餐与额度</td>
+<td><strong>完全相同</strong></td>
+<td><strong>完全相同</strong></td>
+</tr>
+<tr>
+<td>实际差别</td>
+<td>选你<strong>更常用、网络更稳</strong>的那个</td>
+<td>同上</td>
+</tr>
+</tbody></table>
+<p><strong>注意事项：</strong></p>
+<ul>
+<li>这是 <strong>opencode.ai 官网登录</strong>，不是终端里 <code>/connect</code> 的 GitHub Copilot。</li>
+<li><strong>不要用两个账号各登一次</strong>，可能变成两个独立账户，订阅和余额不互通。</li>
+<li>订了 Go 的账号，以后续费、看用量要用<strong>同一种方式</strong>登录。</li>
+</ul>
+<h4>步骤 3：订阅并绑卡</h4>
+<ol>
+<li>登录后进入 OpenCode Zen / 账户控制台</li>
+<li>找到 <strong>OpenCode Go</strong> 订阅（$5 首月 → $10/月）</li>
+<li>添加付款方式（国际信用卡等，以结账页为准）</li>
+<li>确认订阅状态为 <strong>Active</strong></li>
+</ol>
+<blockquote>
+<p>Go 和 Zen 是<strong>不同产品</strong>：Zen 是充值按量；Go 是月订 + 内含额度。</p>
+</blockquote>
+<h4>步骤 4：复制 API Key</h4>
+<p>在控制台创建或查看 <strong>OpenCode Go</strong> 的 API Key 并保存。</p>
+<h3>4.3 在 OpenCode 终端连接 Go</h3>
+<pre><code class="language-powershell">cd D:\projects\jcclab
+opencode
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><code>/connect</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>选择 <strong>OpenCode Go</strong>（不是 Zen、不是 OpenRouter）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>粘贴 Go 的 API Key</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>/models</code> 选模型</td>
+</tr>
+</tbody></table>
+<h4>Go 推荐模型（Java / Spring / Vue / React / MySQL）</h4>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐模型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>日常开发、省额度</td>
+<td><strong>Qwen3.5 Plus</strong>、<strong>DeepSeek V4 Flash</strong></td>
+</tr>
+<tr>
+<td>稍强一点</td>
+<td><strong>Qwen3.6 Plus</strong>、<strong>DeepSeek V4 Pro</strong></td>
+</tr>
+<tr>
+<td>不建议主力</td>
+<td>Go 免费档、Zen 免费档</td>
+</tr>
+</tbody></table>
+<h3>4.4 Go 用量限额（超过会怎样）</h3>
+<p>Go 月费 $10 内含的是<strong>用量上限</strong>（按美元价值计），不是「再收 $60」：</p>
+<table>
+<thead>
+<tr>
+<th>周期</th>
+<th>上限（约）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>每 5 小时</td>
+<td>$12</td>
+</tr>
+<tr>
+<td>每周</td>
+<td>$30</td>
+</tr>
+<tr>
+<td>每月</td>
+<td>$60</td>
+</tr>
+</tbody></table>
+<p><strong>哪个先到先触发。</strong></p>
+<h4>超过限额之后</h4>
+<pre><code class="language-text">月 $60 用完（或周/5h 限额先到）
+    │
+    ├─ 默认（未开 Use balance、Zen 无余额）
+    │     → Go 付费模型不可用
+    │     → 仍可用 Zen 免费模型（能力弱一档）
+    │     → 月费 $10 照样收，不会自动再收 $60
+    │
+    └─ 已开 Use balance 且 Zen 有余额
+          → 继续用 Go 模型，从 Zen 余额按量扣费（$10 + 额外充值）
+</code></pre>
+<p>限额重置时间以 <a href="https://opencode.ai/auth">opencode.ai 控制台</a> 用量页为准。</p>
+<h3>4.5 小技巧：模型选择与切换</h3>
+<p>官网列出的 12 个 Go 模型，是套餐<strong>允许使用的模型池</strong>，不是 12 个模型自动轮着用。实际使用时需要理解下面几点。</p>
+<h4>有没有 Auto 自动切换？</h4>
+<table>
+<thead>
+<tr>
+<th>提供商</th>
+<th>是否有 Auto</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>OpenRouter</strong></td>
+<td>✅ 有 <strong>Auto Router</strong>（不推荐当主力）</td>
+</tr>
+<tr>
+<td><strong>OpenCode Go</strong></td>
+<td>❌ <strong>没有</strong> Auto，需手动指定主模型</td>
+</tr>
+</tbody></table>
+<p>Go 里<strong>同一时间通常只有一个主模型</strong>在跑；左下角会显示当前模型，例如 <code>Build · Qwen3.5 Plus · OpenCode Go</code>。</p>
+<h4>什么情况下会「自动」换模型？</h4>
+<p>OpenCode 里和模型相关的「自动」只有这些，<strong>都不是按「写 Java / 改 Vue」智能路由</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>做什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>small_model</code></strong></td>
+<td>会话标题等轻量任务用更便宜模型，主对话仍用你选的主模型</td>
+</tr>
+<tr>
+<td><strong><code>compaction.auto</code></strong></td>
+<td>上下文满了自动压缩会话，不换模型</td>
+</tr>
+<tr>
+<td><strong>自定义 agent / command</strong></td>
+<td>配置里给某个 agent 指定别的模型，只有你主动用时才换</td>
+</tr>
+</tbody></table>
+<p><strong>Plan 模式（Tab）和 Build 模式</strong>是行为差异，默认<strong>不换模型</strong>。</p>
+<h4>手动切换策略（Go 推荐）</h4>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>建议模型</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>日常主力</strong>（Java CRUD、Vue/React、SQL）</td>
+<td><strong>Qwen3.5 Plus</strong> 或 <strong>DeepSeek V4 Flash</strong></td>
+<td>月额度里请求数最多</td>
+</tr>
+<tr>
+<td><strong>稍难</strong>（多模块、接口设计）</td>
+<td><strong>Qwen3.6 Plus</strong>、<strong>DeepSeek V4 Pro</strong></td>
+<td>质量更好，更烧额度</td>
+</tr>
+<tr>
+<td><strong>很难</strong>（架构、疑难 bug）</td>
+<td><strong>GLM-5.1</strong>、<strong>Kimi K2.6</strong></td>
+<td>能力强，额度消耗快</td>
+</tr>
+<tr>
+<td><strong>省额度、简单问答</strong></td>
+<td><strong>DeepSeek V4 Flash</strong>、<strong>MiniMax M2.5</strong></td>
+<td>请求数多</td>
+</tr>
+</tbody></table>
+<pre><code class="language-text">开始一天开发 → 固定 Qwen3.5 Plus（或 DeepSeek V4 Flash）当主力
+遇到难题 / 连续改不对 → /models 临时切 DeepSeek V4 Pro 或 Qwen3.6 Plus
+还是搞不定 → 再切 GLM-5.1 / Kimi K2.6
+难题解决后 → /models 切回 Qwen3.5 Plus，省额度
+</code></pre>
+<p>切换方式：输入 <strong><code>/models</code></strong> 选新模型，或在 <code>opencode.json</code> 里改 <code>model</code>。</p>
+<h4>固定默认模型（少每次手选）</h4>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;model&quot;: &quot;opencode-go/qwen3.5-plus&quot;,
+  &quot;small_model&quot;: &quot;opencode-go/deepseek-v4-flash&quot;,
+  &quot;enabled_providers&quot;: [&quot;opencode-go&quot;]
+}
+</code></pre>
+<p>模型 ID 格式为 <code>opencode-go/&lt;模型名&gt;</code>（如 <code>qwen3.5-plus</code>、<code>deepseek-v4-pro</code>）。</p>
+<h4>OpenRouter 侧的小技巧</h4>
+<ul>
+<li>用 OpenRouter 时同样 <strong><code>/models</code> 固定一个模型</strong>，避免 <strong>Auto Router</strong>。</li>
+<li>Java 全栈日常推荐 <strong><code>google/gemini-2.5-flash</code></strong>；要质量再切 Sonnet。</li>
+<li>大需求先 <strong>Plan</strong> 再 <strong>Build</strong>，减少返工烧 token。</li>
+</ul>
+<h3>4.6 说明事项：每个 Workspace 只能一名成员订阅 Go</h3>
+<p>官网提示：<strong>每个工作空间只能有一名成员订阅 OpenCode Go。</strong> 这句话容易误解，说明如下。</p>
+<h4>Workspace 是什么？</h4>
+<p><strong>Workspace（工作空间）</strong> 指 <a href="https://opencode.ai/auth">opencode.ai</a> 上的<strong>账户/团队空间</strong>，用来管理 Go 订阅、Zen 余额、API Key、成员与用量。</p>
+<p><strong>不是</strong>项目目录、<code>jcclab</code> 仓库、Git 仓库，也不是 VS Code 的 Workspace。</p>
+<h4>具体含义</h4>
+<pre><code class="language-text">一个 Workspace（团队账户）
+    └── Go 订阅名额：最多 1 个人能「开通/持有」这份 Go 订阅
+    └── 不是团队里每个人都可以各订一份 $10/月的 Go
+</code></pre>
+<h4>常见场景对照</h4>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>是否受限</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>一个人，两台电脑</strong>都用 Go</td>
+<td>❌ 不受限（同一 Key 多设备）</td>
+</tr>
+<tr>
+<td><strong>一个人</strong>，公司 + 家里电脑，同一 GitHub 账号</td>
+<td>❌ 不受限</td>
+</tr>
+<tr>
+<td><strong>两个人</strong>共用一个 opencode.ai 团队 Workspace，都想各订 Go</td>
+<td>✅ 受限：只能 1 人订</td>
+</tr>
+<tr>
+<td><strong>两个人</strong>各用各的 GitHub/Google 账号（两个 Workspace）</td>
+<td>❌ 不受限：各订各的</td>
+</tr>
+<tr>
+<td>团队一人订 Go，其他人用他发的 <strong>API Key</strong></td>
+<td>✅ 可以，<strong>共享同一份 Go 额度</strong></td>
+</tr>
+</tbody></table>
+<h4>个人开发者结论</h4>
+<p>若你是<strong>个人账号 + 两台电脑</strong>，通常 Workspace 里只有你自己，<strong>可以正常订阅 Go</strong>，这条限制<strong>基本不用管</strong>。只有<strong>公司团队多人想在同一 Workspace 里各自订 Go</strong> 时才需要留意。</p>
+<hr>
+<h2>五、OpenCode Zen 简要说明</h2>
+<p>Zen 是 OpenCode 官方的<strong>按量充值</strong>网关，和 Go 同属 opencode.ai，但计费不同：</p>
+<table>
+<thead>
+<tr>
+<th>对比</th>
+<th>Zen</th>
+<th>Go</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>付费</td>
+<td>充值按 token</td>
+<td>$10/月 + 内含额度</td>
+</tr>
+<tr>
+<td>模型</td>
+<td>多（含 Claude、GPT、Gemini 等）</td>
+<td>少（开源/国产向）</td>
+</tr>
+<tr>
+<td>适合</td>
+<td>不想挑模型、愿按量</td>
+<td>月费封顶、预算紧</td>
+</tr>
+</tbody></table>
+<p>Go 超额后可开 <strong>Use balance</strong> 用 Zen 余额续用。</p>
+<hr>
+<h2>六、包月 vs 不包月：费用与能力对比</h2>
+<h3>6.1 各方案月费一览</h3>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>月费（约）</th>
+<th>是否包月</th>
+<th>在 OpenCode 连接</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>OpenCode Go</strong></td>
+<td>$5 首月 → $10/月</td>
+<td>✅ 是</td>
+<td><code>/connect</code> → OpenCode Go</td>
+</tr>
+<tr>
+<td><strong>OpenRouter</strong></td>
+<td>自定（如 $10～30 充值）</td>
+<td>❌ 按量</td>
+<td><code>/connect</code> → OpenRouter</td>
+</tr>
+<tr>
+<td><strong>OpenCode Zen</strong></td>
+<td>自定充值</td>
+<td>❌ 按量</td>
+<td><code>/connect</code> → OpenCode Zen</td>
+</tr>
+<tr>
+<td><strong>ChatGPT Plus</strong></td>
+<td>$20/月</td>
+<td>✅</td>
+<td><code>/connect</code> → OpenAI → ChatGPT 登录</td>
+</tr>
+<tr>
+<td><strong>ChatGPT Pro</strong></td>
+<td>$100～200/月</td>
+<td>✅</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><strong>Claude Pro</strong></td>
+<td>~$20/月</td>
+<td>✅</td>
+<td>更适合 <strong>Claude Code</strong>，非 OpenCode 首选</td>
+</tr>
+</tbody></table>
+<p>OpenRouter、Zen <strong>没有包月无限套餐</strong>。</p>
+<h3>6.2 代码能力分档</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>代表</th>
+<th>复杂项目</th>
+<th>多文件重构</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>S</strong></td>
+<td>Sonnet、GPT-5 Codex</td>
+<td>很强</td>
+<td>很强</td>
+</tr>
+<tr>
+<td><strong>A</strong></td>
+<td>ChatGPT Plus、Gemini Flash</td>
+<td>好</td>
+<td>较好</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>OpenCode Go（Qwen/DeepSeek 等）</td>
+<td>够用</td>
+<td>中等，易漏改</td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>免费模型、Auto Router</td>
+<td>试玩</td>
+<td>不推荐</td>
+</tr>
+</tbody></table>
+<h3>6.3 预算 ≤ $10 怎么选</h3>
+<table>
+<thead>
+<tr>
+<th>目标</th>
+<th>推荐</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>月费必须固定</td>
+<td><strong>OpenCode Go（$10/月）</strong></td>
+</tr>
+<tr>
+<td>同样 $10 但要更好代码质量</td>
+<td><strong>OpenRouter 充 $10 + 固定 Gemini 2.5 Flash</strong>（不包月，可能月中用完）</td>
+</tr>
+<tr>
+<td>几乎不花钱</td>
+<td>Zen/OpenRouter 免费模型（质量差一截）</td>
+</tr>
+</tbody></table>
+<h3>6.4 每天约 4 小时重度使用</h3>
+<p><strong>$10/月通常不够</strong>（按量或 Go 额度都可能触顶）。更现实：</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>月支出</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OpenCode Go</td>
+<td>$10</td>
+<td>可能碰周/月限额；质量 B+～A-</td>
+</tr>
+<tr>
+<td>OpenRouter + Flash</td>
+<td>~$25～45</td>
+<td>质量 A-，更稳</td>
+</tr>
+<tr>
+<td>Go + OpenRouter 备用</td>
+<td>~$20～25</td>
+<td>平时 Go，难题切 Flash</td>
+</tr>
+</tbody></table>
+<p><strong>技术栈（Java Spring + Vue/React + MySQL）</strong> 建议主模型至少 <strong>Gemini 2.5 Flash</strong> 或 Go 里 <strong>Qwen3.5 Plus</strong>，不要用 Lite/免费档扛全天。</p>
+<hr>
+<h2>七、国内网络使用注意</h2>
+<h3>7.1 OpenRouter</h3>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>访问</td>
+<td>需稳定访问 <code>openrouter.ai</code></td>
+</tr>
+<tr>
+<td>体验</td>
+<td>依赖代理质量；高峰可能慢、断流</td>
+</tr>
+<tr>
+<td>地区限制</td>
+<td>部分模型可能报「region not available」，与出口 IP 有关</td>
+</tr>
+</tbody></table>
+<h3>7.2 OpenCode Go</h3>
+<p>官方写明面向<strong>国际用户</strong>，模型部署在 <strong>美国、欧盟、新加坡</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>能否使用</td>
+<td>通常需要稳定国际线路</td>
+</tr>
+<tr>
+<td>常见误区</td>
+<td>Go 含 Qwen/DeepSeek 等「国产模型」，但流量仍先走 <code>opencode.ai</code> 境外网关，<strong>不等于国内直连</strong></td>
+</tr>
+<tr>
+<td>对比</td>
+<td>国内直连 DashScope/DeepSeek 官方 API 通常更快，但那就不是 Go 套餐了</td>
+</tr>
+<tr>
+<td>网络评分</td>
+<td>国内约 ★★☆～★★★；优势是 $10 包月，不是国内专线</td>
+</tr>
+</tbody></table>
+<h3>7.3 实用建议</h3>
+<ol>
+<li>先浏览器能打开 <a href="https://opencode.ai">opencode.ai</a> 再订阅 Go</li>
+<li>代理选低延迟节点（新加坡/日本/香港常比欧美合适）</li>
+<li>固定出口 IP，减少地区报错</li>
+<li>两台电脑用<strong>同一套代理策略</strong></li>
+</ol>
+<hr>
+<h2>八、两台电脑共用配置</h2>
+<p>OpenCode <strong>不限制设备数</strong>；同一 API Key 可在多台电脑使用。</p>
+<table>
+<thead>
+<tr>
+<th>内容</th>
+<th>存放位置</th>
+<th>同步方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>API Key</td>
+<td><code>%USERPROFILE%\.local\share\opencode\auth.json</code></td>
+<td>每台 <code>/connect</code> 一次，或安全复制（勿提交 Git）</td>
+</tr>
+<tr>
+<td>全局习惯</td>
+<td><code>%USERPROFILE%\.config\opencode\opencode.json</code></td>
+<td>手动复制或网盘同步</td>
+</tr>
+<tr>
+<td>项目配置</td>
+<td><code>opencode.json</code></td>
+<td><strong>提交 Git</strong>，两台 <code>git pull</code></td>
+</tr>
+<tr>
+<td>项目说明</td>
+<td><code>AGENTS.md</code></td>
+<td>同上</td>
+</tr>
+</tbody></table>
+<p>项目级 <code>opencode.json</code> 示例（可提交 Git，不含密钥）：</p>
+<pre><code class="language-json">{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;model&quot;: &quot;google/gemini-2.5-flash&quot;,
+  &quot;enabled_providers&quot;: [&quot;openrouter&quot;],
+  &quot;shell&quot;: &quot;pwsh&quot;,
+  &quot;instructions&quot;: [
+    &quot;Java 17+, Spring Boot, Spring MVC/Data/Security&quot;,
+    &quot;Frontend: Vue and React per package&quot;,
+    &quot;Database: MySQL&quot;
+  ],
+  &quot;permission&quot;: {
+    &quot;bash&quot;: &quot;ask&quot;,
+    &quot;edit&quot;: &quot;ask&quot;
+  }
+}
+</code></pre>
+<p>若用 Go，将 <code>model</code> 改为如 <code>opencode-go/qwen3.5-plus</code>，<code>enabled_providers</code> 改为 <code>[&quot;opencode-go&quot;]</code>。</p>
+<hr>
+<h2>九、日常使用速查</h2>
+<h3>9.1 常用命令</h3>
+<table>
+<thead>
+<tr>
+<th>命令/操作</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/connect</code></td>
+<td>连接提供商</td>
+</tr>
+<tr>
+<td><code>/models</code></td>
+<td>切换模型</td>
+</tr>
+<tr>
+<td><code>/init</code></td>
+<td>分析项目，生成 <code>AGENTS.md</code></td>
+</tr>
+<tr>
+<td><code>Tab</code></td>
+<td>Plan / Build 模式切换</td>
+</tr>
+<tr>
+<td><code>/undo</code> / <code>/redo</code></td>
+<td>撤销/重做 AI 改动</td>
+</tr>
+<tr>
+<td><code>/share</code></td>
+<td>分享会话</td>
+</tr>
+<tr>
+<td><code>opencode run &quot;问题&quot;</code></td>
+<td>非交互单次提问</td>
+</tr>
+<tr>
+<td><code>opencode auth list</code></td>
+<td>查看已保存凭证</td>
+</tr>
+<tr>
+<td><code>opencode debug config</code></td>
+<td>查看合并后的最终配置</td>
+</tr>
+</tbody></table>
+<h3>9.2 省钱又保质的习惯</h3>
+<ul>
+<li>大需求先 <strong>Plan</strong> 再 <strong>Build</strong>，减少返工烧 token</li>
+<li>提问带路径：<code>@src/.../UserService.java</code></li>
+<li>两台机器保持<strong>同一 Git 分支</strong></li>
+<li>固定一个主模型，<strong>关掉 Auto Router</strong>（详见 <a href="#45-%E5%B0%8F%E6%8A%80%E5%B7%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9%E4%B8%8E%E5%88%87%E6%8D%A2">§4.5 模型切换小技巧</a>）</li>
+<li>在 OpenRouter Activity 或 Go 控制台<strong>定期看用量</strong></li>
+</ul>
+<hr>
+<h2>十、选型决策树</h2>
+<pre><code class="language-text">月预算必须 ≤ $10？
+├─ 是 → OpenCode Go（Qwen3.5 Plus / DeepSeek V4 Flash）
+│        接受可能触顶、国内需稳定访问 opencode.ai
+└─ 否 → 要最好代码质量？
+         ├─ 是 → OpenRouter 或 Zen + Claude Sonnet（按量 ~$30+/月）
+         └─ 否 → OpenRouter + Gemini 2.5 Flash（按量 ~$25～45/月，4h/天）
+
+已有 ChatGPT Plus（$20）？
+└─ 可 /connect → OpenAI → ChatGPT 登录，与 OpenRouter/Go 并行
+
+认准 Claude、愿付 $20+？
+└─ 考虑 Claude Code（官方），而非 OpenCode 里绑 Claude 订阅
+</code></pre>
+<h3>综合推荐（Java 全栈 + 每天 4h + 两台电脑）</h3>
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>首选</strong></td>
+<td>OpenRouter + <code>google/gemini-2.5-flash</code>，月预算按 <strong>~$30</strong> 规划</td>
+</tr>
+<tr>
+<td><strong>必须 $10</strong></td>
+<td>OpenCode Go + Qwen3.5 Plus，监控额度</td>
+</tr>
+<tr>
+<td><strong>已有稳定代理 + 想包月</strong></td>
+<td>Go $10/月可作补充，大活仍建议 Flash/Sonnet</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>十一、常见问题排查</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/connect</code> 后不知道干嘛</td>
+<td>已连上，执行 <code>/models</code> 选固定模型</td>
+</tr>
+<tr>
+<td>认证失败</td>
+<td>重新 <code>/connect</code>；检查 Key 与余额</td>
+</tr>
+<tr>
+<td>模型找不到</td>
+<td>对照 <a href="https://openrouter.ai/models">openrouter.ai/models</a> 完整 ID</td>
+</tr>
+<tr>
+<td>仍走 Auto Router</td>
+<td><code>/models</code> 改选具体模型</td>
+</tr>
+<tr>
+<td>Go 提示 No payment method</td>
+<td>到 opencode.ai 控制台验证支付方式</td>
+</tr>
+<tr>
+<td>地区不可用</td>
+<td>换稳定出口 IP；避免频繁切换节点</td>
+</tr>
+<tr>
+<td>超 Go 额度</td>
+<td>用免费模型，或开 Use balance + Zen 充值</td>
+</tr>
+<tr>
+<td>两台电脑模型不一致</td>
+<td>统一项目 <code>opencode.json</code> 并 Git 同步</td>
+</tr>
+<tr>
+<td>Go 有没有 Auto 换模型</td>
+<td><strong>没有</strong>，需 <code>/models</code> 手动切，见 <a href="#45-%E5%B0%8F%E6%8A%80%E5%B7%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9%E4%B8%8E%E5%88%87%E6%8D%A2">§4.5</a></td>
+</tr>
+<tr>
+<td>团队多人能各订 Go 吗</td>
+<td>同一 Workspace <strong>只能 1 人订</strong>，见 <a href="#46-%E8%AF%B4%E6%98%8E%E4%BA%8B%E9%A1%B9%E6%AF%8F%E4%B8%AA-workspace-%E5%8F%AA%E8%83%BD%E4%B8%80%E5%90%8D%E6%88%90%E5%91%98%E8%AE%A2%E9%98%85-go">§4.6</a></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>十二、参考链接</h2>
+<table>
+<thead>
+<tr>
+<th>资源</th>
+<th>地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OpenCode 官网</td>
+<td><a href="https://opencode.ai">https://opencode.ai</a></td>
+</tr>
+<tr>
+<td>OpenCode 配置文档</td>
+<td><a href="https://dev.opencode.ai/docs/config">https://dev.opencode.ai/docs/config</a></td>
+</tr>
+<tr>
+<td>OpenCode 提供商文档</td>
+<td><a href="https://opencode.ai/docs/providers">https://opencode.ai/docs/providers</a></td>
+</tr>
+<tr>
+<td>OpenCode Go 文档</td>
+<td><a href="https://opencode.ai/docs/go">https://opencode.ai/docs/go</a></td>
+</tr>
+<tr>
+<td>OpenCode Zen 文档</td>
+<td><a href="https://opencode.ai/docs/zen">https://opencode.ai/docs/zen</a></td>
+</tr>
+<tr>
+<td>OpenRouter 官网</td>
+<td><a href="https://openrouter.ai">https://openrouter.ai</a></td>
+</tr>
+<tr>
+<td>OpenRouter 集成 OpenCode</td>
+<td><a href="https://openrouter.ai/docs/cookbook/coding-agents/opencode-integration">https://openrouter.ai/docs/cookbook/coding-agents/opencode-integration</a></td>
+</tr>
+<tr>
+<td>OpenRouter 模型列表</td>
+<td><a href="https://openrouter.ai/models">https://openrouter.ai/models</a></td>
+</tr>
+<tr>
+<td>OpenRouter 充值</td>
+<td><a href="https://openrouter.ai/settings/credits">https://openrouter.ai/settings/credits</a></td>
+</tr>
+<tr>
+<td>OpenCode 登录/订阅</td>
+<td><a href="https://opencode.ai/auth">https://opencode.ai/auth</a></td>
+</tr>
+<tr>
+<td>OpenCode Go 订阅页</td>
+<td><a href="https://opencode.ai/go">https://opencode.ai/go</a></td>
+</tr>
+</tbody></table>
+<hr>
+<blockquote>
+<p>文档整理自 OpenCode + OpenRouter + OpenCode Go 实践与官方文档，适用于 Windows 终端环境。价格与限额以各平台官网实时信息为准。</p>
+</blockquote>
+
+</body>
+</html>

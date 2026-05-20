@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git 提交信息（Commit Message）格式规范</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #1f2328;
+  background: #fff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: 600;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d0d7de;
+  color: #1f2328;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 24px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #d0d7de;
+  color: #1f2328;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 20px 0 8px;
+  color: #1f2328;
+}
+
+h4 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  color: #1f2328;
+}
+
+p {
+  margin: 0 0 16px;
+}
+
+a {
+  color: #0969da;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+strong {
+  font-weight: 600;
+}
+
+ul, ol {
+  padding-left: 2em;
+  margin: 0 0 16px;
+}
+
+li {
+  margin: 4px 0;
+}
+
+li > ul, li > ol {
+  margin: 4px 0 0;
+}
+
+blockquote {
+  margin: 0 0 16px;
+  padding: 8px 16px;
+  color: #656d76;
+  border-left: 4px solid #d0d7de;
+  background: #f6f8fa;
+  border-radius: 0 4px 4px 0;
+}
+
+blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875em;
+  padding: 2px 6px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  color: #1f2328;
+}
+
+pre {
+  margin: 0 0 16px;
+  padding: 16px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+pre code {
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.85em;
+  color: #1f2328;
+}
+
+table {
+  width: 100%;
+  margin: 0 0 16px;
+  border-collapse: collapse;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+thead {
+  background: #f6f8fa;
+}
+
+th, td {
+  padding: 8px 14px;
+  text-align: left;
+  border: 1px solid #d0d7de;
+  font-size: 0.95em;
+}
+
+th {
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background: #f6f8fa;
+}
+
+hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid #d0d7de;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+</style>
+</head>
+<body>
+<h1>Git 提交信息（Commit Message）格式规范</h1>
+<p><strong>业界最标准、最通用、Cursor / GitHub / 团队开发都认可的格式</strong></p>
+<hr>
+<h1>一、标准格式（必须记住）</h1>
+<pre><code>&lt;类型&gt;: &lt;简短描述&gt;
+</code></pre>
+<p>例子：</p>
+<pre><code>feat: 添加历史上的今天卡片展示
+fix: 修复图片路径404问题
+docs: 更新README部署说明
+</code></pre>
+<hr>
+<h1>二、最常用的 7 种类型</h1>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>含义</th>
+<th>你的项目使用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>feat</strong></td>
+<td>新增功能</td>
+<td>加页面、加组件、加接口、加模块</td>
+</tr>
+<tr>
+<td><strong>fix</strong></td>
+<td>修复bug</td>
+<td>修复图片不显示、部署失败、样式错乱</td>
+</tr>
+<tr>
+<td><strong>docs</strong></td>
+<td>文档修改</td>
+<td>改README、加说明、写使用文档</td>
+</tr>
+<tr>
+<td><strong>style</strong></td>
+<td>样式/格式调整</td>
+<td>改CSS、调整排版、格式化代码</td>
+</tr>
+<tr>
+<td><strong>refactor</strong></td>
+<td>代码重构</td>
+<td>优化结构、改名、抽离逻辑，不改功能</td>
+</tr>
+<tr>
+<td><strong>test</strong></td>
+<td>测试相关</td>
+<td>加测试代码</td>
+</tr>
+<tr>
+<td><strong>chore</strong></td>
+<td>构建/依赖/杂项</td>
+<td>打包配置、升级依赖、清理文件</td>
+</tr>
+</tbody></table>
+<hr>
+<h1>三、正确示例（你可以直接复制）</h1>
+<pre><code>feat: 新增历史上的今天详情页面
+fix: 修复百度翻译部署失败问题
+docs: 完善项目部署教程
+style: 优化卡片列表样式间距
+refactor: 重构图片目录结构
+chore: 升级vite配置
+</code></pre>
+<hr>
+<h1>四、错误示范（不要这样写）</h1>
+<pre><code>提交代码
+修复
+更新
+aaa
+111
+测试
+</code></pre>
+<p>❌ 不规范、不清晰、别人看不懂、自己以后也忘</p>
+<hr>
+<h1>五、最适合你项目的真实提交示例</h1>
+<pre><code>feat: 新增阿里云OSS图片存储方案
+fix: 修复GitHub Pages图片404问题
+docs: 更新Tag版本发布说明
+style: 优化博客文章布局
+refactor: 统一图片目录结构
+chore: 优化打包体积
+</code></pre>
+<hr>
+<h1>六、一句话记住规范</h1>
+<p><strong>类型: 做了什么</strong>
+英文小写 + 冒号 + 空格 + 描述</p>
+<hr>
+<h1>七、如果你想更规范（可选，进阶）</h1>
+<pre><code>&lt;类型&gt;(&lt;范围&gt;): &lt;描述&gt;
+
+例：
+feat(home): 首页添加历史卡片列表
+fix(image): 修复图片加载失败
+docs(readme): 更新部署步骤
+</code></pre>
+<hr>
+<h2>总结（你只需要背这一句）</h2>
+<p><strong>类型: 简短清晰的描述</strong>
+例如：</p>
+<pre><code>fix: 修复图片路径问题
+docs: 更新版本说明
+feat: 新增功能模块
+</code></pre>
+<p>需要我给你做一个<strong>可以直接在Cursor里粘贴使用的commit模板</strong>吗？以后直接复制改字就行！</p>
+
+</body>
+</html>

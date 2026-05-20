@@ -287,8 +287,13 @@
 
     <PerpetualCalendar v-if="showPerpetualCalendar" @close="showPerpetualCalendar = false" />
 
-    <!-- 点击后，渲染对应 md 内容 -->
-    <MarkdownViewer v-if="showViewer" :mdContent="currentMdContent" @close="closeViewer" />
+    <!-- 点击后，渲染对应 md / html 内容 -->
+    <MarkdownViewer
+      v-if="showViewer"
+      :mdContent="currentMdContent"
+      :blogHtml="currentBlogHtml"
+      @close="closeViewer"
+    />
   </div>
 </template>
 
@@ -334,8 +339,9 @@ const rawFromGlob = (mod: GlobRawModule | undefined): string => {
 }
 
 /** 从 glob 的 key（如 `./assets/blog/标题.md`）取出不含扩展名的文件名 */
-const stemFromMdGlobPath = (globKey: string): string | null => {
-  const m = globKey.match(/\/([^/]+)\.md$/)
+const stemFromGlobPath = (globKey: string, ext: string): string | null => {
+  const escaped = ext.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const m = globKey.match(new RegExp(`/([^/]+)\\.${escaped}$`))
   return m ? m[1] : null
 }
 
@@ -349,7 +355,7 @@ const historyFiles = import.meta.glob('./assets/history/*.md', {
   import: 'default'
 }) as RawMdMap
 
-const blogFiles = import.meta.glob('./assets/blog/*.md', {
+const blogFiles = import.meta.glob('./assets/blog/html/*.html', {
   eager: true,
   query: '?raw',
   import: 'default'
@@ -391,9 +397,11 @@ const blogList = computed((): BlogListItem[] => {
   const meta = blogMetaMap
   return Object.keys(blogFiles)
     .map((path) => {
-      const name = stemFromMdGlobPath(path)
+      const name = stemFromGlobPath(path, 'html')
       if (!name) return null
-      return { name, path, updatedAt: Number(meta[path] || 0) }
+      // 查找对应的 md 路径以匹配 blog-meta.json 的时间戳
+      const mdPath = `./assets/blog/${name}.md`
+      return { name, path, updatedAt: Number(meta[mdPath] || 0) }
     })
     .filter((item): item is BlogListItem => item !== null)
     .sort((a, b) => b.updatedAt - a.updatedAt)
@@ -402,7 +410,7 @@ const blogList = computed((): BlogListItem[] => {
 const commandList = computed((): MdStemItem[] =>
   Object.keys(commandFiles)
     .map((path) => {
-      const name = stemFromMdGlobPath(path)
+      const name = stemFromGlobPath(path, 'md')
       return name ? { name, path } : null
     })
     .filter((item): item is MdStemItem => item !== null)
@@ -411,7 +419,7 @@ const commandList = computed((): MdStemItem[] =>
 const vpnList = computed((): MdStemItem[] =>
   Object.keys(vpnFiles)
     .map((path) => {
-      const name = stemFromMdGlobPath(path)
+      const name = stemFromGlobPath(path, 'md')
       return name ? { name, path } : null
     })
     .filter((item): item is MdStemItem => item !== null)
@@ -431,6 +439,7 @@ const latestVpnHtml = computed(() => {
 
 // —— UI 状态 ——
 const currentMdContent = ref('')
+const currentBlogHtml = ref('')
 const showViewer = ref(false)
 const activeModule = ref<ModuleTabKey>('all')
 const activeTool = ref<ActiveToolKey>('formatCheck')
@@ -682,6 +691,16 @@ const openMdFromMap = (map: RawMdMap, filePath: string) => {
   const mod = map[filePath]
   if (!mod) return
   currentMdContent.value = rawFromGlob(mod)
+  currentBlogHtml.value = ''
+  showViewer.value = true
+}
+
+/** 根据 glob 表中的路径打开博客 HTML 弹窗 */
+const openHtmlFromMap = (map: RawMdMap, filePath: string) => {
+  const mod = map[filePath]
+  if (!mod) return
+  currentBlogHtml.value = rawFromGlob(mod)
+  currentMdContent.value = ''
   showViewer.value = true
 }
 
@@ -751,7 +770,7 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
       openMdFromMap(historyFiles, `./assets/history/history-${value}.md`)
       break
     case 'blog':
-      openMdFromMap(blogFiles, value)
+      openHtmlFromMap(blogFiles, value)
       break
     case 'command':
       openMdFromMap(commandFiles, value)
@@ -879,6 +898,7 @@ const runHeaderSearchEnter = () => {
 const closeViewer = () => {
   showViewer.value = false
   currentMdContent.value = ''
+  currentBlogHtml.value = ''
 }
 
 // —— 百度翻译（签名在前端；生产需 Worker 或同源代理，见 vite 配置 /baidu-fanyi）——
