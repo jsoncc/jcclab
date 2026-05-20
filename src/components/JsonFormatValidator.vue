@@ -11,15 +11,24 @@
           {{ no }}
         </div>
       </div>
-      <textarea
-        ref="textareaRef"
-        v-model="inputText"
-        class="jfv-textarea"
-        :style="highlightStyle"
-        placeholder="在此输入 JSON…"
-        spellcheck="false"
-        @scroll="syncScroll"
-      />
+      <div class="jfv-editor-wrapper">
+        <pre
+          v-if="statusKind === 'ok' && inputText"
+          ref="highlightRef"
+          class="jfv-highlight"
+          aria-hidden="true"
+        ><code v-html="highlightedCode"></code></pre>
+        <textarea
+          ref="textareaRef"
+          v-model="inputText"
+          class="jfv-textarea"
+          :class="{ 'highlight-active': statusKind === 'ok' && inputText }"
+          :style="highlightStyle"
+          placeholder="在此输入 JSON…"
+          spellcheck="false"
+          @scroll="syncScroll"
+        />
+      </div>
 
       <div class="jfv-editor-actions">
         <button
@@ -89,7 +98,7 @@
               {{ no }}
             </div>
           </div>
-          <pre class="jfv-modal-pre"><code>{{ inputText }}</code></pre>
+          <pre class="jfv-modal-pre"><code v-html="highlightedCodeModal"></code></pre>
         </div>
       </div>
     </div>
@@ -123,6 +132,7 @@ const statusText = ref('请输入 JSON 后点击“格式化校验”')
 const errorDetail = ref<JsonErrorDetail | null>(null)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const gutterRef = ref<HTMLDivElement | null>(null)
+const highlightRef = ref<HTMLElement | null>(null)
 const showExpanded = ref(false)
 const showExpandBtn = ref(false)
 let resizeObserver: ResizeObserver | null = null
@@ -135,6 +145,59 @@ const canRun = computed(() => Boolean(inputText.value.trim()))
 const lineCount = computed(() => Math.max(1, String(inputText.value || '').split('\n').length))
 
 const modalLineCount = computed(() => Math.max(1, String(inputText.value || '').split('\n').length))
+
+/** 语法高亮：为 JSON 的不同类型添加不同的样式 */
+const highlightJson = (text: string): string => {
+  if (!text) return ''
+  
+  // 先转义 HTML 特殊字符
+  let result = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+  
+  // 分步处理，避免相互干扰
+  // 1. 先处理键（带冒号的字符串）
+  result = result.replace(/"([^"\\]|\\.)*"(?=\s*:)/g, (match) => {
+    return `<span class="jfv-json-key">${match}</span>`
+  })
+  
+  // 2. 处理字符串值（冒号后的字符串）- 引号和内部内容分开样式
+  // 使用更精确的正则，只匹配冒号后的字符串
+  result = result.replace(/:\s*"((?:[^"\\]|\\.)*)"/g, (match, inner) => {
+    const whitespace = match.match(/:\s*/)?.[0]?.slice(1) || ''
+    return `:${whitespace}<span class="jfv-quote">"</span><span class="jfv-json-string-value">${inner}</span><span class="jfv-quote">"</span>`
+  })
+  
+  // 3. 处理布尔值
+  result = result.replace(/\btrue\b/g, '<span class="jfv-json-boolean">true</span>')
+  result = result.replace(/\bfalse\b/g, '<span class="jfv-json-boolean">false</span>')
+  
+  // 4. 处理 null
+  result = result.replace(/\bnull\b/g, '<span class="jfv-json-null">null</span>')
+  
+  // 5. 处理数字（对象中的数字值）
+  result = result.replace(/:(\s*-?\d+(?:\.\d*)?(?:[eE][+\-]?[0-9]+)?)/g, (match, num) => {
+    return `:<span class="jfv-json-number">${num}</span>`
+  })
+  
+  // 6. 处理数组中的数字
+  result = result.replace(/\[(\s*-?\d+(?:\.\d*)?(?:[eE][+\-]?[0-9]+)?)(\s*[\],])/g, (match, num, end) => {
+    return `[<span class="jfv-json-number">${num}</span>${end}`
+  })
+  
+  return result
+}
+
+const highlightedCode = computed(() => {
+  if (statusKind.value !== 'ok' || !inputText.value) return ''
+  return highlightJson(inputText.value)
+})
+
+const highlightedCodeModal = computed(() => {
+  if (!inputText.value) return ''
+  return highlightJson(inputText.value)
+})
 
 /** 优先 Clipboard API；非 https 等环境降级为 execCommand */
 const copyTextToClipboard = async (text: string) => {
@@ -237,8 +300,14 @@ const computeLineColumnFromIndex = (text: string, index: number) => {
 const syncScroll = () => {
   const ta = textareaRef.value
   const gutter = gutterRef.value
+  const highlight = highlightRef.value
   if (!ta || !gutter) return
-  gutter.scrollTop = ta.scrollTop
+  const scrollTop = ta.scrollTop
+  gutter.scrollTop = scrollTop
+  
+  if (highlight) {
+    highlight.scrollTop = scrollTop
+  }
 }
 
 const checkOverflow = () => {
@@ -316,6 +385,11 @@ onUnmounted(() => {
   height: min(70vh, 620px);
 }
 
+.jfv-editor-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
 .jfv-gutter {
   background: #fbfbfb;
   border-right: 1px solid #e6e6e6;
@@ -333,6 +407,7 @@ onUnmounted(() => {
   padding-right: 10px;
   user-select: none;
   white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .jfv-gutter-line.active {
@@ -352,12 +427,127 @@ onUnmounted(() => {
   height: 100%;
   box-sizing: border-box;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  color: transparent;
+  background: #fff;
+  caret-color: #333;
+}
+
+.jfv-highlight {
+  position: absolute;
+  inset: 0;
+  margin: 0 !important;
+  padding: 10px 12px !important;
+  font-size: 14px;
+  line-height: 22px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
   color: #333;
   background: #fff;
-  background-image: linear-gradient(#f6d3d3, #f6d3d3);
-  background-repeat: no-repeat;
-  background-size: 100% calc(var(--jfv-hl-end, 0px) - var(--jfv-hl-start, 0px));
-  background-position: 0 var(--jfv-hl-start, -9999px);
+  overflow-y: auto;
+  white-space: pre;
+  word-spacing: 0;
+  text-indent: 0;
+  pointer-events: none;
+  border: none !important;
+  display: block;
+  text-align: left;
+  letter-spacing: normal;
+}
+
+.jfv-highlight code {
+  display: block;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  white-space: inherit;
+  word-spacing: inherit;
+  text-align: left;
+}
+
+.jfv-highlight :deep(.jfv-json-key) {
+  color: #c41a16;
+  font-weight: 400;
+}
+
+.jfv-highlight :deep(.jfv-quote) {
+  color: #666;
+}
+
+.jfv-highlight :deep(.jfv-json-string-value) {
+  color: #2563eb;
+}
+
+.jfv-highlight :deep(.jfv-json-number) {
+  color: #16a34a;
+}
+
+.jfv-highlight :deep(.jfv-json-boolean) {
+  color: #0c3a97;
+  font-weight: 600;
+}
+
+.jfv-highlight :deep(.jfv-json-null) {
+  color: #0c3a97;
+  font-weight: 600;
+}
+
+.jfv-textarea {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 22px;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  background: transparent;
+  caret-color: #333;
+  overflow-y: auto;
+  white-space: pre;
+  color: #333;
+  margin: 0;
+  text-align: left;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-indent: 0;
+}
+
+.jfv-textarea.highlight-active {
+  color: transparent;
+  caret-color: transparent;
+}
+
+.jfv-textarea.highlight-active:focus {
+  caret-color: #333;
+}
+
+.jfv-json-key {
+  color: #c41a16;
+  font-weight: 600;
+}
+
+.jfv-json-string {
+  color: #c41a16;
+}
+
+.jfv-json-number {
+  color: #16a34a;
+}
+
+.jfv-json-boolean {
+  color: #0c3a97;
+  font-weight: 600;
+}
+
+.jfv-json-null {
+  color: #0c3a97;
+  font-weight: 600;
 }
 
 .jfv-editor-actions {
@@ -613,6 +803,51 @@ onUnmounted(() => {
 .jfv-modal-pre code {
   white-space: pre;
   word-break: normal;
+}
+
+.jfv-modal-pre :deep(.jfv-json-key) {
+  color: #c41a16;
+  font-weight: 400;
+}
+
+.jfv-modal-pre :deep(.jfv-quote) {
+  color: #666;
+}
+
+.jfv-modal-pre :deep(.jfv-json-string-value) {
+  color: #2563eb;
+}
+
+.jfv-modal-pre :deep(.jfv-json-number) {
+  color: #16a34a;
+}
+
+.jfv-modal-pre :deep(.jfv-json-boolean) {
+  color: #0c3a97;
+  font-weight: 600;
+}
+
+.jfv-modal-pre :deep(.jfv-json-null) {
+  color: #0c3a97;
+  font-weight: 600;
+}
+
+.jfv-modal-pre .jfv-json-string {
+  color: #c41a16 !important;
+}
+
+.jfv-modal-pre .jfv-json-number {
+  color: #16a34a !important;
+}
+
+.jfv-modal-pre .jfv-json-boolean {
+  color: #0c3a97 !important;
+  font-weight: 600;
+}
+
+.jfv-modal-pre .jfv-json-null {
+  color: #0c3a97 !important;
+  font-weight: 600;
 }
 
 @media (max-width: 640px) {
