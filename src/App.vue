@@ -462,7 +462,7 @@ const moduleTabs: { key: ModuleTabKey; label: string }[] = [
   { key: 'history', label: '历史上的今天' },
   { key: 'blog', label: '博客' },
   { key: 'command', label: '命令' },
-  { key: 'vpn', label: '科学上网' },
+  // { key: 'vpn', label: '科学上网' }, // 已隐藏
   { key: 'formatCheck', label: '工具集合' },
   { key: 'translate', label: '翻译' }
 ]
@@ -752,16 +752,16 @@ const listModules = computed((): ListModule[] => [
       href: `#/command/${item.name}`
     }))
   },
-  {
-    key: 'vpn',
-    title: '科学上网',
-    items: vpnList.value.map(item => ({
-      key: item.path,
-      label: item.name,
-      value: item.path,
-      href: `#/vpn/${item.name}`
-    }))
-  }
+  // {
+  //   key: 'vpn',
+  //   title: '科学上网',
+  //   items: vpnList.value.map(item => ({
+  //     key: item.path,
+  //     label: item.name,
+  //     value: item.path,
+  //     href: `#/vpn/${item.name}`
+  //   }))
+  // } // 已隐藏
 ])
 
 const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
