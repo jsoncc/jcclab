@@ -116,40 +116,60 @@ watch(() => props.mdContent, () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 40px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .markdown-modal {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  max-width: 1200px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  max-width: 1400px;
   width: 100%;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 24px 32px;
   border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
 }
 
 .modal-title {
   margin: 0;
-  font-size: 20px;
-  color: #1f2937;
-  font-weight: 600;
+  font-size: 22px;
+  color: #1e293b;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .header-buttons {
@@ -159,87 +179,287 @@ watch(() => props.mdContent, () => {
 }
 
 .copy-all-btn {
-  background: #0969da;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
+  border-radius: 8px;
+  padding: 8px 16px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
 }
 
 .copy-all-btn:hover {
-  background: #0954b3;
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+}
+
+.copy-all-btn:active {
+  transform: translateY(0);
 }
 
 .close-btn {
-  background: none;
-  border: none;
-  font-size: 28px;
-  color: #6b7280;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  font-size: 22px;
+  color: #64748b;
   cursor: pointer;
   line-height: 1;
   padding: 0;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all 0.2s;
 }
 
 .close-btn:hover {
-  background: #e5e7eb;
-  color: #374151;
+  background: #e2e8f0;
+  color: #1e293b;
+  transform: rotate(90deg);
 }
 
 .modal-body {
-  padding: 24px;
+  padding: 32px 40px;
   overflow-y: auto;
   flex: 1;
+  background: #ffffff;
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .markdown-content {
-  line-height: 1.8;
-  color: #333;
+  line-height: 1.85;
+  color: #334155;
+  font-size: 16px;
 }
 
 .markdown-content h1 {
-  margin: 0 0 20px 0;
-  font-size: 28px;
-  color: #1f2937;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 12px;
+  margin: 0 0 24px 0;
+  font-size: 32px;
+  color: #0f172a;
+  border-bottom: 3px solid #e2e8f0;
+  padding-bottom: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .markdown-content h2 {
-  margin: 24px 0 12px;
+  margin: 32px 0 16px;
+  font-size: 24px;
+  color: #1e293b;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 10px;
+  font-weight: 700;
+}
+
+.markdown-content h3 {
+  margin: 28px 0 14px;
   font-size: 20px;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 8px;
+  color: #334155;
+  font-weight: 600;
 }
 
-.markdown-content ul {
-  padding-left: 2em;
-  margin: 12px 0;
-}
-
-.markdown-content li {
-  margin: 8px 0;
+.markdown-content h4 {
+  margin: 24px 0 12px;
+  font-size: 17px;
+  color: #475569;
+  font-weight: 600;
 }
 
 .markdown-content p {
-  margin: 12px 0;
+  margin: 16px 0;
+  line-height: 1.9;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 2em;
+  margin: 16px 0;
+}
+
+.markdown-content li {
+  margin: 10px 0;
+  line-height: 1.8;
+}
+
+.markdown-content blockquote {
+  margin: 20px 0;
+  padding: 16px 20px;
+  border-left: 4px solid #0284c7;
+  background: #f0f9ff;
+  border-radius: 0 8px 8px 0;
+  color: #475569;
+}
+
+.markdown-content blockquote p:first-child {
+  margin-top: 0;
+}
+
+.markdown-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content code {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-size: 0.9em;
+  padding: 3px 8px;
+  background: #f1f5f9;
+  border-radius: 6px;
+  color: #0369a1;
+  border: 1px solid #e2e8f0;
+}
+
+.markdown-content pre {
+  margin: 20px 0;
+  padding: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.markdown-content pre code {
+  padding: 0;
+  background: none;
+  border: none;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.markdown-content table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.markdown-content th {
+  background: #f8fafc;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 2px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.markdown-content td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.markdown-content tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown-content tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin: 20px 0;
+}
+
+.markdown-content hr {
+  margin: 32px 0;
+  border: none;
+  border-top: 2px solid #e5e7eb;
+}
+
+.markdown-content a {
+  color: #0284c7;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.markdown-content a:hover {
+  border-bottom-color: #0284c7;
 }
 </style>
 
 <style>
-/** 博客 HTML 独立样式：作用于 v-html 注入的内容 */
+/** 博客 HTML 独立样式：作用于 v-html 注入的内容 
+ * 基于 theme-factory 的 Modern Minimalist 和 Ocean Depths 主题
+ */
 .blog-html-wrapper {
-  color: #1f2328;
+  color: #334155;
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.blog-html-wrapper h1,
+.blog-html-wrapper h2,
+.blog-html-wrapper h3,
+.blog-html-wrapper h4 {
+  margin-top: 28px;
+  margin-bottom: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.blog-html-wrapper p {
+  margin: 16px 0;
+  line-height: 1.9;
+}
+
+.blog-html-wrapper img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin: 20px 0;
+}
+
+.blog-html-wrapper pre {
+  background: #f8fafc;
+  color: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+.blog-html-wrapper code {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9em;
+}
+
+.blog-html-wrapper blockquote {
+  margin: 20px 0;
+  padding: 16px 20px;
+  border-left: 4px solid #0284c7;
+  background: #f0f9ff;
+  border-radius: 0 8px 8px 0;
+  color: #475569;
 }
 </style>
