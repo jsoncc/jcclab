@@ -22,11 +22,13 @@
     "@iconify-icons/radix-icons": "^1.2.9",
     "@iconify/vue": "^5.0.0",
     "crypto-js": "^4.2.0",
+    "jszip": "^3.10.1",
     "lunar-javascript": "^1.7.7",
     "lunar-typescript": "^1.8.6",
     "marked": "^17.0.5",
     "nodemailer": "^7.0.9",
     "opencc-js": "^1.0.5",
+    "pdfjs-dist": "^4.9.155",
     "solarlunar": "^3.1.0",
     "vue": "^3.4.0"
   },

@@ -120,6 +120,14 @@
                     >
                       在线Base64转文件
                     </button>
+                    <button
+                      type="button"
+                      class="sidebar-dropdown-item"
+                      :class="{ active: activeModule === 'formatCheck' && activeTool === 'pdfToImage' }"
+                      @click="openTool('pdfToImage')"
+                    >
+                      PDF转图片
+                    </button>
                   </div>
                 </Teleport>
               </div>
@@ -216,7 +224,8 @@
           <UuidGenerator v-else-if="activeTool === 'uuid'" />
           <MyBatisSqlFormatter v-else-if="activeTool === 'mybatisSql'" />
           <Base64Decoder v-else-if="activeTool === 'base64Decode'" />
-          <Base64ToFileTool v-else />
+          <Base64ToFileTool v-else-if="activeTool === 'base64ToFile'" />
+          <PdfToImage v-else-if="activeTool === 'pdfToImage'" />
         </div>
         </div>
       </div>
@@ -324,6 +333,7 @@ import UuidGenerator from './components/UuidGenerator.vue'
 import MyBatisSqlFormatter from './components/MyBatisSqlFormatter.vue'
 import Base64Decoder from './components/Base64Decoder.vue'
 import Base64ToFileTool from './components/Base64ToFileTool.vue'
+import PdfToImage from './components/PdfToImage.vue'
 import PerpetualCalendar from './components/PerpetualCalendar.vue'
 import blogMeta from './assets/blog/blog-meta.json'
 import homeQrcodeImg from './assets/images/home/qrcode.png'
@@ -346,7 +356,7 @@ const stemFromGlobPath = (globKey: string, ext: string): string | null => {
 }
 
 type ModuleTabKey = 'all' | 'history' | 'blog' | 'vpn' | 'formatCheck' | 'translate'
-type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode' | 'base64ToFile'
+type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode' | 'base64ToFile' | 'pdfToImage'
 
 // —— Markdown 原始文件（构建期打包；key 为形如 ./assets/... 的路径）——
 const historyFiles = import.meta.glob('./assets/history/*.md', {
@@ -487,6 +497,7 @@ const toolsTitle = computed(() => {
   if (activeTool.value === 'mybatisSql') return 'MyBatis SQL日志格式化'
   if (activeTool.value === 'base64Decode') return '在线Base64编解码工具'
   if (activeTool.value === 'base64ToFile') return '在线Base64转文件工具'
+  if (activeTool.value === 'pdfToImage') return 'PDF转图片工具'
   return 'JSON格式化校验'
 })
 
@@ -827,6 +838,13 @@ const headerSearchCandidates = computed<HeaderSearchItem[]>(() => [
     meta: '工具集合',
     tags: ['base64', '文件', '转文件', 'pdf', '下载', '在线base64转文件工具', '工具'],
     action: () => toTool('base64ToFile')
+  },
+  {
+    key: 'tool-pdf2img',
+    title: '工具：PDF转图片工具',
+    meta: '工具集合',
+    tags: ['pdf', '转图片', 'png', 'jpeg', '转换', '格式转换', '工具'],
+    action: () => toTool('pdfToImage')
   },
   ...dateList.value.slice(0, 30).map((item) => ({
     key: `history-${item.date}`,
