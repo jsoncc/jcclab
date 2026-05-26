@@ -345,7 +345,7 @@ const stemFromGlobPath = (globKey: string, ext: string): string | null => {
   return m ? m[1] : null
 }
 
-type ModuleTabKey = 'all' | 'history' | 'blog' | 'command' | 'vpn' | 'formatCheck' | 'translate'
+type ModuleTabKey = 'all' | 'history' | 'blog' | 'vpn' | 'formatCheck' | 'translate'
 type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode' | 'base64ToFile'
 
 // —— Markdown 原始文件（构建期打包；key 为形如 ./assets/... 的路径）——
@@ -461,7 +461,7 @@ const moduleTabs: { key: ModuleTabKey; label: string }[] = [
   { key: 'all', label: '全部' },
   { key: 'history', label: '历史上的今天' },
   { key: 'blog', label: '博客' },
-  { key: 'command', label: '命令' },
+  // { key: 'command', label: '命令' }, // 已移除，内容已拆分到博客模块
   // { key: 'vpn', label: '科学上网' }, // 已隐藏
   { key: 'formatCheck', label: '工具集合' },
   { key: 'translate', label: '翻译' }
@@ -704,7 +704,7 @@ const openHtmlFromMap = (map: RawMdMap, filePath: string) => {
   showViewer.value = true
 }
 
-type ListModuleKey = 'history' | 'blog' | 'command' | 'vpn'
+type ListModuleKey = 'history' | 'blog' | 'vpn'
 
 interface ListModule {
   key: ListModuleKey
@@ -720,7 +720,7 @@ type HeaderSearchItem = {
   action: () => void
 }
 
-/** 侧栏四块列表的数据：history / blog / command / vpn（vpn 单开模块时另有内联展示） */
+/** 侧栏列表的数据：history / blog（command 模块内容已拆分到博客，vpn 已隐藏） */
 const listModules = computed((): ListModule[] => [
   {
     key: 'history',
@@ -742,16 +742,16 @@ const listModules = computed((): ListModule[] => [
       href: `#/blog/${item.name}`
     }))
   },
-  {
-    key: 'command',
-    title: '命令',
-    items: commandList.value.map(item => ({
-      key: item.path,
-      label: item.name,
-      value: item.path,
-      href: `#/command/${item.name}`
-    }))
-  },
+  // {
+  //   key: 'command',
+  //   title: '命令',
+  //   items: commandList.value.map(item => ({
+  //     key: item.path,
+  //     label: item.name,
+  //     value: item.path,
+  //     href: `#/command/${item.name}`
+  //   }))
+  // }, // 已移除，内容已拆分到博客模块
   // {
   //   key: 'vpn',
   //   title: '科学上网',
@@ -772,12 +772,12 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
     case 'blog':
       openHtmlFromMap(blogFiles, value)
       break
-    case 'command':
-      openMdFromMap(commandFiles, value)
-      break
-    case 'vpn':
-      openMdFromMap(vpnFiles, value)
-      break
+    // case 'command':
+    //   openMdFromMap(commandFiles, value)
+    //   break // 已移除，内容已拆分到博客模块
+    // case 'vpn':
+    //   openMdFromMap(vpnFiles, value)
+    //   break // 已隐藏
     default:
       break
   }
@@ -842,20 +842,20 @@ const headerSearchCandidates = computed<HeaderSearchItem[]>(() => [
     tags: ['博客', 'blog', item.name],
     action: () => openModuleItem('blog', item.path)
   })),
-  ...commandList.value.slice(0, 40).map((item) => ({
-    key: `command-${item.path}`,
-    title: `命令：${item.name}`,
-    meta: '命令模块',
-    tags: ['命令', 'command', item.name],
-    action: () => openModuleItem('command', item.path)
-  })),
-  ...vpnList.value.slice(0, 40).map((item) => ({
-    key: `vpn-${item.path}`,
-    title: `科学上网：${item.name}`,
-    meta: '科学上网模块',
-    tags: ['科学上网', 'vpn', item.name],
-    action: () => openModuleItem('vpn', item.path)
-  }))
+  // ...commandList.value.slice(0, 40).map((item) => ({
+  //   key: `command-${item.path}`,
+  //   title: `命令：${item.name}`,
+  //   meta: '命令模块',
+  //   tags: ['命令', 'command', item.name],
+  //   action: () => openModuleItem('command', item.path)
+  // })), // 已移除，内容已拆分到博客模块
+  // ...vpnList.value.slice(0, 40).map((item) => ({
+  //   key: `vpn-${item.path}`,
+  //   title: `科学上网：${item.name}`,
+  //   meta: '科学上网模块',
+  //   tags: ['科学上网', 'vpn', item.name],
+  //   action: () => openModuleItem('vpn', item.path)
+  // })) // 已隐藏
 ])
 
 const headerSearchResults = computed(() => {
