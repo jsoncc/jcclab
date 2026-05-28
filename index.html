@@ -8,9 +8,10 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { height: 100%; }
-    body { min-height: 100%; background: #f6f8fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto; }
+    body { min-height: 100%; background: var(--page-bg, #f6f8fa); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto; transition: background 0.3s ease; }
     #app { min-height: 100vh; display: flex; flex-direction: column; align-items: stretch; }
   </style>
+  <script>!function(){var t=localStorage.getItem('theme');if(t&&t!=='default'){var e={'ocean':'#ecf5f9','midnight':'#f2eef9','forest':'#edf4ed','sunset':'#fcf2eb','arctic':'#eef4fa','rose':'#faf0f0','dark':'#1a1d23'};var b=e[t];if(b)document.documentElement.style.setProperty('--page-bg',b)}}();</script>
 </head>
 <body>
   <div id="app"></div>

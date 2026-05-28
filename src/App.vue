@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home" :data-theme="themeKey">
     <header class="page-header">
       <div class="header-left">
         <h1 class="page-title">JsonCC Lab</h1>
@@ -282,6 +282,31 @@
         </div>
       </div>
 
+      <div class="theme-tool">
+        <button
+          type="button"
+          class="floating-tool-btn theme-btn"
+          title="切换主题"
+          aria-label="切换主题"
+          @click.stop="showThemePicker = !showThemePicker"
+        >
+          <Icon class="theme-icon" :icon="paletteIcon" aria-hidden="true" />
+        </button>
+        <div v-if="showThemePicker" class="theme-picker" @click.stop>
+          <button
+            v-for="t in themes"
+            :key="t.key"
+            type="button"
+            class="theme-option"
+            :class="{ active: themeKey === t.key }"
+            @click="setTheme(t.key)"
+          >
+            <span class="theme-swatch" :style="{ background: t.color }"></span>
+            <span class="theme-label">{{ t.label }}</span>
+          </button>
+        </div>
+      </div>
+
       <button
         v-show="showBackToTop"
         type="button"
@@ -317,6 +342,7 @@ import {
   nextTick,
   onBeforeUnmount,
   onMounted,
+  watch,
   type CSSProperties,
   type VNodeRef
 } from 'vue'
@@ -324,6 +350,7 @@ import { Icon } from '@iconify/vue'
 import pinTopIcon from '@iconify-icons/radix-icons/pin-top'
 import qrcodeIcon from '@iconify-icons/mdi/qrcode'
 import starOutlineIcon from '@iconify-icons/mdi/star-outline'
+import paletteIcon from '@iconify-icons/mdi/palette'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
 import CryptoJS from 'crypto-js'
 import { marked } from 'marked'
@@ -458,6 +485,31 @@ const toolsMenuTimer = ref(0)
 const toolsAnchorRef = ref<HTMLButtonElement | null>(null)
 const nowText = ref('')
 let clockTimer = 0
+const showThemePicker = ref(false)
+const themeKey = ref(localStorage.getItem('theme') || 'default')
+
+const themes = [
+  { key: 'default', label: '极简白', pageBg: '#f6f8fa', color: '#e2e8f0' },
+  { key: 'ocean', label: '深海蓝', pageBg: '#ecf5f9', color: '#94b8d0' },
+  { key: 'midnight', label: '暮光紫', pageBg: '#f2eef9', color: '#b8a9d4' },
+  { key: 'forest', label: '晨雾绿', pageBg: '#edf4ed', color: '#9ebd9e' },
+  { key: 'sunset', label: '暖阳橙', pageBg: '#fcf2eb', color: '#e8b89a' },
+  { key: 'arctic', label: '冰雪蓝', pageBg: '#eef4fa', color: '#a1bcd6' },
+  { key: 'rose', label: '玫瑰粉', pageBg: '#faf0f0', color: '#dbb5b5' },
+  { key: 'dark', label: '暗夜黑', pageBg: '#1a1d23', color: '#4a4d55' },
+]
+
+watch(themeKey, (val) => {
+  localStorage.setItem('theme', val)
+  const theme = themes.find(t => t.key === val)
+  if (theme) document.documentElement.style.setProperty('--page-bg', theme.pageBg)
+}, { immediate: true })
+
+const setTheme = (key: string) => {
+  themeKey.value = key
+  showThemePicker.value = false
+}
+
 const toolsMenuStyle = ref<CSSProperties>({
   position: 'fixed',
   left: '-9999px',
@@ -677,6 +729,11 @@ const loadSiteStats = async () => {
   }
 }
 
+const onDocumentClick = (e: MouseEvent) => {
+  const target = e.target as HTMLElement
+  if (!target.closest('.theme-tool')) showThemePicker.value = false
+}
+
 onMounted(() => {
   nowText.value = formatNow()
   clockTimer = window.setInterval(() => {
@@ -685,6 +742,7 @@ onMounted(() => {
 
   window.addEventListener('scroll', onWindowScroll, true)
   window.addEventListener('resize', onWindowRelayout)
+  window.addEventListener('click', onDocumentClick, true)
   updateBackToTopVisibility()
 
   void loadSiteStats()
@@ -695,6 +753,7 @@ onBeforeUnmount(() => {
   if (headerSearchBlurTimer.value) window.clearTimeout(headerSearchBlurTimer.value)
   window.removeEventListener('scroll', onWindowScroll, true)
   window.removeEventListener('resize', onWindowRelayout)
+  window.removeEventListener('click', onDocumentClick, true)
 })
 
 /** 根据 glob 表中的路径打开 Markdown 弹窗 */

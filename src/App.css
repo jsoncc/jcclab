@@ -836,3 +836,103 @@
   }
 
 }
+
+/* —— 页面背景主题（基于 theme-factory 配色） —— */
+
+.home[data-theme="default"] {
+  --page-bg: #f6f8fa;
+}
+
+.home[data-theme="ocean"] {
+  --page-bg: #ecf5f9;
+}
+
+.home[data-theme="midnight"] {
+  --page-bg: #f2eef9;
+}
+
+.home[data-theme="forest"] {
+  --page-bg: #edf4ed;
+}
+
+.home[data-theme="sunset"] {
+  --page-bg: #fcf2eb;
+}
+
+.home[data-theme="arctic"] {
+  --page-bg: #eef4fa;
+}
+
+.home[data-theme="rose"] {
+  --page-bg: #faf0f0;
+}
+
+.home[data-theme="dark"] {
+  --page-bg: #1a1d23;
+}
+
+/* —— 主题选择器 —— */
+
+.theme-tool {
+  position: relative;
+}
+
+.theme-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.theme-picker {
+  position: absolute;
+  right: calc(100% + 12px);
+  bottom: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 8px;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 180px;
+  z-index: 200;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 13px;
+  color: #374151;
+  text-align: left;
+  width: 100%;
+}
+
+.theme-option:hover {
+  background: #f3f4f6;
+}
+
+.theme-option.active {
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.theme-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.theme-label {
+  white-space: nowrap;
+}
