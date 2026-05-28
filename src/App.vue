@@ -6,12 +6,12 @@
         <p class="repo-cta">
           项目源码与更新：
           <a
-            href="https://github.com/jsoncc/today-history"
+            href="https://github.com/jsoncc/jcclab"
             target="_blank"
             rel="noopener noreferrer"
             class="repo-link"
           >
-            GitHub - jsoncc/today-history
+            GitHub - jsoncc/jcclab
           </a>
         </p>
       </div>
