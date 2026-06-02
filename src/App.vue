@@ -115,10 +115,10 @@
                     <button
                       type="button"
                       class="sidebar-dropdown-item"
-                      :class="{ active: activeModule === 'formatCheck' && activeTool === 'base64ToFile' }"
-                      @click="openTool('base64ToFile')"
+                      :class="{ active: activeModule === 'formatCheck' && activeTool === 'base64File' }"
+                      @click="openTool('base64File')"
                     >
-                      在线Base64转文件
+                      Base64转文件
                     </button>
                     <button
                       type="button"
@@ -224,7 +224,7 @@
           <UuidGenerator v-else-if="activeTool === 'uuid'" />
           <MyBatisSqlFormatter v-else-if="activeTool === 'mybatisSql'" />
           <Base64Decoder v-else-if="activeTool === 'base64Decode'" />
-          <Base64ToFileTool v-else-if="activeTool === 'base64ToFile'" />
+          <Base64FileTool v-else-if="activeTool === 'base64File'" />
           <PdfTools v-else-if="activeTool === 'pdfTools'" />
         </div>
         </div>
@@ -359,7 +359,7 @@ import JsonFormatValidator from './components/JsonFormatValidator.vue'
 import UuidGenerator from './components/UuidGenerator.vue'
 import MyBatisSqlFormatter from './components/MyBatisSqlFormatter.vue'
 import Base64Decoder from './components/Base64Decoder.vue'
-import Base64ToFileTool from './components/Base64ToFileTool.vue'
+import Base64FileTool from './components/Base64FileTool.vue'
 import PdfTools from './components/PdfTools.vue'
 import PerpetualCalendar from './components/PerpetualCalendar.vue'
 import blogMeta from './assets/blog/blog-meta.json'
@@ -383,7 +383,7 @@ const stemFromGlobPath = (globKey: string, ext: string): string | null => {
 }
 
 type ModuleTabKey = 'all' | 'history' | 'blog' | 'vpn' | 'formatCheck' | 'translate'
-type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode' | 'base64ToFile' | 'pdfTools'
+type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode' | 'base64File' | 'pdfTools'
 
 // —— Markdown 原始文件（构建期打包；key 为形如 ./assets/... 的路径）——
 const historyFiles = import.meta.glob('./assets/history/*.md', {
@@ -548,7 +548,7 @@ const toolsTitle = computed(() => {
   if (activeTool.value === 'uuid') return 'UUID在线生成'
   if (activeTool.value === 'mybatisSql') return 'MyBatis SQL日志格式化'
   if (activeTool.value === 'base64Decode') return '在线Base64编解码工具'
-  if (activeTool.value === 'base64ToFile') return '在线Base64转文件工具'
+  if (activeTool.value === 'base64File') return 'Base64转文件'
   if (activeTool.value === 'pdfTools') return 'PDF 转换'
   return 'JSON格式化校验'
 })
@@ -893,10 +893,10 @@ const headerSearchCandidates = computed<HeaderSearchItem[]>(() => [
   },
   {
     key: 'tool-base64-file',
-    title: '工具：在线Base64转文件工具',
+    title: '工具：Base64转文件',
     meta: '工具集合',
-    tags: ['base64', '文件', '转文件', 'pdf', '下载', '在线base64转文件工具', '工具'],
-    action: () => toTool('base64ToFile')
+    tags: ['base64', '文件', '转文件', '文件转base64', '编码', '下载', '工具'],
+    action: () => toTool('base64File')
   },
   {
     key: 'tool-pdf',
