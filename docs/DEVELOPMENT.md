@@ -4,6 +4,12 @@
 
 ---
 
+## 环境要求
+
+- **Node.js** ≥ 18.0.0（推荐 LTS）
+- **npm** ≥ 9（随 Node.js 18+ 自带）
+- `package.json` 已声明 `engines.node`，Node.js 版本过低时 npm 会发出警告
+
 ## 技术栈
 
 - **前端**：Vue 3、TypeScript、Vite 5、`@vitejs/plugin-vue`

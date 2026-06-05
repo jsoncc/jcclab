@@ -24,13 +24,17 @@
 
 ## 快速开始
 
-### 1. 安装依赖
+### 1. 环境要求
+
+- **Node.js** ≥ 18.0.0（推荐 LTS）
+
+### 2. 安装依赖
 
 ```bash
 npm install
 ```
 
-### 2. 环境变量
+### 3. 环境变量
 
 复制 `.env.example` 为 `.env`，按需填写：
 
@@ -41,7 +45,7 @@ VITE_BAIDU_SECRET=你的百度翻译密钥
 # VITE_BAIDU_TRANSLATE_URL=https://xxx.workers.dev
 ```
 
-### 3. 本地开发
+### 4. 本地开发
 
 ```bash
 npm run dev
@@ -49,7 +53,7 @@ npm run dev
 
 `predev` 会先执行 `generate-blog-meta.ts` + `convert-md-to-html.ts`，再启动 Vite（默认端口 3000）。
 
-### 4. 生产构建与预览
+### 5. 生产构建与预览
 
 ```bash
 npm run build    # 先类型检查（vue-tsc），再 vite build，产出 dist/
