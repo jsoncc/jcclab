@@ -10,11 +10,14 @@
 
 | 模块 | 说明 |
 |------|------|
-| 历史上的今天 | `src/assets/history/` 下按日期的 `.md`，首页按日期倒序列出 |
-| 博客 / 命令 / VPN | 对应 `blog`、`command`、`vpn` 目录扫描 `.md`；博客列表按 Git 最后提交时间排序 |
+| 历史上的今天 | `src/assets/history/` 下按日期的 `.md`，首页按日期倒序列出；每日定时自动生成并邮件推送 |
+| 博客 | `src/assets/blog/` 下的 `.md`，构建时转为 HTML；博客列表按 Git 最后提交时间排序 |
 | 翻译 | 百度翻译通用 API；开发走 Vite 代理，生产需可访问的转发地址（如 Cloudflare Worker） |
-| 工具集合 | JSON 格式化校验、UUID 批量生成 |
+| 工具集合 | JSON 格式化校验、UUID 批量生成、MyBatis SQL 日志格式化、Base64 编解码、Base64 转文件、PDF 转图片/转 Word |
+| 万年历 | 农历、节气、节日查询 |
 | 导航 | 左侧「全部 / 单模块」切换；单模块时主区域拉高便于阅读 |
+| 全站搜索 | 顶栏输入关键词，实时匹配工具、历史、博客等模块内容 |
+| 主题切换 | 8 套预设主题（极简白、深海蓝、暮光紫、晨雾绿、暖阳橙、冰雪蓝、玫瑰粉、暗夜黑） |
 | 页脚统计 | 总访问量（PV）/ 总访客（UV），请求 Worker `GET /stats`（需 KV，见 `workers/README.md`） |
 
 ---
@@ -22,11 +25,17 @@
 ## 技术栈
 
 - **前端**：Vue 3、TypeScript、Vite 5、`@vitejs/plugin-vue`
-- **Markdown**：`marked`
+- **Markdown**：`marked`（博客 MD → HTML、历史/VPN 弹窗渲染）
 - **翻译签名**：`crypto-js`（MD5）
-- **构建前脚本**：`tsx` 执行 `scripts/generate-blog-meta.ts`，生成博客更新时间元数据
+- **图标**：`@iconify/vue` + `@iconify-icons/mdi` + `@iconify-icons/radix-icons`
+- **PDF 处理**：`pdfjs-dist`（PDF → 图片）、`docx` + `jszip`（PDF → Word）
+- **农历**：`lunar-javascript`、`solarlunar`
+- **繁简转换**：`opencc-js`
+- **构建前脚本**：`tsx` 执行 `scripts/generate-blog-meta.ts`（博客元数据）和 `scripts/convert-md-to-html.ts`（MD → HTML）
+- **每日历史生成**：`scripts/generate-history-daily.ts`（拉取维基百科 + 百度百科，自动生成当日历史 Markdown）
+- **邮件推送**：`scripts/send-history-mail.ts`（nodemailer，SMTP 发送历史内容）
 - **可选边缘**：`workers/site-worker.ts` + Wrangler（翻译 POST 转发 + 可选 KV 统计 `/stats`）
-- **CI/CD**：GitHub Actions → GitHub Pages（见 `.github/workflows/deploy.yml`）
+- **CI/CD**：GitHub Actions → GitHub Pages（见 `.github/workflows/deploy.yml`）；每日历史生成与邮件推送（见 `.github/workflows/history-daily-mail.yml`）
 
 ---
 
@@ -39,27 +48,48 @@
 ├─ vite.config.ts             # Vite：base 相对路径（GitHub Pages）；开发期 /baidu-fanyi 代理
 ├─ tsconfig.json              # 含 src、scripts、workers、vite.config
 ├─ scripts/
-│  └─ generate-blog-meta.ts   # 生成 src/assets/blog/blog-meta.json（Git 时间 / mtime 兜底）
+│  ├─ generate-blog-meta.ts   # 生成 src/assets/blog/blog-meta.json（Git 时间 / mtime 兜底）
+│  ├─ convert-md-to-html.ts   # 批量将 blog/*.md 转为 blog/html/*.html
+│  ├─ generate-history-daily.ts # 联网生成「历史上的今天」Markdown（Wikipedia + 百度百科）
+│  ├─ send-history-mail.ts    # 通过 SMTP 发送历史内容邮件
+│  └─ worker-kv-bind.ts       # 一键创建/关联 Cloudflare KV 命名空间
 ├─ src/
 │  ├─ main.ts                 # createApp 入口
-│  ├─ env.d.ts                # Vite 环境变量、*.vue 类型
-│  ├─ App.vue / App.css       # 页面布局与全局样式
+│  ├─ env.d.ts                # Vite 环境变量、*.vue 类型声明
+│  ├─ App.vue / App.css       # 页面布局、侧栏导航、翻译、主题切换、全站搜索
 │  ├─ components/
 │  │  ├─ MarkdownViewer.vue   # Markdown 弹窗阅读、图片路径解析
 │  │  ├─ JsonFormatValidator.vue
-│  │  └─ UuidGenerator.vue
+│  │  ├─ UuidGenerator.vue
+│  │  ├─ MyBatisSqlFormatter.vue
+│  │  ├─ Base64Decoder.vue
+│  │  ├─ Base64FileTool.vue
+│  │  ├─ FileToBase64Tool.vue
+│  │  ├─ Base64ToFileTool.vue
+│  │  ├─ PdfTools.vue         # PDF 转图片 / 转 Word
+│  │  ├─ PdfToImage.vue
+│  │  ├─ PdfToWord.vue
+│  │  └─ PerpetualCalendar.vue # 万年历
+│  ├─ types/
+│  │  └─ opencc-js.d.ts
 │  └─ assets/
-│     ├─ history/             # history-YYYY-MM-DD.md
-│     ├─ blog/                # *.md；blog-meta.json 勿手改（脚本生成）
-│     ├─ command/
-│     ├─ vpn/
+│     ├─ history/             # history-YYYY-MM-DD.md（自动生成）
+│     ├─ blog/                # *.md + blog-meta.json（脚本生成，勿手改）+ html/*.html
+│     ├─ command/             # 已隐藏，内容已拆分到博客模块
+│     ├─ vpn/                 # 已隐藏
 │     └─ images/              # 文内引用 ./images/...
 ├─ workers/
 │  ├─ site-worker.ts          # Worker 入口：百度翻译 POST + GET /stats（KV）
-│  ├─ stats.ts                # /stats 逻辑
+│  ├─ stats.ts                # /stats 逻辑（PV +1 / UV Cookie 去重）
 │  ├─ README.md               # KV 绑定与部署说明
 │  └─ wrangler.toml
-├─ .github/workflows/deploy.yml
+├─ types/
+│  └─ lunar-javascript.d.ts   # lunar-javascript 类型声明
+├─ docs/
+│  └─ history-mail-setup.md   # 每日历史邮件配置说明
+├─ .github/workflows/
+│  ├─ deploy.yml              # 推送 main → 构建部署到 GitHub Pages
+│  └─ history-daily-mail.yml  # 每日 UTC 12:00（北京时间 20:00）生成历史并邮件推送
 └─ .env.example               # 本地/CI 环境变量模板
 ```
 
@@ -90,13 +120,13 @@ VITE_BAIDU_SECRET=你的百度翻译密钥
 npm run dev
 ```
 
-`predev` 会先执行 `generate-blog-meta.ts`，再启动 Vite（默认端口见 `vite.config.ts`，一般为 3000）。
+`predev` 会先执行 `generate-blog-meta.ts` + `convert-md-to-html.ts`，再启动 Vite（默认端口 3000）。
 
 ### 4. 生产构建与预览
 
 ```bash
 npm run build    # 先类型检查（vue-tsc），再 vite build，产出 dist/
-npm run preview  # 本地预览 dist（与 dev 相同可使用 /baidu-fanyi 代理配置）
+npm run preview  # 本地预览 dist
 ```
 
 ---
@@ -105,10 +135,16 @@ npm run preview  # 本地预览 dist（与 dev 相同可使用 /baidu-fanyi 代�
 
 | 脚本 | 作用 |
 |------|------|
-| `npm run dev` | `tsx` 刷新博客元数据 → 启动开发服务器 |
-| `npm run build` | `tsx` 刷新博客元数据 → `vue-tsc --noEmit` → `vite build` |
+| `npm run dev` | 刷新博客元数据 + MD 转 HTML → 启动开发服务器 |
+| `npm run build` | 刷新博客元数据 + MD 转 HTML → `vue-tsc --noEmit` → `vite build` |
 | `npm run preview` | 预览 `dist` |
 | `npm run typecheck` | 仅运行 `vue-tsc --noEmit`，不打包 |
+| `npm run workers:dev` | 本地调试 Cloudflare Worker（默认 8787 端口） |
+| `npm run workers:deploy` | 部署 Worker 到 Cloudflare |
+| `npm run workers:kv-bind` | 创建/关联 KV 命名空间并写入 `wrangler.toml` |
+| `npm run history:generate` | 联网生成指定日期（默认次日）的「历史上的今天」Markdown |
+| `npm run history:send-mail` | 通过 SMTP 发送当日历史内容邮件 |
+| `npm run history:daily` | 生成 + 发送邮件（一键执行） |
 
 手动只刷新博客元数据（通常不必，`dev`/`build` 已自动跑）：
 
@@ -148,6 +184,23 @@ Worker **不保存**你的 appid/secret；签名仍由前端用环境变量计�
 
 ---
 
+## 每日历史生成与邮件推送
+
+`.github/workflows/history-daily-mail.yml` 每天北京时间 20:00（UTC 12:00）自动：
+
+1. 拉取维基百科 + 百度百科当日数据，生成 `src/assets/history/history-YYYY-MM-DD.md`
+2. 自动 `git commit` + `git push` 提交生成的文件
+3. 通过 SMTP 发送邮件到指定收件箱
+
+邮件相关 Secrets（在仓库 Settings → Secrets 中配置）：
+
+- `SMTP_HOST`、`SMTP_PORT`、`SMTP_USER`、`SMTP_PASS`
+- `HISTORY_MAIL_TO`、`HISTORY_MAIL_FROM`
+
+详见 [`docs/history-mail-setup.md`](docs/history-mail-setup.md)。
+
+---
+
 ## 内容维护
 
 ### 历史上的今天
@@ -155,13 +208,14 @@ Worker **不保存**你的 appid/secret；签名仍由前端用环境变量计�
 - 目录：`src/assets/history/`
 - 文件名：`history-YYYY-MM-DD.md`
 - 首页按日期**新→旧**展示
+- 自动生成：`npm run history:generate`（可选 `TARGET_DATE=2026-06-05` 指定日期）
 
-### 博客、命令、VPN
+### 博客
 
-- 目录：`src/assets/blog/`、`command/`、`vpn/`
+- 目录：`src/assets/blog/`
 - 任意可读文件名 + `.md` 即可被扫描到
-- **博客排序**：依赖 `blog-meta.json`（路径 → Unix 秒），由 `scripts/generate-blog-meta.ts` 根据 **Git 最后一次提交该文件的时间** 生成；无 Git 信息时用文件修改时间
-- **科学上网**单模块视图：内联展示列表**第一项**的正文（列表与内联均按文件名字符串**降序**排列，非按文件日期）
+- 构建时自动转为 `html/*.html`（`scripts/convert-md-to-html.ts`）
+- **排序**：依赖 `blog-meta.json`（路径 → Unix 秒），由 `scripts/generate-blog-meta.ts` 根据 **Git 最后一次提交该文件的时间** 生成；无 Git 信息时用文件修改时间
 
 ### 文内图片
 
@@ -173,7 +227,7 @@ Worker **不保存**你的 appid/secret；签名仍由前端用环境变量计�
 
 - **全部**：各模块卡片同时出现
 - **单模块**：只显示当前模块；主区域高度加大，适合长文
-- **工具集合**：悬停展开子菜单（JSON 工具 / UUID），避免侧栏裁切会挂到 `body`
+- **工具集合**：悬停展开子菜单（JSON 工具 / UUID / MyBatis SQL / Base64 / PDF），避免侧栏裁切会挂到 `body`
 
 ---
 
