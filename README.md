@@ -48,10 +48,9 @@ VITE_BAIDU_SECRET=你的百度翻译密钥
 ### 4. 本地开发
 
 ```bash
-npm run dev
+npm run dev        # 仅启动开发服务器
+npm run dev:full   # 同时启动开发服务器 + Worker（含页脚统计）
 ```
-
-`predev` 会先执行 `generate-blog-meta.ts` + `convert-md-to-html.ts`，再启动 Vite（默认端口 3000）。
 
 ### 5. 生产构建与预览
 
@@ -66,16 +65,8 @@ npm run preview  # 本地预览 dist
 
 | 脚本 | 作用 |
 |------|------|
-| `npm run dev` | 刷新博客元数据 + MD 转 HTML → 启动开发服务器 |
-| `npm run build` | 刷新博客元数据 + MD 转 HTML → `vue-tsc --noEmit` → `vite build` |
-| `npm run preview` | 预览 `dist` |
-| `npm run typecheck` | 仅运行 `vue-tsc --noEmit`，不打包 |
-| `npm run workers:dev` | 本地调试 Cloudflare Worker（默认 8787 端口） |
-| `npm run workers:deploy` | 部署 Worker 到 Cloudflare |
-| `npm run workers:kv-bind` | 创建/关联 KV 命名空间并写入 `wrangler.toml` |
-| `npm run history:generate` | 联网生成指定日期（默认次日）的「历史上的今天」Markdown |
-| `npm run history:send-mail` | 通过 SMTP 发送当日历史内容邮件 |
-| `npm run history:daily` | 生成 + 发送邮件（一键执行） |
+| `npm run dev` | 启动开发服务器 |
+| `npm run dev:full` | 启动开发服务器 + Worker（含页脚统计） |
 
 ---
 

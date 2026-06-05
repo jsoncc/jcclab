@@ -27,6 +27,43 @@
 
 ---
 
+## npm 脚本
+
+### 常用
+
+| 脚本 | 作用 |
+|------|------|
+| `npm run dev` | 启动开发服务器（Vite，端口 3000） |
+| `npm run dev:full` | 同时启动开发服务器 + Worker（端口 8787，含页脚统计） |
+
+### 构建与检查
+
+| 脚本 | 作用 |
+|------|------|
+| `npm run build` | `prebuild` → `vue-tsc --noEmit` → `vite build`，产出 `dist/` |
+| `npm run preview` | 本地预览 `dist/` 打包产物 |
+| `npm run typecheck` | 仅运行 TypeScript 类型检查，不打包 |
+
+### Worker
+
+| 脚本 | 作用 |
+|------|------|
+| `npm run workers:dev` | 本地调试 Cloudflare Worker（端口 8787） |
+| `npm run workers:deploy` | 部署 Worker 到 Cloudflare |
+| `npm run workers:kv-bind` | 创建/关联 KV 命名空间并写入 `wrangler.toml` |
+
+### 每日历史
+
+| 脚本 | 作用 |
+|------|------|
+| `npm run history:generate` | 联网生成指定日期（默认次日）的「历史上的今天」Markdown |
+| `npm run history:send-mail` | 通过 SMTP 发送当日历史内容邮件 |
+| `npm run history:daily` | 生成 + 发送邮件（一键执行） |
+
+> `predev` / `prebuild` 会自动执行 `generate-blog-meta.ts` + `convert-md-to-html.ts`，无需手动运行。
+
+---
+
 ## 仓库结构
 
 ```text
