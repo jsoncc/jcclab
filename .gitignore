@@ -43,3 +43,6 @@ Desktop.ini
 *.njsproj
 *.sln
 *.sw?
+
+# 视频内容提取（本地文件，不提交）
+视频内容提取/
