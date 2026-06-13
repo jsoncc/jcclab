@@ -30,6 +30,7 @@
     </p>
 
     <div v-if="lastFileInfo" class="b64f-info">
+      <span v-if="lastFileInfo.sourceName">原文件名：{{ lastFileInfo.sourceName }}</span>
       <span>识别类型：{{ lastFileInfo.mime }}</span>
       <span>建议后缀：.{{ lastFileInfo.ext }}</span>
       <span>大小：{{ lastFileInfo.sizeLabel }}</span>
@@ -46,6 +47,7 @@ interface FileInfo {
   mime: string
   ext: string
   sizeLabel: string
+  sourceName: string
 }
 
 const inputText = ref('')
@@ -81,14 +83,31 @@ const toUint8Array = (base64: string) => {
 
 const parseInput = (raw: string) => {
   const text = String(raw || '').trim()
-  const m = text.match(/^data:([^;,]+)?(?:;charset=[^;,]+)?;base64,(.*)$/is)
+  const m = text.match(/^data:([^;,]+)?((?:;[^;,]+)*);base64,(.*)$/is)
   if (m) {
+    const params = m[2] || ''
+    const nameMatch = params.match(/;name=([^;,]+)/i)
+    const filename = nameMatch ? decodeURIComponent(nameMatch[1]) : ''
     return {
       mimeFromPrefix: (m[1] || '').toLowerCase() || '',
-      payload: (m[2] || '').replace(/\s+/g, '')
+      payload: (m[3] || '').replace(/\s+/g, ''),
+      filenameFromPrefix: filename
     }
   }
-  return { mimeFromPrefix: '', payload: text.replace(/\s+/g, '') }
+  return { mimeFromPrefix: '', payload: text.replace(/\s+/g, ''), filenameFromPrefix: '' }
+}
+
+const sanitizeFilename = (name: string) => {
+  return name.replace(/[\\/:*?"<>|]/g, '_').slice(0, 100)
+}
+
+const buildFilename = (ext: string, suggestedName?: string) => {
+  if (suggestedName) {
+    const sanitized = sanitizeFilename(suggestedName)
+    if (sanitized.toLowerCase().endsWith(`.${ext.toLowerCase()}`)) return sanitized
+    return `${sanitized}.${ext}`
+  }
+  return `${Date.now()}.${ext}`
 }
 
 const inferFromMagic = (bytes: Uint8Array): { mime: string; ext: string } => {
@@ -145,13 +164,14 @@ const convertToFile = () => {
     const bytes = toUint8Array(normalized)
     const detected = pickType(parsed.mimeFromPrefix, bytes)
     const blob = new Blob([bytes], { type: detected.mime || 'application/octet-stream' })
-    const filename = `jsoncc-export-${Date.now()}.${detected.ext}`
+    const filename = buildFilename(detected.ext, parsed.filenameFromPrefix)
     downloadBlob(blob, filename)
 
     lastFileInfo.value = {
       mime: detected.mime,
       ext: detected.ext,
-      sizeLabel: bytesToSize(bytes.byteLength)
+      sizeLabel: bytesToSize(bytes.byteLength),
+      sourceName: parsed.filenameFromPrefix
     }
     statusKind.value = 'ok'
     statusText.value = `转换成功，已下载 ${filename}`
