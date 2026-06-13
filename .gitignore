@@ -46,3 +46,6 @@ Desktop.ini
 
 # 视频内容提取（本地文件，不提交）
 视频内容提取/
+
+# 博客图片（本地文件，不提交）
+src/assets/blog/picture/
