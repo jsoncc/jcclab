@@ -675,6 +675,82 @@ async function fetchTopicSummaryWithSearch(topic: HotTopic): Promise<string | nu
   return null
 }
 
+/** 抽象：过滤各种导航/验证页/界面文字 */
+const SKIP_TEXT_PATTERNS = [
+  // Cloudflare 验证页
+  'One last step', 'Please solve the challenge', 'Verify you are human',
+  'cf-chl', 'challenge-running', 'Just a moment', 'Verifying you are human',
+  // 通用导航
+  'Search Skip to content', 'Accessibility Feedback', 'Skip to content',
+  // 百度界面
+  '百度', '为您找到', '相关搜索', '网页', '图片', '资讯', '百度快照',
+  '按时间排序', '按相关性排序', '百度热榜', '百度热搜',
+  // Bing 界面
+  'Bing', '必应', 'Microsoft', 'Privacy Policy', 'Legal',
+  // 微博界面
+  '微博热搜', '微博搜索', '微博客户端',
+  // 虎扑界面
+  '虎扑社区', '虎扑', '步行街', '登录虎扑',
+  // 通用干扰
+  'JavaScript', 'Cookies', 'Enable JavaScript', '加载中', '正在加载'
+]
+
+function isValidAbstract(text: string): boolean {
+  if (text.length < 40 || text.length > 400) return false
+  for (const pattern of SKIP_TEXT_PATTERNS) {
+    if (text.includes(pattern)) return false
+  }
+  // 必须包含足够的中文（>30%）
+  const chineseCount = (text.match(/[\u4e00-\u9fa5]/g) || []).length
+  if (chineseCount / text.length < 0.3) return false
+  // 不能全是标点
+  const meaningful = text.replace(/[\s\p{P}]/gu, '')
+  if (meaningful.length < 30) return false
+  return true
+}
+
+/** 智能提取搜索摘要（百度/Bing 通用） */
+function extractSearchAbstracts(html: string): string[] {
+  const decoded = extractBaikeTopicText(html)
+  const abstracts: string[] = []
+  const seen = new Set<string>()
+
+  // 1. 优先尝试结构化选择器（百度 <div class="c-abstract"> / Bing <p class="b_paractl">）
+  const structPatterns = [
+    /<div[^>]*class="[^"]*\b(?:c-abstract|content-right_8Zs40|result-op\b)[^"]*"[^>]*>([\s\S]{30,500}?)<\/div>/g,
+    /<p[^>]*class="[^"]*\bb_(?:paractl|algoSlug|caption|attribution)[^"]*"[^>]*>([\s\S]{30,500}?)<\/p>/g
+  ]
+  for (const re of structPatterns) {
+    let m: RegExpExecArray | null
+    while ((m = re.exec(decoded)) !== null) {
+      const text = m[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+      if (isValidAbstract(text) && !seen.has(text)) {
+        seen.add(text)
+        abstracts.push(text)
+        if (abstracts.length >= 3) break
+      }
+    }
+    if (abstracts.length >= 3) break
+  }
+  if (abstracts.length >= 3) return abstracts
+
+  // 2. 兜底用通用正则（提取所有"中文+标点+空格"的连续片段）
+  const abstractRegex = /[\u4e00-\u9fa5][\u4e00-\u9fa5A-Za-z0-9，。；：、！\?"'《》（）()\s,.!?;:'"-]{50,400}/g
+  let match: RegExpExecArray | null
+  while ((match = abstractRegex.exec(decoded)) !== null) {
+    const text = match[0].trim()
+    if (isValidAbstract(text) && !seen.has(text)) {
+      // 进一步要求：摘要中应包含查询关键词的一部分（说明真的相关）
+      // 跳过太短的片段（截断的）
+      if (text.length < 60) continue
+      seen.add(text)
+      abstracts.push(text)
+      if (abstracts.length >= 3) break
+    }
+  }
+  return abstracts
+}
+
 async function searchWithBaidu(query: string): Promise<string | null> {
   try {
     const url = `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`
@@ -685,27 +761,7 @@ async function searchWithBaidu(query: string): Promise<string | null> {
     })
     if (!response.ok) return null
     const html = await response.text()
-    const decoded = extractBaikeTopicText(html)
-
-    // 提取百度搜索结果的摘要
-    const abstracts: string[] = []
-    const abstractRegex = /[\u4e00-\u9fa5][\u4e00-\u9fa5A-Za-z0-9，。；：、！？""''《》（）()\s,.!?;:'"-]{30,300}/g
-    let match: RegExpExecArray | null
-    while ((match = abstractRegex.exec(decoded)) !== null) {
-      const text = match[0].trim()
-      if (
-        !text.includes('百度') &&
-        !text.includes('为您找到') &&
-        !text.includes('相关搜索') &&
-        !text.includes('网页') &&
-        !text.includes('图片') &&
-        !text.includes('资讯') &&
-        text.length >= 40
-      ) {
-        abstracts.push(text)
-        if (abstracts.length >= 3) break
-      }
-    }
+    const abstracts = extractSearchAbstracts(html)
     if (abstracts.length > 0) {
       return shortSummary(abstracts.join(' '), 280)
     }
@@ -725,21 +781,7 @@ async function searchWithBing(query: string): Promise<string | null> {
     })
     if (!response.ok) return null
     const html = await response.text()
-    const decoded = extractBaikeTopicText(html)
-    const abstracts: string[] = []
-    const abstractRegex = /[\u4e00-\u9fa5][\u4e00-\u9fa5A-Za-z0-9，。；：、！？""''《》（）()\s,.!?;:'"-]{30,300}/g
-    let match: RegExpExecArray | null
-    while ((match = abstractRegex.exec(decoded)) !== null) {
-      const text = match[0].trim()
-      if (
-        !text.includes('Bing') &&
-        !text.includes('必应') &&
-        text.length >= 40
-      ) {
-        abstracts.push(text)
-        if (abstracts.length >= 3) break
-      }
-    }
+    const abstracts = extractSearchAbstracts(html)
     if (abstracts.length > 0) {
       return shortSummary(abstracts.join(' '), 280)
     }
@@ -747,6 +789,15 @@ async function searchWithBing(query: string): Promise<string | null> {
   } catch {
     return null
   }
+}
+
+/** 简单清理话题标题，去掉末尾的"?"/"？"、问号，统一标点 */
+function normalizeTopicTitle(title: string): string {
+  return title
+    .replace(/\?+\s*$/g, '')
+    .replace(/？+\s*$/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 async function buildHotSearchSection(): Promise<string> {
@@ -758,9 +809,17 @@ async function buildHotSearchSection(): Promise<string> {
 
     const items: string[] = []
     for (const topic of topics) {
-      // 跳过抓取失败的条目
-      const summary = await fetchTopicSummaryWithSearch(topic)
-      if (!summary) continue
+      // 优先用搜索引擎抓摘要
+      let summary = await fetchTopicSummaryWithSearch(topic)
+      // 抓不到就降级：跳过"摘要"字段（保留链接）
+      if (!summary) {
+        // 不输出摘要，直接标题
+        const heading = topic.url
+          ? `### ${topic.rank}. [${topic.title}](${topic.url})`
+          : `### ${topic.rank}. ${topic.title}`
+        items.push(heading, '')
+        continue
+      }
 
       // 标题带上链接（无链接则保持纯文本）
       const heading = topic.url
