@@ -20,7 +20,7 @@ const SECTION_ORDER = [
   '🌐 国际要闻',
   '🌟 今日出生',
   '⚰️ 今日逝世',
-  '👨‍💻 程序员视角'
+  '🔥 今日热榜'
 ] as const
 
 const FESTIVAL_MAP: Record<string, { name: string; intro: string }> = {
@@ -466,34 +466,7 @@ const TECH_KEYWORDS = [
   '开发者'
 ]
 
-const STRICT_TECH_KEYWORDS = [
-  '计算机',
-  '互联网',
-  '网络',
-  '软件',
-  '硬件',
-  '芯片',
-  '数据库',
-  '云计算',
-  '微服务',
-  'Java',
-  'Python',
-  'Golang',
-  'Go',
-  'Vue',
-  'React',
-  'AI',
-  '人工智能',
-  '机器学习',
-  '开源',
-  '开发者',
-  '智能手机',
-  'Galaxy',
-  'A380',
-  '试飞',
-  '卫星发射',
-  'YouTube'
-]
+
 
 function containsKeyword(text: string, keywords: string[]): boolean {
   return keywords.some((keyword) => new RegExp(escapeRegExp(keyword), 'i').test(text))
@@ -611,31 +584,208 @@ function buildFestivalSectionMerged(targetDate: string, holidays: WikiItem[]): s
   return ['## 🎈 今日节日', '', blocks, ''].join('\n')
 }
 
-function buildProgrammerView(events: WikiItem[]): string {
-  const top = selectUniqueByText(events, 40)
-  const techHot = pickEvents(top, (item) => containsKeyword(item.text ?? '', STRICT_TECH_KEYWORDS), 6)
-  const chosen = techHot.slice(0, 3)
-  const lines = chosen.map((item) => {
-    const year = item.year ? `${item.year}年` : '当年'
-    const text = shortText(toSimplified(item.text ?? ''), 100)
-    return `- ${year} — ${text}`
-  })
-  if (lines.length > 0) return lines.join('\n\n')
-  return [
-    '- 当天公开史料中与 IT 直接相关的历史条目较少，程序员社区讨论通常会回到工程基本面：服务稳定性、可观测性与变更治理。',
-    '- 后端（Java/Python/Go）侧重点通常在接口契约、幂等控制、限流熔断与数据库一致性。',
-    '- 前端（Vue/React）与 AI 应用侧重点通常在性能监控、灰度发布、评测基线和数据安全审计。'
-  ].join('\n\n')
+type HotTopic = {
+  rank: number
+  title: string
+  url: string
+  summary?: string
 }
 
-function buildMarkdown(targetDate: string, source: OnlineSource): string {
+function decodeHtmlEntitiesForHot(text: string): string {
+  return decodeHtmlEntities(text)
+}
+
+function extractBaikeTopicText(text: string): string {
+  return decodeHtmlEntitiesForHot(text)
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+}
+
+function shortSummary(text: string, max = 240): string {
+  const cleaned = decodeHtmlEntitiesForHot(text).replace(/\s+/g, ' ').trim()
+  if (cleaned.length <= max) return cleaned
+  return `${cleaned.slice(0, max - 1)}…`
+}
+
+async function fetchHotTopics(): Promise<HotTopic[]> {
+  const url = 'https://tophub.today/hot'
+  const response = await fetch(url, {
+    headers: {
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36'
+    }
+  })
+  if (!response.ok) {
+    throw new Error(`抓取 tophub 失败: HTTP ${response.status}`)
+  }
+  const html = await response.text()
+
+  // 直接从原始 HTML 中提取"实时榜中榜"区域之后的 <a> 标签
+  // 跳过导航/分类/榜单切换等非热搜链接
+  const skipTitles = new Set([
+    '首页', '日报', '动态', '追踪', '榜中榜', '热文库', '话题', '日历',
+    '综合', '科技', '娱乐', '社区', '购物', '财经', '开发', '简报', 'AI',
+    '查看往日', '更多', '夜间模式', '登录', '关于我们', 'App 下载',
+    '使用指南', '赞助商广告', 'API 开放平台', '创建追踪器', '成为赞助商',
+    '今日热榜', '实时榜中榜'
+  ])
+
+  const hotIndex = html.indexOf('### 实时榜中榜')
+  const hotSection = hotIndex >= 0 ? html.slice(hotIndex) : html
+
+  const linkRegex = /<a[^>]*href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/g
+  const topics: HotTopic[] = []
+  let rank = 0
+  let m: RegExpExecArray | null
+  while ((m = linkRegex.exec(hotSection)) !== null) {
+    const linkUrl = m[1]
+    // 清理标题：去内部 HTML 标签和多余空白
+    const rawTitle = m[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+    // 去除标题中的装饰字符（热度等）
+    const title = rawTitle.replace(/\s*[·・]\s*\d+万?热度\s*$/, '').trim()
+    if (!title || title.length < 4) continue
+    if (skipTitles.has(title)) continue
+    // 排除榜单切换链接（日榜、周榜、月榜）
+    if (/^\d{4}-\d{2}-\d{2}$/.test(title) || /^\d{2}\.\d{2}-\d{2}\.\d{2}$/.test(title)) continue
+
+    rank++
+    if (rank > 10) break
+    topics.push({ rank, title, url: linkUrl })
+  }
+
+  return topics
+}
+
+async function fetchTopicSummaryWithSearch(topic: HotTopic): Promise<string | null> {
+  // 尝试多个搜索 query，按完整标题搜索
+  const queries = [
+    topic.title,
+    topic.title.replace(/[？?！!，,。.\s]+/g, ' ').trim()
+  ]
+
+  for (const query of queries) {
+    const result = await searchWithBaidu(query) || await searchWithBing(query)
+    if (result) return result
+  }
+  return null
+}
+
+async function searchWithBaidu(query: string): Promise<string | null> {
+  try {
+    const url = `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`
+    const response = await fetch(url, {
+      headers: {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36'
+      }
+    })
+    if (!response.ok) return null
+    const html = await response.text()
+    const decoded = extractBaikeTopicText(html)
+
+    // 提取百度搜索结果的摘要
+    const abstracts: string[] = []
+    const abstractRegex = /[\u4e00-\u9fa5][\u4e00-\u9fa5A-Za-z0-9，。；：、！？""''《》（）()\s,.!?;:'"-]{30,300}/g
+    let match: RegExpExecArray | null
+    while ((match = abstractRegex.exec(decoded)) !== null) {
+      const text = match[0].trim()
+      if (
+        !text.includes('百度') &&
+        !text.includes('为您找到') &&
+        !text.includes('相关搜索') &&
+        !text.includes('网页') &&
+        !text.includes('图片') &&
+        !text.includes('资讯') &&
+        text.length >= 40
+      ) {
+        abstracts.push(text)
+        if (abstracts.length >= 3) break
+      }
+    }
+    if (abstracts.length > 0) {
+      return shortSummary(abstracts.join(' '), 280)
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+async function searchWithBing(query: string): Promise<string | null> {
+  try {
+    const url = `https://www.bing.com/search?q=${encodeURIComponent(query)}`
+    const response = await fetch(url, {
+      headers: {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36'
+      }
+    })
+    if (!response.ok) return null
+    const html = await response.text()
+    const decoded = extractBaikeTopicText(html)
+    const abstracts: string[] = []
+    const abstractRegex = /[\u4e00-\u9fa5][\u4e00-\u9fa5A-Za-z0-9，。；：、！？""''《》（）()\s,.!?;:'"-]{30,300}/g
+    let match: RegExpExecArray | null
+    while ((match = abstractRegex.exec(decoded)) !== null) {
+      const text = match[0].trim()
+      if (
+        !text.includes('Bing') &&
+        !text.includes('必应') &&
+        text.length >= 40
+      ) {
+        abstracts.push(text)
+        if (abstracts.length >= 3) break
+      }
+    }
+    if (abstracts.length > 0) {
+      return shortSummary(abstracts.join(' '), 280)
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+async function buildHotSearchSection(): Promise<string> {
+  try {
+    const topics = await fetchHotTopics()
+    if (topics.length === 0) {
+      return '- 今日热榜数据源暂不可用，后续补充。'
+    }
+
+    const items: string[] = []
+    for (const topic of topics) {
+      // 跳过抓取失败的条目
+      const summary = await fetchTopicSummaryWithSearch(topic)
+      if (!summary) continue
+
+      // 标题带上链接（无链接则保持纯文本）
+      const heading = topic.url
+        ? `### ${topic.rank}. [${topic.title}](${topic.url})`
+        : `### ${topic.rank}. ${topic.title}`
+      items.push(
+        heading,
+        `- **摘要**：${summary}`,
+        ''
+      )
+    }
+
+    if (items.length === 0) {
+      return '- 今日热榜数据源抓取失败，后续补充。'
+    }
+
+    return `${items.join('\n').trim()}\n\n---\n\n✨ 关注实时热点，把握今日脉搏 ✨`
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    return `- 今日热榜抓取失败: ${message}`
+  }
+}
+
+async function buildMarkdown(targetDate: string, source: OnlineSource): Promise<string> {
   const headingDate = formatChineseDate(targetDate)
   const lunarText = formatLunarLine(targetDate)
   const festivalSection = buildFestivalSectionMerged(targetDate, source.holidays)
   const festivalBlock = festivalSection ? [festivalSection, '---', ''].join('\n') : ''
 
   const allEvents = selectUniqueByText(filterMeaningful(source.events), 50)
-  const programmerPool = selectUniqueByText(filterMeaningful([...source.techHints, ...allEvents]), 60)
   const births = filterChinesePreferred(source.births)
   const deaths = filterChinesePreferred(source.deaths)
   const ancient = pickEvents(allEvents, (item) => (item.year ?? 99999) <= 1700, 3)
@@ -652,7 +802,7 @@ function buildMarkdown(targetDate: string, source: OnlineSource): string {
     '🌐 国际要闻': buildSectionText(ensureMin(internationalNews, internationalModern, 4), '暂无国际要闻条目，后续补充。', 4),
     '🌟 今日出生': buildSectionText(births, '暂无今日出生条目，后续补充。', 4),
     '⚰️ 今日逝世': buildSectionText(deaths, '暂无今日逝世条目，后续补充。', 4),
-    '👨‍💻 程序员视角': buildProgrammerView(programmerPool) || '- 历史提醒工程实践：稳定性、可观测性和长期迭代能力同等重要。'
+    '🔥 今日热榜': await buildHotSearchSection()
   }
 
   const sections = SECTION_ORDER.map((name) => [`## ${name}`, '', sectionMap[name]].join('\n')).join('\n\n---\n\n')
@@ -701,29 +851,7 @@ function qualityGate(markdown: string): string {
     return `${title}是具有公共纪念意义的节点，常用于提示公众关注该主题背后的历史与现实问题。`
   })
 
-  // 3) 程序员视角模板化空话兜底替换
-  const weakPatterns = [
-    '当天公开史料中与 IT 直接相关的历史条目较少',
-    '后端（Java/Python/Go）侧重点通常在接口契约',
-    '前端（Vue/React）与 AI 应用侧重点通常在性能监控'
-  ]
-  const hasWeakProgrammerView = weakPatterns.some((p) => text.includes(p))
-  if (hasWeakProgrammerView) {
-    text = text.replace(
-      /## 👨‍💻 程序员视角[\s\S]*?---/m,
-      [
-        '## 👨‍💻 程序员视角',
-        '',
-        '- 技术社区长期热点之一是“高并发与高可靠”的平衡：从后端服务治理（Java/Python/Go）到链路可观测性，核心都在于让系统在峰值与异常下保持可预测。',
-        '',
-        '- 前端工程（Vue/React）侧重用户体验与交付效率并行：性能监控、灰度发布、异常回传和回滚机制已经成为大型应用的默认工程配置。',
-        '',
-        '- AI 应用开发从“模型可用”转向“模型可运营”：数据质量、评测基线、提示词治理与安全审计，正在成为团队日常迭代中的基础设施。',
-        '',
-        '---'
-      ].join('\n')
-    )
-  }
+  // 3) 程序员视角已移除（被今日热榜替代）
 
   return text.replace(/\n{3,}/g, '\n\n').trim()
 }
@@ -747,7 +875,7 @@ async function main(): Promise<void> {
 
   try {
     const source = await fetchOnlineSource(targetDate)
-    const markdown = qualityGate(toSimplified(buildMarkdown(targetDate, source)))
+    const markdown = qualityGate(toSimplified(await buildMarkdown(targetDate, source)))
     fs.writeFileSync(targetFilePath, `${markdown}\n`, 'utf8')
     console.log(`已生成历史文件: ${path.relative(rootDir, targetFilePath)}`)
     console.log(`已联网拉取条目：events=${source.events.length}, births=${source.births.length}, deaths=${source.deaths.length}, holidays=${source.holidays.length}`)

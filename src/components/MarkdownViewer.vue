@@ -26,6 +26,9 @@
  */
 import { computed, ref, watch } from 'vue'
 import { marked } from 'marked'
+import { configureMarked } from '../utils/markedConfig'
+
+configureMarked()
 
 const props = defineProps<{
   mdContent?: string

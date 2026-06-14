@@ -354,6 +354,8 @@ import paletteIcon from '@iconify-icons/mdi/palette'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
 import CryptoJS from 'crypto-js'
 import { marked } from 'marked'
+import { configureMarked } from './utils/markedConfig'
+configureMarked()
 import MarkdownViewer from './components/MarkdownViewer.vue'
 import JsonFormatValidator from './components/JsonFormatValidator.vue'
 import UuidGenerator from './components/UuidGenerator.vue'
