@@ -40,11 +40,27 @@
         >
           <Icon :icon="fullscreenIcon" />
         </button>
-        <button type="button" class="jfv-editor-btn" :disabled="!inputText" @click="copyInput">
+      </div>
+      <div class="jfv-editor-footer">
+        <button
+          type="button"
+          class="jfv-editor-btn"
+          :disabled="!inputText"
+          title="复制"
+          @click="copyInput"
+        >
           <Icon :icon="contentCopyIcon" />
         </button>
+        <button
+          type="button"
+          class="jfv-editor-btn"
+          :disabled="!inputText"
+          title="清空"
+          @click="clearAll"
+        >
+          <Icon :icon="trashCanOutlineIcon" />
+        </button>
       </div>
-      <button type="button" class="jfv-clear" :disabled="!inputText" @click="clearAll">清空</button>
     </div>
 
     <div class="jfv-actionsbar">
@@ -117,6 +133,7 @@ import informationVariant from '@iconify-icons/mdi/information-variant'
 import fullscreenIcon from '@iconify-icons/mdi/fullscreen'
 import fullscreenExitIcon from '@iconify-icons/mdi/fullscreen-exit'
 import contentCopyIcon from '@iconify-icons/mdi/content-copy'
+import trashCanOutlineIcon from '@iconify-icons/mdi/trash-can-outline'
 
 type StatusKind = 'idle' | 'ok' | 'error'
 
@@ -185,7 +202,12 @@ const highlightJson = (text: string): string => {
   result = result.replace(/\[(\s*-?\d+(?:\.\d*)?(?:[eE][+\-]?[0-9]+)?)(\s*[\],])/g, (match, num, end) => {
     return `[<span class="jfv-json-number">${num}</span>${end}`
   })
-  
+
+  // 7. 处理数组中的字符串值（关键修复）
+  result = result.replace(/\[(\s*)"((?:[^"\\]|\\.)*)"(\s*[\],])/g, (match, ws, inner, end) => {
+    return `[${ws}<span class="jfv-quote">"</span><span class="jfv-json-string-value">${inner}</span><span class="jfv-quote">"</span>${end}`
+  })
+
   return result
 }
 
@@ -586,22 +608,19 @@ onUnmounted(() => {
   cursor: not-allowed;
 }
 
-.jfv-clear {
+.jfv-editor-footer {
   position: absolute;
   right: 10px;
   bottom: 10px;
-  padding: 5px 10px;
-  font-size: 12px;
-  color: #666;
-  background: #fff;
-  border: 1px solid #e6e6e6;
-  border-radius: 2px;
-  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  z-index: 2;
 }
 
-.jfv-clear:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+.jfv-editor-footer .jfv-editor-btn :deep(svg) {
+  width: 16px;
+  height: 16px;
 }
 
 .jfv-actionsbar {
