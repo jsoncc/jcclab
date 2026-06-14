@@ -620,39 +620,44 @@ async function fetchHotTopics(): Promise<HotTopic[]> {
   }
   const html = await response.text()
 
-  // 直接从原始 HTML 中提取"实时榜中榜"区域之后的 <a> 标签
-  // 跳过导航/分类/榜单切换等非热搜链接
-  const skipTitles = new Set([
-    '首页', '日报', '动态', '追踪', '榜中榜', '热文库', '话题', '日历',
-    '综合', '科技', '娱乐', '社区', '购物', '财经', '开发', '简报', 'AI',
-    '查看往日', '更多', '夜间模式', '登录', '关于我们', 'App 下载',
-    '使用指南', '赞助商广告', 'API 开放平台', '创建追踪器', '成为赞助商',
-    '今日热榜', '实时榜中榜'
-  ])
+  // 真实榜单容器：<ul class="rank-all-item daily-rank-list">
+  // 每条：<li class="child-item">，内部有 <a href="..." itemid="..."> 包裹标题
+  // 排序：取前 10 条
+  const listStart = html.indexOf('rank-all-item daily-rank-list')
+  if (listStart < 0) {
+    throw new Error('未找到热搜榜单容器（rank-all-item daily-rank-list）')
+  }
+  // 截取到 "我是有底线的"（榜单结束）
+  const bottomIdx = html.indexOf('我是有底线的', listStart)
+  const sectionHtml = bottomIdx > 0 ? html.slice(listStart, bottomIdx) : html.slice(listStart)
 
-  const hotIndex = html.indexOf('### 实时榜中榜')
-  const hotSection = hotIndex >= 0 ? html.slice(hotIndex) : html
-
-  const linkRegex = /<a[^>]*href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/g
+  // 匹配每条 <li class="child-item">...</li>
+  const itemRegex = /<li class="child-item">([\s\S]{0,3000}?)<\/li>/g
   const topics: HotTopic[] = []
-  let rank = 0
   let m: RegExpExecArray | null
-  while ((m = linkRegex.exec(hotSection)) !== null) {
-    const linkUrl = m[1]
-    // 清理标题：去内部 HTML 标签和多余空白
-    const rawTitle = m[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
-    // 去除标题中的装饰字符（热度等）
-    const title = rawTitle.replace(/\s*[·・]\s*\d+万?热度\s*$/, '').trim()
-    if (!title || title.length < 4) continue
-    if (skipTitles.has(title)) continue
-    // 排除榜单切换链接（日榜、周榜、月榜）
-    if (/^\d{4}-\d{2}-\d{2}$/.test(title) || /^\d{2}\.\d{2}-\d{2}\.\d{2}$/.test(title)) continue
+  while ((m = itemRegex.exec(sectionHtml)) !== null) {
+    if (topics.length >= 10) break
+    const item = m[1]
 
-    rank++
-    if (rank > 10) break
-    topics.push({ rank, title, url: linkUrl })
+    // 提取链接和 itemid
+    const linkMatch = item.match(/<a[^>]*href="(https?:\/\/[^"]+)"[^>]*itemid="(\d+)"/)
+    if (!linkMatch) continue
+    const linkUrl = linkMatch[1]
+    const itemid = linkMatch[2]
+
+    // 提取标题：取 itemid 所在 <a> 标签的文本
+    const titleMatch = item.match(new RegExp(`itemid="${itemid}">([\\s\\S]{0,500}?)</a>`))
+    if (!titleMatch) continue
+    const title = titleMatch[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+    if (!title) continue
+
+    // 序号 = 当前已抓到的数量 + 1
+    topics.push({ rank: topics.length + 1, title, url: linkUrl })
   }
 
+  if (topics.length === 0) {
+    throw new Error('解析热搜列表失败：未匹配到任何条目')
+  }
   return topics
 }
 
