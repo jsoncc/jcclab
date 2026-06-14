@@ -661,6 +661,16 @@ async function fetchHotTopics(): Promise<HotTopic[]> {
   return topics
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+/** 简单的随机延迟（毫秒） */
+function randomDelay(min = 800, max = 2500): Promise<void> {
+  const ms = Math.floor(Math.random() * (max - min)) + min
+  return sleep(ms)
+}
+
 async function fetchTopicSummaryWithSearch(topic: HotTopic): Promise<string | null> {
   // 尝试多个搜索 query，按完整标题搜索
   const queries = [
@@ -669,6 +679,8 @@ async function fetchTopicSummaryWithSearch(topic: HotTopic): Promise<string | nu
   ]
 
   for (const query of queries) {
+    // 每次搜索前加随机延迟，避免触发反爬频率限制
+    await randomDelay(600, 1500)
     const result = await searchWithBaidu(query) || await searchWithBing(query)
     if (result) return result
   }
@@ -850,6 +862,36 @@ function normalizeTopicTitle(title: string): string {
     .trim()
 }
 
+/** 检测问题类型（用于兜底摘要生成） */
+function detectTopicType(title: string): string {
+  if (/^\/+/.test(title)) return '讨论'
+  if (/什么|为何|为什么|怎么|哪些|哪里|如何|怎样|是不是/.test(title)) return '提问'
+  if (/评价|怎么看|如何看待|怎么看/.test(title)) return '讨论'
+  if (/热搜|排行|榜单|第一|夺冠|破|刷新/.test(title)) return '热点'
+  if (/宣布|发布|推出|上市|官宣|声明|回应|通报/.test(title)) return '事件'
+  if (/去世|逝世|离世|遇难|身亡/.test(title)) return '事件'
+  if (/道歉|回应|澄清|辟谣|否认/.test(title)) return '事件'
+  if (/价格|涨价|跌|暴跌|上涨|跌至|降|售/.test(title)) return '事件'
+  return '话题'
+}
+
+/** 当搜索引擎抓不到时，基于标题生成简短的兜底描述 */
+function generateFallbackSummary(title: string, url: string = ''): string {
+  const normalized = normalizeTopicTitle(title)
+  const type = detectTopicType(normalized)
+
+  // 根据 URL 判断来源平台
+  let platform = '网络'
+  if (url.includes('zhihu.com')) platform = '知乎'
+  else if (url.includes('s.weibo.com')) platform = '微博'
+  else if (url.includes('bbs.hupu.com')) platform = '虎扑社区'
+  else if (url.includes('mp.weixin.qq.com')) platform = '微信'
+  else if (url.includes('douyin.com')) platform = '抖音'
+  else if (url.includes('36kr.com')) platform = '36氪'
+
+  return `${platform}热门${type}，详情点击原文查看`
+}
+
 async function buildHotSearchSection(): Promise<string> {
   try {
     const topics = await fetchHotTopics()
@@ -861,25 +903,19 @@ async function buildHotSearchSection(): Promise<string> {
     for (const topic of topics) {
       // 优先用搜索引擎抓摘要
       let summary = await fetchTopicSummaryWithSearch(topic)
-      // 抓不到就降级：跳过"摘要"字段（保留链接）
-      if (!summary) {
-        // 不输出摘要，直接标题
-        const heading = topic.url
-          ? `### ${topic.rank}. [${topic.title}](${topic.url})`
-          : `### ${topic.rank}. ${topic.title}`
-        items.push(heading, '')
-        continue
-      }
 
       // 标题带上链接（无链接则保持纯文本）
       const heading = topic.url
         ? `### ${topic.rank}. [${topic.title}](${topic.url})`
         : `### ${topic.rank}. ${topic.title}`
-      items.push(
-        heading,
-        `- **摘要**：${summary}`,
-        ''
-      )
+
+      if (summary) {
+        items.push(heading, `- **摘要**：${summary}`, '')
+      } else {
+        // 搜索引擎抓不到时，基于标题生成简短描述（兜底也要有内容）
+        const fallback = generateFallbackSummary(topic.title, topic.url)
+        items.push(heading, `- **摘要**：${fallback}`, '')
+      }
     }
 
     if (items.length === 0) {
