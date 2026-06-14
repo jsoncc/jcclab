@@ -692,26 +692,78 @@ const SKIP_TEXT_PATTERNS = [
   // 虎扑界面
   '虎扑社区', '虎扑', '步行街', '登录虎扑',
   // 通用干扰
-  'JavaScript', 'Cookies', 'Enable JavaScript', '加载中', '正在加载'
+  'JavaScript', 'Cookies', 'Enable JavaScript', '加载中', '正在加载',
+  // tophub 侧边栏推荐内容
+  '看见时间里的中国', 'iDailyToday', '榜眼数据', '聚合全网', '热文库',
+  // 热搜榜单特征词（密集出现说明抓的是榜单列表）
+  '热搜榜', '今日热榜', '实时榜中榜', '日榜', '周榜', '月榜',
+  '聚合热点', '热门话题', '热门微博', '热门知乎'
 ]
 
-function isValidAbstract(text: string): boolean {
+/** 提取查询中的核心中文词（>=2 字） */
+function extractQueryKeywords(query: string): string[] {
+  return Array.from(new Set(query.match(/[\u4e00-\u9fa5]{2,}/g) || []))
+}
+
+/** 检测文本是否像"榜单列表"（带编号+短标题的密集列表） */
+function looksLikeRankList(text: string): boolean {
+  // 检测模式："数字 + 空格 + 短文本" 出现 >= 3 次
+  // 例如："1 世界杯 2 小男孩 3 地下管网 4 新华字典"
+  const numberedItems = text.match(/\d+\s*[\u4e00-\u9fa5][^0-9]{2,15}/g) || []
+  if (numberedItems.length >= 3) return true
+  // 检测模式："数字 + 句号 + 文本" 出现 >= 3 次
+  const dotItems = text.match(/\d+\.\s*[\u4e00-\u9fa5]/g) || []
+  if (dotItems.length >= 5) return true
+  return false
+}
+
+/** 检测是否包含大量"新/热"等榜单标记词（说明是榜单列表） */
+function hasRankMarkerDensity(text: string): boolean {
+  // 短文本（<100字）里"新"或"热"超过 3 次
+  if (text.length < 100) return false
+  const markerCount = (text.match(/[\s\u4e00-\u9fa5][新热](\s|$|，|。|,)/g) || []).length
+  return markerCount >= 4
+}
+
+/** 综合判断摘要是否有效 */
+function isValidAbstract(text: string, queryKeywords: string[] = []): boolean {
+  // 长度检查
   if (text.length < 40 || text.length > 400) return false
+
+  // 关键词黑名单
   for (const pattern of SKIP_TEXT_PATTERNS) {
     if (text.includes(pattern)) return false
   }
-  // 必须包含足够的中文（>30%）
+
+  // 必须包含足够的中文（>= 30%）
   const chineseCount = (text.match(/[\u4e00-\u9fa5]/g) || []).length
   if (chineseCount / text.length < 0.3) return false
+
   // 不能全是标点
   const meaningful = text.replace(/[\s\p{P}]/gu, '')
   if (meaningful.length < 30) return false
+
+  // 拒绝"榜单列表"特征
+  if (looksLikeRankList(text)) return false
+
+  // 拒绝高密度榜单标记词
+  if (hasRankMarkerDensity(text)) return false
+
+  // 关键词相关性检查（关键）
+  if (queryKeywords.length > 0) {
+    const matched = queryKeywords.filter(kw => text.includes(kw))
+    // 必须至少匹配 1/3 的查询关键词，且至少 1 个
+    const requiredMatches = Math.max(1, Math.ceil(queryKeywords.length / 3))
+    if (matched.length < requiredMatches) return false
+  }
+
   return true
 }
 
 /** 智能提取搜索摘要（百度/Bing 通用） */
-function extractSearchAbstracts(html: string): string[] {
+function extractSearchAbstracts(html: string, query: string): string[] {
   const decoded = extractBaikeTopicText(html)
+  const queryKeywords = extractQueryKeywords(query)
   const abstracts: string[] = []
   const seen = new Set<string>()
 
@@ -724,7 +776,7 @@ function extractSearchAbstracts(html: string): string[] {
     let m: RegExpExecArray | null
     while ((m = re.exec(decoded)) !== null) {
       const text = m[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
-      if (isValidAbstract(text) && !seen.has(text)) {
+      if (isValidAbstract(text, queryKeywords) && !seen.has(text)) {
         seen.add(text)
         abstracts.push(text)
         if (abstracts.length >= 3) break
@@ -739,10 +791,8 @@ function extractSearchAbstracts(html: string): string[] {
   let match: RegExpExecArray | null
   while ((match = abstractRegex.exec(decoded)) !== null) {
     const text = match[0].trim()
-    if (isValidAbstract(text) && !seen.has(text)) {
-      // 进一步要求：摘要中应包含查询关键词的一部分（说明真的相关）
-      // 跳过太短的片段（截断的）
-      if (text.length < 60) continue
+    if (text.length < 60) continue
+    if (isValidAbstract(text, queryKeywords) && !seen.has(text)) {
       seen.add(text)
       abstracts.push(text)
       if (abstracts.length >= 3) break
@@ -761,7 +811,7 @@ async function searchWithBaidu(query: string): Promise<string | null> {
     })
     if (!response.ok) return null
     const html = await response.text()
-    const abstracts = extractSearchAbstracts(html)
+    const abstracts = extractSearchAbstracts(html, query)
     if (abstracts.length > 0) {
       return shortSummary(abstracts.join(' '), 280)
     }
@@ -781,7 +831,7 @@ async function searchWithBing(query: string): Promise<string | null> {
     })
     if (!response.ok) return null
     const html = await response.text()
-    const abstracts = extractSearchAbstracts(html)
+    const abstracts = extractSearchAbstracts(html, query)
     if (abstracts.length > 0) {
       return shortSummary(abstracts.join(' '), 280)
     }
