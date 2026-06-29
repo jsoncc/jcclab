@@ -147,7 +147,18 @@
         <div class="module-container" :class="{ 'single-view': activeModule !== 'all' }">
         <template v-for="module in listModules" :key="module.key">
           <div v-if="showModule(module.key)" class="list-card">
-            <h2 class="module-title">{{ module.title }}</h2>
+            <h2 class="module-title">
+              {{ module.title }}
+              <button
+                v-if="module.key === 'hotnews' && hasHotnewsHistory"
+                type="button"
+                class="hotnews-history-toggle"
+                :title="showHotnewsHistory ? '收起历史' : '查看历史'"
+                @click="showHotnewsHistory = !showHotnewsHistory"
+              >
+                {{ showHotnewsHistory ? '收起 ▲' : '查看历史 ▼' }}
+              </button>
+            </h2>
             <div v-if="module.key === 'vpn' && activeModule === 'vpn'" class="inline-md">
               <h3 v-if="latestVpnTitle" class="inline-md-title">{{ latestVpnTitle }}</h3>
               <div class="inline-md-content" v-html="latestVpnHtml" />
@@ -480,6 +491,27 @@ const hotnewsList = computed((): MdStemItem[] =>
     .filter((item): item is MdStemItem => item !== null)
     .sort((a, b) => b.name.localeCompare(a.name))
 )
+
+/** 今日热榜：仅展示当天（北京时间）的文件；找不到则 fallback 到最新一条 */
+const todayHotnews = computed((): MdStemItem | null => {
+  const today = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date())
+  return (
+    hotnewsList.value.find((item) => item.name === `hotnews-${today}.md`) ??
+    hotnewsList.value[0] ??
+    null
+  )
+})
+
+/** 是否有多条历史（用于决定是否显示"查看历史"按钮） */
+const hasHotnewsHistory = computed(() => hotnewsList.value.length > 1)
+
+/** 是否展开历史列表（默认收起） */
+const showHotnewsHistory = ref(false)
 
 /** 「科学上网」单模块视图下：默认展开排序后的第一篇（列表按名称排，首项即展示内容） */
 const latestVpnTitle = computed(() => vpnList.value[0]?.name || '')
@@ -825,7 +857,12 @@ const listModules = computed((): ListModule[] => [
   {
     key: 'hotnews',
     title: '今日热榜',
-    items: hotnewsList.value.map(item => ({
+    items: (showHotnewsHistory.value
+      ? hotnewsList.value
+      : todayHotnews.value
+        ? [todayHotnews.value]
+        : []
+    ).map(item => ({
       key: item.path,
       label: item.name,
       value: item.path,

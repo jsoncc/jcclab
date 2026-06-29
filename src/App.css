@@ -611,6 +611,27 @@
   color: #374151;
   border-bottom: 1px solid #e5e7eb;
   padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hotnews-history-toggle {
+  font-size: 12px;
+  padding: 4px 10px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #4b5563;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.hotnews-history-toggle:hover {
+  background: #e5e7eb;
+  color: #1f2937;
 }
 .list-item {
   padding: 16px 0;
