@@ -32,7 +32,8 @@ function addDays(isoDate: string, days: number): string {
 function resolveTargetDateIso(): string {
   const overrideDate = process.env.TARGET_DATE
   if (overrideDate && /^\d{4}-\d{2}-\d{2}$/.test(overrideDate)) return overrideDate
-  return addDays(getShanghaiTodayIso(), 1)
+  // 抓取当天：cron 在 8/14/20 北京时间触发，文件名 = 当天日期
+  return getShanghaiTodayIso()
 }
 
 function formatChineseDate(isoDate: string): string {

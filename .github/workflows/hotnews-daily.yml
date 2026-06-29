@@ -2,8 +2,9 @@ name: Generate Daily Hot News
 
 on:
   schedule:
-    # 北京时间 20:00 = UTC 12:00
-    - cron: '0 12 * * *'
+    # 北京时间 8:00 / 14:00 / 20:00 = UTC 0:00 / 6:00 / 12:00
+    # 一天 3 次抓取，覆盖上午/下午/晚间三大高峰
+    - cron: '0 0,6,12 * * *'
   workflow_dispatch:
     inputs:
       target_date:

@@ -384,7 +384,7 @@ const stemFromGlobPath = (globKey: string, ext: string): string | null => {
   return m ? m[1] : null
 }
 
-type ModuleTabKey = 'all' | 'history' | 'blog' | 'vpn' | 'formatCheck' | 'translate'
+type ModuleTabKey = 'all' | 'blog' | 'vpn' | 'formatCheck' | 'translate'
 type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode' | 'base64File' | 'pdfTools'
 
 // —— Markdown 原始文件（构建期打包；key 为形如 ./assets/... 的路径）——
@@ -407,6 +407,12 @@ const commandFiles = import.meta.glob('./assets/command/*.md', {
 }) as RawMdMap
 
 const vpnFiles = import.meta.glob('./assets/vpn/*.md', {
+  eager: true,
+  query: '?raw',
+  import: 'default'
+}) as RawMdMap
+
+const hotnewsFiles = import.meta.glob('./assets/hotnews/*.md', {
   eager: true,
   query: '?raw',
   import: 'default'
@@ -457,6 +463,16 @@ const commandList = computed((): MdStemItem[] =>
 
 const vpnList = computed((): MdStemItem[] =>
   Object.keys(vpnFiles)
+    .map((path) => {
+      const name = stemFromGlobPath(path, 'md')
+      return name ? { name, path } : null
+    })
+    .filter((item): item is MdStemItem => item !== null)
+    .sort((a, b) => b.name.localeCompare(a.name))
+)
+
+const hotnewsList = computed((): MdStemItem[] =>
+  Object.keys(hotnewsFiles)
     .map((path) => {
       const name = stemFromGlobPath(path, 'md')
       return name ? { name, path } : null
@@ -531,8 +547,10 @@ const moduleTabs: { key: ModuleTabKey; label: string }[] = [
   { key: 'translate', label: '翻译' }
 ]
 
-/** 「全部」时所有模块都显示；选中某一模块时只显示该块 */
-const showModule = (moduleKey: ModuleTabKey) =>
+/** 「全部」时所有模块都显示；选中某一模块时只显示该块
+ * 接受 ListModuleKey 和 ModuleTabKey 两种类型
+ */
+const showModule = (moduleKey: ListModuleKey | ModuleTabKey) =>
   activeModule.value === 'all' || activeModule.value === moduleKey
 
 const openToolsDefault = () => {
@@ -776,7 +794,7 @@ const openHtmlFromMap = (map: RawMdMap, filePath: string) => {
   showViewer.value = true
 }
 
-type ListModuleKey = 'history' | 'blog' | 'vpn'
+type ListModuleKey = 'hotnews' | 'blog' | 'vpn'
 
 interface ListModule {
   key: ListModuleKey
@@ -792,16 +810,26 @@ type HeaderSearchItem = {
   action: () => void
 }
 
-/** 侧栏列表的数据：history / blog（command 模块内容已拆分到博客，vpn 已隐藏） */
+/** 侧栏列表的数据：hotnews / blog（history 模块已隐藏，command 已拆分，vpn 已隐藏） */
 const listModules = computed((): ListModule[] => [
+  // {
+  //   key: 'history',
+  //   title: '历史上的今天',
+  //   items: dateList.value.map(item => ({
+  //     key: item.date,
+  //     label: item.date,
+  //     value: item.date,
+  //     href: `#/history/${item.date}`
+  //   }))
+  // }, // 暂时隐藏
   {
-    key: 'history',
-    title: '历史上的今天',
-    items: dateList.value.map(item => ({
-      key: item.date,
-      label: item.date,
-      value: item.date,
-      href: `#/history/${item.date}`
+    key: 'hotnews',
+    title: '今日热榜',
+    items: hotnewsList.value.map(item => ({
+      key: item.path,
+      label: item.name,
+      value: item.path,
+      href: `#/hotnews/${item.name}`
     }))
   },
   {
@@ -838,8 +866,11 @@ const listModules = computed((): ListModule[] => [
 
 const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
   switch (moduleKey) {
-    case 'history':
-      openMdFromMap(historyFiles, `./assets/history/history-${value}.md`)
+    // case 'history':
+    //   openMdFromMap(historyFiles, `./assets/history/history-${value}.md`)
+    //   break // 已隐藏
+    case 'hotnews':
+      openMdFromMap(hotnewsFiles, value)
       break
     case 'blog':
       openHtmlFromMap(blogFiles, value)
@@ -907,12 +938,19 @@ const headerSearchCandidates = computed<HeaderSearchItem[]>(() => [
     tags: ['pdf', '转图片', '转word', 'png', 'jpeg', 'docx', '转换', '格式转换', '工具'],
     action: () => toTool('pdfTools')
   },
-  ...dateList.value.slice(0, 30).map((item) => ({
-    key: `history-${item.date}`,
-    title: `历史上的今天：${item.date}`,
-    meta: '历史模块',
-    tags: ['历史', 'history', item.date],
-    action: () => openModuleItem('history', item.date)
+  // ...dateList.value.slice(0, 30).map((item) => ({
+  //   key: `history-${item.date}`,
+  //   title: `历史上的今天：${item.date}`,
+  //   meta: '历史模块',
+  //   tags: ['历史', 'history', item.date],
+  //   action: () => openModuleItem('history', item.date)
+  // })), // 已隐藏
+  ...hotnewsList.value.slice(0, 40).map((item) => ({
+    key: `hotnews-${item.path}`,
+    title: `今日热榜：${item.name}`,
+    meta: '热榜模块',
+    tags: ['热榜', 'hotnews', item.name],
+    action: () => openModuleItem('hotnews', item.path)
   })),
   ...blogList.value.slice(0, 40).map((item) => ({
     key: `blog-${item.path}`,
