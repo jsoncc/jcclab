@@ -1,0 +1,48 @@
+name: Generate Daily Hot News
+
+on:
+  schedule:
+    # 北京时间 20:00 = UTC 12:00
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: '可选：指定目标日期（YYYY-MM-DD），不填则按北京时间次日'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  hotnews-daily:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate next-day hotnews markdown
+        env:
+          TARGET_DATE: ${{ inputs.target_date }}
+        run: npm run hotnews:generate
+
+      - name: Commit generated hotnews file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/assets/hotnews/hotnews-*.md
+          if git diff --cached --quiet; then
+            echo "No hotnews file changes to commit."
+          else
+            git commit -m "chore(hotnews): generate daily hotnews file"
+            git push
+          fi

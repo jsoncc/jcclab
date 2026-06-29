@@ -523,7 +523,7 @@ const toolsMenuStyle = ref<CSSProperties>({
 /** 左侧一级导航（顺序即展示顺序） */
 const moduleTabs: { key: ModuleTabKey; label: string }[] = [
   { key: 'all', label: '全部' },
-  { key: 'history', label: '历史上的今天' },
+  // { key: 'history', label: '历史上的今天' }, // 暂时隐藏
   { key: 'blog', label: '博客' },
   // { key: 'command', label: '命令' }, // 已移除，内容已拆分到博客模块
   // { key: 'vpn', label: '科学上网' }, // 已隐藏

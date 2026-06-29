@@ -19,7 +19,9 @@
     "workers:kv-bind": "tsx scripts/worker-kv-bind.ts",
     "history:generate": "tsx scripts/generate-history-daily.ts",
     "history:send-mail": "tsx scripts/send-history-mail.ts",
-    "history:daily": "npm run history:generate && npm run history:send-mail"
+    "history:daily": "npm run history:generate && npm run history:send-mail",
+    "hotnews:generate": "tsx scripts/generate-hotnews-daily.ts",
+    "hotnews:daily": "npm run hotnews:generate"
   },
   "dependencies": {
     "@iconify-icons/mdi": "^1.2.48",

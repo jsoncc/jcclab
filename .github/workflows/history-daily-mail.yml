@@ -1,9 +1,13 @@
 name: Generate and Mail Daily History
 
+# ⚠️ 暂时停用：2026-06-29 起暂停自动生成 + 自动发送邮件
+# 原因：模块入口已隐藏，邮件订阅暂停接收
+# 如需恢复：取消下方 schedule 注释即可
 on:
-  schedule:
-    # 北京时间 20:00 = UTC 12:00
-    - cron: '0 12 * * *'
+  # 暂时停用
+  # schedule:
+  #   # 北京时间 20:00 = UTC 12:00
+  #   - cron: '0 12 * * *'
   workflow_dispatch:
     inputs:
       target_date:
