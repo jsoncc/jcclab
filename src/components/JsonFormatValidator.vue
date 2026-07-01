@@ -325,10 +325,12 @@ const syncScroll = () => {
   const highlight = highlightRef.value
   if (!ta || !gutter) return
   const scrollTop = ta.scrollTop
+  const scrollLeft = ta.scrollLeft
   gutter.scrollTop = scrollTop
-  
+  gutter.scrollLeft = 0
   if (highlight) {
     highlight.scrollTop = scrollTop
+    highlight.scrollLeft = scrollLeft
   }
 }
 
