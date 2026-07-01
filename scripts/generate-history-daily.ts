@@ -8,6 +8,8 @@ import {
   fetchHotTopics,
   fetchTopicSummaryWithSearch,
   generateFallbackSummary,
+  formatLunarLine,
+  buildJieQiSection,
   type HotTopic
 } from './_shared/hotnews-helpers.js'
 
@@ -171,72 +173,11 @@ function formatChineseDate(isoDate: string): string {
   return `${year}年${month}月${day}日 ${weekday}`
 }
 
-function formatLunarLine(isoDate: string): string {
-  const [year, month, day] = isoDate.split('-').map(Number)
-  const solar = Solar.fromYmd(year, month, day)
-  const lunar = solar.getLunar()
-  return lunar.toString()
-}
-
 function buildFixedFestivalBody(targetDate: string): string | null {
   const mmdd = targetDate.slice(5)
   const festival = FESTIVAL_MAP[mmdd]
   if (!festival) return null
   return [`**${festival.name}**`, '', festival.intro].join('\n')
-}
-
-/** 完整节气知识库：每个节气的简介、物候、民俗 */
-const JIEQI_KB: Record<string, { intro: string; wu: string; min: string; solar: string }> = {
-  立春: { intro: '二十四节气之首，标志春季开始，太阳到达黄经 315°。', wu: '东风解冻、蛰虫始振、鱼陟负冰。', min: '民间有贴春字、吃春饼、咬春等习俗，象征万物复苏。', solar: '公历 2 月 3-5 日交节。' },
-  雨水: { intro: '立春之后，气温回升、降水增多，万物萌动。', wu: '獭祭鱼、鸿雁来、草木萌动。', min: '民间有"拉保保"、回娘屋、占稻色等习俗，寓意祈雨祈福。', solar: '公历 2 月 18-20 日交节。' },
-  惊蛰: { intro: '春雷乍动、蛰虫惊醒，标志仲春开始。', wu: '桃始华、仓庚鸣、鹰化为鸠。', min: '民间有祭白虎、打小人、吃梨等习俗，象征驱邪避害。', solar: '公历 3 月 5-7 日交节。' },
-  春分: { intro: '太阳直射赤道，昼夜平分，春季过半。', wu: '玄鸟至、雷乃发声、始电。', min: '民间有竖蛋、送春牛、吃春菜等习俗，象征平衡与新生。', solar: '公历 3 月 20-22 日交节。' },
-  清明: { intro: '二十四节气中唯一既是节气又是节日的日期，春季第五个节气。', wu: '桐始华、田鼠化为鴽、虹始见。', min: '主要习俗为祭祖扫墓、踏青郊游、放风筝、荡秋千。', solar: '公历 4 月 4-6 日交节。' },
-  谷雨: { intro: '春季最后一个节气，源自"雨生百谷"之意。', wu: '萍始生、鸣鸠拂其羽、戴胜降于桑。', min: '民间有喝谷雨茶、走谷雨、贴谷雨贴等习俗，寓意祈福消灾。', solar: '公历 4 月 19-21 日交节。' },
-  立夏: { intro: '夏季第一个节气，标志万物进入旺盛生长期。', wu: '蝼蝈鸣、蚯蚓出、王瓜生。', min: '民间有称人、斗蛋、尝新等习俗，寓意健康度夏。', solar: '公历 5 月 5-7 日交节。' },
-  小满: { intro: '夏熟作物籽粒开始饱满，但未成熟。', wu: '苦菜秀、靡草死、麦秋至。', min: '民间有祭车神、祭蚕、吃苦菜等习俗，象征丰收在望。', solar: '公历 5 月 20-22 日交节。' },
-  芒种: { intro: '农事最忙时节，有芒之谷类作物可种。', wu: '螳螂生、䴗始鸣、反舌无声。', min: '民间有送花神、安苗、煮梅等习俗，标志农忙开始。', solar: '公历 6 月 5-7 日交节。' },
-  夏至: { intro: '二十四节气中白昼最长的一天，太阳直射北回归线。', wu: '鹿角解、蝉始鸣、半夏生。', min: '古有祭神祀祖、吃面、消夏避暑等习俗，江淮一带"梅雨"季由此开始。', solar: '公历 6 月 21-22 日交节。' },
-  小暑: { intro: '天气开始炎热，但未达极点。', wu: '温风至、蟋蟀居壁、鹰始挚。', min: '民间有晒伏、吃藕、食新等习俗，寓意防暑祛湿。', solar: '公历 7 月 6-8 日交节。' },
-  大暑: { intro: '一年中最炎热的时节，雷雨频繁。', wu: '腐草为萤、土润溽暑、大雨时行。', min: '民间有饮伏茶、晒伏姜、烧仙草等习俗，消暑保健。', solar: '公历 7 月 22-24 日交节。' },
-  立秋: { intro: '秋季第一个节气，标志暑去凉来。', wu: '凉风至、白露降、寒蝉鸣。', min: '民间有贴秋膘、咬秋、晒秋等习俗，寓意补益身体。', solar: '公历 8 月 7-9 日交节。' },
-  处暑: { intro: '"处"为止，暑气至此而止。', wu: '鹰乃祭鸟、天地始肃、禾乃登。', min: '民间有出游迎秋、放河灯、吃鸭子等习俗。', solar: '公历 8 月 22-24 日交节。' },
-  白露: { intro: '天气转凉，昼夜温差加大，地面水汽凝结成露。', wu: '鸿雁来、玄鸟归、群鸟养羞。', min: '民间有饮白露茶、吃龙眼、收露等习俗。', solar: '公历 9 月 7-9 日交节。' },
-  秋分: { intro: '太阳直射赤道，昼夜再次平分。', wu: '雷始收声、蛰虫坯户、水始涸。', min: '民间有祭月、竖蛋、送秋牛等习俗。', solar: '公历 9 月 22-24 日交节。' },
-  寒露: { intro: '露水更冷，将欲凝结。', wu: '鸿雁来宾、雀入大水为蛤、菊有黄华。', min: '民间有登高、赏菊、吃花糕等习俗。', solar: '公历 10 月 8-9 日交节。' },
-  霜降: { intro: '秋季最后一个节气，初霜出现，天气渐冷。', wu: '豺乃祭兽、草木黄落、蛰虫咸俯。', min: '民间有赏菊、吃柿子、登高远眺等习俗。', solar: '公历 10 月 23-24 日交节。' },
-  立冬: { intro: '冬季第一个节气，万物收藏，规避寒冷。', wu: '水始冰、地始冻、雉入大水为蜃。', min: '民间有迎冬、补冬、贺冬等习俗，饺子、羊肉是应节食品。', solar: '公历 11 月 7-8 日交节。' },
-  小雪: { intro: '气温下降，北方地区开始降雪，但雪量不大。', wu: '虹藏不见、天气上升、闭塞成冬。', min: '民间有腌腊肉、晒鱼干、吃糍粑等习俗。', solar: '公历 11 月 22-23 日交节。' },
-  大雪: { intro: '降雪可能性增大，地面可能积雪。', wu: '鹖旦不鸣、虎始交、荔挺出。', min: '北方民间有腌肉、封河、进补等习俗。', solar: '公历 12 月 6-8 日交节。' },
-  冬至: { intro: '二十四节气中白昼最短的一天，民间有"冬至大如年"之说。', wu: '蚯蚓结、麋角解、水泉动。', min: '北方吃饺子、馄饨，南方吃汤圆、米团，祭祀祖先。', solar: '公历 12 月 21-23 日交节。' },
-  小寒: { intro: '天气进一步寒冷，但未到极点。', wu: '雁北乡、鹊始巢、雉始雊。', min: '民间有吃腊八粥、菜饭、糯米饭等习俗，滋补养生。', solar: '公历 1 月 5-7 日交节。' },
-  大寒: { intro: '二十四节气中最后一个节气，一年中最寒冷的时节。', wu: '鸡始乳、征鸟厉疾、水泽腹坚。', min: '民间有尾牙祭、扫尘、除旧布新等年节准备活动。', solar: '公历 1 月 20-21 日交节。' }
-}
-
-/** 节气独立成区（不再混入"今日节日"） */
-function buildJieQiSection(isoDate: string): string {
-  const [year, month, day] = isoDate.split('-').map(Number)
-  const solar = Solar.fromYmd(year, month, day)
-  const lunar = solar.getLunar()
-  const jieQi = lunar.getJieQi()
-  if (!jieQi) return ''
-
-  const kb = JIEQI_KB[jieQi]
-  if (!kb) return ''
-
-  const content = [
-    `**${jieQi}**`,
-    '',
-    `📖 ${kb.intro}`,
-    '',
-    `🌱 **物候**：${kb.wu}`,
-    '',
-    `🎎 **民俗**：${kb.min}`,
-    '',
-    `📅 ${kb.solar}`
-  ].join('\n')
-
-  return ['## 🌱 二十四节气', '', content, ''].join('\n')
 }
 
 function escapeRegExp(value: string): string {

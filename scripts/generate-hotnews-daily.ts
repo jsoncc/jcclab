@@ -7,7 +7,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { buildHotSearchSection } from './_shared/hotnews-helpers.js'
+import {
+  buildHotSearchSection,
+  formatLunarLine,
+  buildFestivalSection,
+  buildJieQiSection
+} from './_shared/hotnews-helpers.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.join(__dirname, '..')
@@ -57,6 +62,9 @@ function wrapAsSection(section: string): string {
 
 async function buildHotnewsMarkdown(targetDate: string): Promise<string> {
   const headingDate = formatChineseDate(targetDate)
+  const lunarText = formatLunarLine(targetDate)
+  const festivalSection = buildFestivalSection(targetDate)
+  const jieQiSection = buildJieQiSection(targetDate)
   const hotSearchSection = await buildHotSearchSection()
   const hotNewsBlock = wrapAsSection(hotSearchSection)
 
@@ -65,10 +73,15 @@ async function buildHotnewsMarkdown(targetDate: string): Promise<string> {
     '',
     `📅 公历：${headingDate}`,
     '',
+    `📆 农历：${lunarText}`,
+    '',
     '✨ 实时热点，洞察今日脉搏',
     '',
+    festivalSection,
+    jieQiSection,
     hotNewsBlock
   ]
+    .filter((s) => s !== undefined)
     .join('\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim()
