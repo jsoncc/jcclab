@@ -242,52 +242,22 @@
 
     <footer class="page-footer">
       <div class="page-footer-inner">
-        <div class="footer-cards">
-          <a class="footer-card footer-card-mail" href="mailto:13233768245@163.com">
-            <div class="footer-card-icon">
-              <Icon :icon="emailIcon" aria-hidden="true" />
-            </div>
-            <div class="footer-card-content">
-              <h3 class="footer-card-title">联系合作</h3>
-              <p class="footer-card-text">13233768245@163.com</p>
-              <p class="footer-card-text">896415482@qq.com</p>
-            </div>
-          </a>
-
+        <p class="footer-brand">JsonCC Lab</p>
+        <p class="footer-line">
+          <span>© 2025</span>
+          <span class="footer-sep" aria-hidden="true">·</span>
+          <span>作者：JsonCC</span>
+          <span class="footer-sep" aria-hidden="true">·</span>
+          <span>每天都有新内容</span>
+          <span class="footer-sep" aria-hidden="true">·</span>
+          <a class="footer-link" href="mailto:13233768245@163.com">13233768245@163.com</a>
+          <span class="footer-sep" aria-hidden="true">·</span>
           <a
-            class="footer-card footer-card-github"
+            class="footer-link"
             href="https://github.com/jsoncc/jcclab"
             target="_blank"
             rel="noopener noreferrer"
-          >
-            <div class="footer-card-icon">
-              <Icon :icon="githubIcon" aria-hidden="true" />
-            </div>
-            <div class="footer-card-content">
-              <h3 class="footer-card-title">开源代码</h3>
-              <p class="footer-card-text">GitHub</p>
-              <p class="footer-card-text">jsoncc/jcclab</p>
-            </div>
-          </a>
-
-          <div class="footer-card footer-card-stats">
-            <div class="footer-card-icon">
-              <Icon :icon="chartLineIcon" aria-hidden="true" />
-            </div>
-            <div class="footer-card-content">
-              <h3 class="footer-card-title">访问统计</h3>
-              <p class="footer-card-text footer-card-stats-text" role="status">{{ footerStatsText }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="footer-divider"></div>
-        <p class="footer-copyright">
-          <span>© 2025 JsonCC Lab</span>
-          <span class="footer-copyright-sep" aria-hidden="true">·</span>
-          <span>作者：JsonCC</span>
-          <span class="footer-copyright-sep" aria-hidden="true">·</span>
-          <span>每天都有新内容</span>
+          >GitHub</a>
         </p>
       </div>
     </footer>
