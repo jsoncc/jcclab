@@ -242,24 +242,53 @@
 
     <footer class="page-footer">
       <div class="page-footer-inner">
-        <div class="footer-contact-section">
-          <div class="footer-contact-header">
-            <Icon :icon="emailIcon" class="footer-contact-icon" aria-hidden="true" />
-            <span>联系合作</span>
-          </div>
-          <div class="footer-mail-list">
-            <a class="footer-mail" href="mailto:13233768245@163.com">13233768245@163.com</a>
-            <span class="footer-mail-sep" aria-hidden="true">·</span>
-            <a class="footer-mail" href="mailto:896415482@qq.com">896415482@qq.com</a>
+        <div class="footer-cards">
+          <a class="footer-card footer-card-mail" href="mailto:13233768245@163.com">
+            <div class="footer-card-icon">
+              <Icon :icon="emailIcon" aria-hidden="true" />
+            </div>
+            <div class="footer-card-content">
+              <h3 class="footer-card-title">联系合作</h3>
+              <p class="footer-card-text">13233768245@163.com</p>
+              <p class="footer-card-text">896415482@qq.com</p>
+            </div>
+          </a>
+
+          <a
+            class="footer-card footer-card-github"
+            href="https://github.com/jsoncc/jcclab"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div class="footer-card-icon">
+              <Icon :icon="githubIcon" aria-hidden="true" />
+            </div>
+            <div class="footer-card-content">
+              <h3 class="footer-card-title">开源代码</h3>
+              <p class="footer-card-text">GitHub</p>
+              <p class="footer-card-text">jsoncc/jcclab</p>
+            </div>
+          </a>
+
+          <div class="footer-card footer-card-stats">
+            <div class="footer-card-icon">
+              <Icon :icon="chartLineIcon" aria-hidden="true" />
+            </div>
+            <div class="footer-card-content">
+              <h3 class="footer-card-title">访问统计</h3>
+              <p class="footer-card-text footer-card-stats-text" role="status">{{ footerStatsText }}</p>
+            </div>
           </div>
         </div>
+
         <div class="footer-divider"></div>
-        <p class="footer-tagline">
-          <span class="footer-tagline-line">作者：JsonCC</span>
-          <span class="footer-tagline-sep" aria-hidden="true">·</span>
-          <span class="footer-tagline-line">每天都有新内容</span>
+        <p class="footer-copyright">
+          <span>© 2025 JsonCC Lab</span>
+          <span class="footer-copyright-sep" aria-hidden="true">·</span>
+          <span>作者：JsonCC</span>
+          <span class="footer-copyright-sep" aria-hidden="true">·</span>
+          <span>每天都有新内容</span>
         </p>
-        <p class="footer-stats" role="status">{{ footerStatsText }}</p>
       </div>
     </footer>
 
@@ -359,6 +388,7 @@ import starOutlineIcon from '@iconify-icons/mdi/star-outline'
 import paletteIcon from '@iconify-icons/mdi/palette'
 import githubIcon from '@iconify-icons/mdi/github'
 import emailIcon from '@iconify-icons/mdi/email-outline'
+import chartLineIcon from '@iconify-icons/mdi/chart-line'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
 import CryptoJS from 'crypto-js'
 import { marked } from 'marked'
