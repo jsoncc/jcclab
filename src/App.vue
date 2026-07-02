@@ -242,26 +242,23 @@
 
     <footer class="page-footer">
       <div class="page-footer-inner">
-        <div class="footer-top">
-          <div class="footer-head">
-            <p class="footer-brand">JsonCC Lab</p>
+        <div class="footer-contact-section">
+          <div class="footer-contact-header">
+            <Icon :icon="emailIcon" class="footer-contact-icon" aria-hidden="true" />
+            <span>联系合作</span>
           </div>
-
-          <p class="footer-tagline">
-            <span class="footer-tagline-line">作者：JsonCC</span>
-            <span class="footer-tagline-sep" aria-hidden="true">·</span>
-            <span class="footer-tagline-line">每天都有新内容</span>
-          </p>
-
-          <div class="footer-contact" aria-label="联系邮箱">
-            <span class="footer-contact-label">邮箱</span>
-            <div class="footer-mail-list">
-              <a class="footer-mail" href="mailto:13233768245@163.com">13233768245@163.com</a>
-              <a class="footer-mail" href="mailto:896415482@qq.com">896415482@qq.com</a>
-            </div>
+          <div class="footer-mail-list">
+            <a class="footer-mail" href="mailto:13233768245@163.com">13233768245@163.com</a>
+            <span class="footer-mail-sep" aria-hidden="true">·</span>
+            <a class="footer-mail" href="mailto:896415482@qq.com">896415482@qq.com</a>
           </div>
         </div>
-
+        <div class="footer-divider"></div>
+        <p class="footer-tagline">
+          <span class="footer-tagline-line">作者：JsonCC</span>
+          <span class="footer-tagline-sep" aria-hidden="true">·</span>
+          <span class="footer-tagline-line">每天都有新内容</span>
+        </p>
         <p class="footer-stats" role="status">{{ footerStatsText }}</p>
       </div>
     </footer>
@@ -361,6 +358,7 @@ import qrcodeIcon from '@iconify-icons/mdi/qrcode'
 import starOutlineIcon from '@iconify-icons/mdi/star-outline'
 import paletteIcon from '@iconify-icons/mdi/palette'
 import githubIcon from '@iconify-icons/mdi/github'
+import emailIcon from '@iconify-icons/mdi/email-outline'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
 import CryptoJS from 'crypto-js'
 import { marked } from 'marked'
