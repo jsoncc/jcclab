@@ -535,21 +535,33 @@ let clockTimer = 0
 const showThemePicker = ref(false)
 const themeKey = ref(localStorage.getItem('theme') || 'default')
 
+/** 主题色板基于 theme-factory skill：
+ * - default: Modern Minimalist（白）
+ * - dark: Tech Innovation（深夜蓝/暗色）
+ * - midnight: Midnight Galaxy（暮色紫）
+ * - sunset: Sunset Boulevard（暖阳橙）
+ * - forest: Forest Canopy（森系绿）
+ * - desert: Desert Rose（沙漠玫）
+ */
 const themes = [
-  { key: 'default', label: '极简白', pageBg: '#f6f8fa', color: '#e2e8f0' },
-  { key: 'ocean', label: '深海蓝', pageBg: '#ecf5f9', color: '#94b8d0' },
-  { key: 'midnight', label: '暮光紫', pageBg: '#f2eef9', color: '#b8a9d4' },
-  { key: 'forest', label: '晨雾绿', pageBg: '#edf4ed', color: '#9ebd9e' },
-  { key: 'sunset', label: '暖阳橙', pageBg: '#fcf2eb', color: '#e8b89a' },
-  { key: 'arctic', label: '冰雪蓝', pageBg: '#eef4fa', color: '#a1bcd6' },
-  { key: 'rose', label: '玫瑰粉', pageBg: '#faf0f0', color: '#dbb5b5' },
-  { key: 'dark', label: '暗夜黑', pageBg: '#1a1d23', color: '#4a4d55' },
+  { key: 'default', label: '极简白', pageBg: '#ffffff', headerBg: '#fafafa', headerText: '#36454f', headerTextSecondary: '#708090', headerLink: '#0969da', color: '#d3d3d3' },
+  { key: 'dark', label: '深夜蓝', pageBg: '#1e1e1e', headerBg: '#0a0a0a', headerText: '#ffffff', headerTextSecondary: '#c0c0c0', headerLink: '#00ffff', color: '#1e1e1e' },
+  { key: 'midnight', label: '暮色紫', pageBg: '#faf8ff', headerBg: '#2b1e3e', headerText: '#ffffff', headerTextSecondary: '#a490c2', headerLink: '#4a4e8f', color: '#2b1e3e' },
+  { key: 'sunset', label: '暖阳橙', pageBg: '#fff5e6', headerBg: '#264653', headerText: '#ffffff', headerTextSecondary: '#e9c46a', headerLink: '#e76f51', color: '#e76f51' },
+  { key: 'forest', label: '森系绿', pageBg: '#faf9f6', headerBg: '#2d4a2b', headerText: '#ffffff', headerTextSecondary: '#a4ac86', headerLink: '#4a7c59', color: '#2d4a2b' },
+  { key: 'desert', label: '沙漠玫', pageBg: '#faf3ee', headerBg: '#5d2e46', headerText: '#ffffff', headerTextSecondary: '#e8d5c4', headerLink: '#b87d6d', color: '#b87d6d' },
 ]
 
 watch(themeKey, (val) => {
   localStorage.setItem('theme', val)
   const theme = themes.find(t => t.key === val)
-  if (theme) document.documentElement.style.setProperty('--page-bg', theme.pageBg)
+  if (!theme) return
+  const root = document.documentElement
+  root.style.setProperty('--page-bg', theme.pageBg)
+  root.style.setProperty('--header-bg', theme.headerBg)
+  root.style.setProperty('--header-text', theme.headerText)
+  root.style.setProperty('--header-text-secondary', theme.headerTextSecondary)
+  root.style.setProperty('--header-link', theme.headerLink)
 }, { immediate: true })
 
 const setTheme = (key: string) => {

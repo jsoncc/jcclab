@@ -791,36 +791,54 @@
 
 /* —— 页面背景主题（基于 theme-factory 配色） —— */
 
+/* —— 主题色板（基于 theme-factory skill） —— */
+
 .home[data-theme="default"] {
-  --page-bg: #f6f8fa;
-}
-
-.home[data-theme="ocean"] {
-  --page-bg: #ecf5f9;
-}
-
-.home[data-theme="midnight"] {
-  --page-bg: #f2eef9;
-}
-
-.home[data-theme="forest"] {
-  --page-bg: #edf4ed;
-}
-
-.home[data-theme="sunset"] {
-  --page-bg: #fcf2eb;
-}
-
-.home[data-theme="arctic"] {
-  --page-bg: #eef4fa;
-}
-
-.home[data-theme="rose"] {
-  --page-bg: #faf0f0;
+  --page-bg: #ffffff;
+  --header-bg: #fafafa;
+  --header-text: #36454f;
+  --header-text-secondary: #708090;
+  --header-link: #0969da;
 }
 
 .home[data-theme="dark"] {
-  --page-bg: #1a1d23;
+  --page-bg: #1e1e1e;
+  --header-bg: #0a0a0a;
+  --header-text: #ffffff;
+  --header-text-secondary: #c0c0c0;
+  --header-link: #00ffff;
+}
+
+.home[data-theme="midnight"] {
+  --page-bg: #faf8ff;
+  --header-bg: #2b1e3e;
+  --header-text: #ffffff;
+  --header-text-secondary: #a490c2;
+  --header-link: #4a4e8f;
+}
+
+.home[data-theme="sunset"] {
+  --page-bg: #fff5e6;
+  --header-bg: #264653;
+  --header-text: #ffffff;
+  --header-text-secondary: #e9c46a;
+  --header-link: #e76f51;
+}
+
+.home[data-theme="forest"] {
+  --page-bg: #faf9f6;
+  --header-bg: #2d4a2b;
+  --header-text: #ffffff;
+  --header-text-secondary: #a4ac86;
+  --header-link: #4a7c59;
+}
+
+.home[data-theme="desert"] {
+  --page-bg: #faf3ee;
+  --header-bg: #5d2e46;
+  --header-text: #ffffff;
+  --header-text-secondary: #e8d5c4;
+  --header-link: #b87d6d;
 }
 
 /* —— 主题选择器 —— */
