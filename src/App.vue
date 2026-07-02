@@ -8,9 +8,9 @@
           rel="noopener noreferrer"
           class="github-link"
           title="查看项目源码与更新"
+          aria-label="查看项目源码与更新（GitHub）"
         >
           <Icon :icon="githubIcon" class="github-link-icon" aria-hidden="true" />
-          <span>jcclab</span>
         </a>
       </div>
       <p class="header-time">
