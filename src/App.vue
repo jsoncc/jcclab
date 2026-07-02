@@ -2,18 +2,16 @@
   <div class="home" :data-theme="themeKey">
     <header class="page-header">
       <div class="header-left">
-        <h1 class="page-title">JsonCC Lab</h1>
-        <p class="repo-cta">
-          项目源码与更新：
-          <a
-            href="https://github.com/jsoncc/jcclab"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="repo-link"
-          >
-            GitHub - jsoncc/jcclab
-          </a>
-        </p>
+        <a
+          href="https://github.com/jsoncc/jcclab"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="github-link"
+          title="查看项目源码与更新"
+        >
+          <Icon :icon="githubIcon" class="github-link-icon" aria-hidden="true" />
+          <span>jcclab</span>
+        </a>
       </div>
       <p class="header-time">
         <Icon class="header-time-icon" :icon="calendarClockOutlineIcon" aria-hidden="true" />
@@ -362,6 +360,7 @@ import pinTopIcon from '@iconify-icons/radix-icons/pin-top'
 import qrcodeIcon from '@iconify-icons/mdi/qrcode'
 import starOutlineIcon from '@iconify-icons/mdi/star-outline'
 import paletteIcon from '@iconify-icons/mdi/palette'
+import githubIcon from '@iconify-icons/mdi/github'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
 import CryptoJS from 'crypto-js'
 import { marked } from 'marked'
