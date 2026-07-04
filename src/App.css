@@ -809,28 +809,12 @@
   --header-link: #00ffff;
 }
 
-.home[data-theme="midnight"] {
-  --page-bg: #faf8ff;
-  --header-bg: #2b1e3e;
-  --header-text: #ffffff;
-  --header-text-secondary: #a490c2;
-  --header-link: #4a4e8f;
-}
-
 .home[data-theme="sunset"] {
   --page-bg: #fff5e6;
   --header-bg: #264653;
   --header-text: #ffffff;
   --header-text-secondary: #e9c46a;
   --header-link: #e76f51;
-}
-
-.home[data-theme="forest"] {
-  --page-bg: #faf9f6;
-  --header-bg: #2d4a2b;
-  --header-text: #ffffff;
-  --header-text-secondary: #a4ac86;
-  --header-link: #4a7c59;
 }
 
 .home[data-theme="desert"] {

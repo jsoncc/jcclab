@@ -546,9 +546,7 @@ const themeKey = ref(localStorage.getItem('theme') || 'default')
 const themes = [
   { key: 'default', label: '极简白', pageBg: '#ffffff', headerBg: '#fafafa', headerText: '#36454f', headerTextSecondary: '#708090', headerLink: '#0969da', color: '#d3d3d3' },
   { key: 'dark', label: '深夜蓝', pageBg: '#1e1e1e', headerBg: '#0a0a0a', headerText: '#ffffff', headerTextSecondary: '#c0c0c0', headerLink: '#00ffff', color: '#1e1e1e' },
-  { key: 'midnight', label: '暮色紫', pageBg: '#faf8ff', headerBg: '#2b1e3e', headerText: '#ffffff', headerTextSecondary: '#a490c2', headerLink: '#4a4e8f', color: '#2b1e3e' },
   { key: 'sunset', label: '暖阳橙', pageBg: '#fff5e6', headerBg: '#264653', headerText: '#ffffff', headerTextSecondary: '#e9c46a', headerLink: '#e76f51', color: '#e76f51' },
-  { key: 'forest', label: '森系绿', pageBg: '#faf9f6', headerBg: '#2d4a2b', headerText: '#ffffff', headerTextSecondary: '#a4ac86', headerLink: '#4a7c59', color: '#2d4a2b' },
   { key: 'desert', label: '沙漠玫', pageBg: '#faf3ee', headerBg: '#5d2e46', headerText: '#ffffff', headerTextSecondary: '#e8d5c4', headerLink: '#b87d6d', color: '#b87d6d' },
 ]
 
