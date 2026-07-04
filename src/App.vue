@@ -242,12 +242,7 @@
 
     <footer class="page-footer">
       <div class="page-footer-inner">
-        <p class="footer-brand">JsonCC Lab</p>
         <p class="footer-line">
-          <span>© 2025</span>
-          <span class="footer-sep" aria-hidden="true">·</span>
-          <span>作者：JsonCC</span>
-          <span class="footer-sep" aria-hidden="true">·</span>
           <span>每天都有新内容</span>
           <span class="footer-sep" aria-hidden="true">·</span>
           <a class="footer-link" href="mailto:13233768245@163.com">13233768245@163.com</a>
@@ -259,6 +254,7 @@
             rel="noopener noreferrer"
           >GitHub</a>
         </p>
+        <p class="footer-stats" role="status">{{ footerStatsText }}</p>
       </div>
     </footer>
 
