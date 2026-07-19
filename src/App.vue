@@ -147,6 +147,7 @@
           <div v-if="showModule(module.key)" class="list-card">
             <h2 class="module-title">
               {{ module.title }}
+              <!-- 隐藏今日热榜模块（2026-07-19）
               <button
                 v-if="module.key === 'hotnews' && hasHotnewsHistory"
                 type="button"
@@ -156,6 +157,7 @@
               >
                 {{ showHotnewsHistory ? '收起 ▲' : '查看历史 ▼' }}
               </button>
+              -->
             </h2>
             <div v-if="module.key === 'vpn' && activeModule === 'vpn'" class="inline-md">
               <h3 v-if="latestVpnTitle" class="inline-md-title">{{ latestVpnTitle }}</h3>
@@ -416,11 +418,12 @@ const vpnFiles = import.meta.glob('./assets/vpn/*.md', {
   import: 'default'
 }) as RawMdMap
 
-const hotnewsFiles = import.meta.glob('./assets/hotnews/*.md', {
-  eager: true,
-  query: '?raw',
-  import: 'default'
-}) as RawMdMap
+// 隐藏今日热榜模块（2026-07-19）
+// const hotnewsFiles = import.meta.glob('./assets/hotnews/*.md', {
+//   eager: true,
+//   query: '?raw',
+//   import: 'default'
+// }) as RawMdMap
 
 /** 由 scripts/generate-blog-meta.ts 生成：博客文件路径 → 最后更新时间（Unix 秒） */
 const blogMetaMap = blogMeta as Record<string, number>
@@ -475,36 +478,37 @@ const vpnList = computed((): MdStemItem[] =>
     .sort((a, b) => b.name.localeCompare(a.name))
 )
 
-const hotnewsList = computed((): MdStemItem[] =>
-  Object.keys(hotnewsFiles)
-    .map((path) => {
-      const name = stemFromGlobPath(path, 'md')
-      return name ? { name, path } : null
-    })
-    .filter((item): item is MdStemItem => item !== null)
-    .sort((a, b) => b.name.localeCompare(a.name))
-)
-
-/** 今日热榜：仅展示当天（北京时间）的文件；找不到则 fallback 到最新一条 */
-const todayHotnews = computed((): MdStemItem | null => {
-  const today = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Shanghai',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(new Date())
-  return (
-    hotnewsList.value.find((item) => item.name === `hotnews-${today}.md`) ??
-    hotnewsList.value[0] ??
-    null
-  )
-})
-
-/** 是否有多条历史（用于决定是否显示"查看历史"按钮） */
-const hasHotnewsHistory = computed(() => hotnewsList.value.length > 1)
-
-/** 是否展开历史列表（默认收起） */
-const showHotnewsHistory = ref(false)
+// 隐藏今日热榜模块（2026-07-19）
+// const hotnewsList = computed((): MdStemItem[] =>
+//   Object.keys(hotnewsFiles)
+//     .map((path) => {
+//       const name = stemFromGlobPath(path, 'md')
+//       return name ? { name, path } : null
+//     })
+//     .filter((item): item is MdStemItem => item !== null)
+//     .sort((a, b) => b.name.localeCompare(a.name))
+// )
+//
+// /** 今日热榜：仅展示当天（北京时间）的文件；找不到则 fallback 到最新一条 */
+// const todayHotnews = computed((): MdStemItem | null => {
+//   const today = new Intl.DateTimeFormat('en-CA', {
+//     timeZone: 'Asia/Shanghai',
+//     year: 'numeric',
+//     month: '2-digit',
+//     day: '2-digit'
+//   }).format(new Date())
+//   return (
+//     hotnewsList.value.find((item) => item.name === `hotnews-${today}.md`) ??
+//     hotnewsList.value[0] ??
+//     null
+//   )
+// })
+//
+// /** 是否有多条历史（用于决定是否显示"查看历史"按钮） */
+// const hasHotnewsHistory = computed(() => hotnewsList.value.length > 1)
+//
+// /** 是否展开历史列表（默认收起） */
+// const showHotnewsHistory = ref(false)
 
 /** 「科学上网」单模块视图下：默认展开排序后的第一篇（列表按名称排，首项即展示内容） */
 const latestVpnTitle = computed(() => vpnList.value[0]?.name || '')
@@ -829,7 +833,7 @@ const openHtmlFromMap = (map: RawMdMap, filePath: string) => {
   showViewer.value = true
 }
 
-type ListModuleKey = 'hotnews' | 'blog' | 'vpn'
+type ListModuleKey = 'blog' | 'vpn'
 
 interface ListModule {
   key: ListModuleKey
@@ -845,7 +849,7 @@ type HeaderSearchItem = {
   action: () => void
 }
 
-/** 侧栏列表的数据：hotnews / blog（history 模块已隐藏，command 已拆分，vpn 已隐藏） */
+/** 侧栏列表的数据：blog（history 模块已隐藏，command 已拆分，vpn 已隐藏，hotnews 已隐藏） */
 const listModules = computed((): ListModule[] => [
   // {
   //   key: 'history',
@@ -857,21 +861,22 @@ const listModules = computed((): ListModule[] => [
   //     href: `#/history/${item.date}`
   //   }))
   // }, // 暂时隐藏
-  {
-    key: 'hotnews',
-    title: '今日热榜',
-    items: (showHotnewsHistory.value
-      ? hotnewsList.value
-      : todayHotnews.value
-        ? [todayHotnews.value]
-        : []
-    ).map(item => ({
-      key: item.path,
-      label: item.name,
-      value: item.path,
-      href: `#/hotnews/${item.name}`
-    }))
-  },
+  // 隐藏今日热榜模块（2026-07-19）
+  // {
+  //   key: 'hotnews',
+  //   title: '今日热榜',
+  //   items: (showHotnewsHistory.value
+  //     ? hotnewsList.value
+  //     : todayHotnews.value
+  //       ? [todayHotnews.value]
+  //       : []
+  //   ).map(item => ({
+  //     key: item.path,
+  //     label: item.name,
+  //     value: item.path,
+  //     href: `#/hotnews/${item.name}`
+  //   }))
+  // },
   {
     key: 'blog',
     title: '博客',
@@ -909,9 +914,10 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
     // case 'history':
     //   openMdFromMap(historyFiles, `./assets/history/history-${value}.md`)
     //   break // 已隐藏
-    case 'hotnews':
-      openMdFromMap(hotnewsFiles, value)
-      break
+    // 隐藏今日热榜模块（2026-07-19）
+    // case 'hotnews':
+    //   openMdFromMap(hotnewsFiles, value)
+    //   break
     case 'blog':
       openHtmlFromMap(blogFiles, value)
       break
@@ -985,13 +991,14 @@ const headerSearchCandidates = computed<HeaderSearchItem[]>(() => [
   //   tags: ['历史', 'history', item.date],
   //   action: () => openModuleItem('history', item.date)
   // })), // 已隐藏
-  ...hotnewsList.value.slice(0, 40).map((item) => ({
-    key: `hotnews-${item.path}`,
-    title: `今日热榜：${item.name}`,
-    meta: '热榜模块',
-    tags: ['热榜', 'hotnews', item.name],
-    action: () => openModuleItem('hotnews', item.path)
-  })),
+  // 隐藏今日热榜模块（2026-07-19）
+  // ...hotnewsList.value.slice(0, 40).map((item) => ({
+  //   key: `hotnews-${item.path}`,
+  //   title: `今日热榜：${item.name}`,
+  //   meta: '热榜模块',
+  //   tags: ['热榜', 'hotnews', item.name],
+  //   action: () => openModuleItem('hotnews', item.path)
+  // })),
   ...blogList.value.slice(0, 40).map((item) => ({
     key: `blog-${item.path}`,
     title: `博客：${item.name}`,
