@@ -90,6 +90,15 @@ const copyAllContent = async () => {
   }
 }
 
+/** 根据 HTML 注释标记为 blockquote 添加类型 class */
+const addBlockquoteClasses = (html: string): string => {
+  // 匹配 HTML 注释 + 后面的 blockquote
+  return html.replace(
+    /<!-- (warning|success|highlight)-start -->\s*\n?\s*<blockquote>/g,
+    '<blockquote class="$1">'
+  )
+}
+
 const processMarkdown = () => {
   if (!props.mdContent) {
     htmlContent.value = ''
@@ -104,7 +113,22 @@ const processMarkdown = () => {
     return `![${alt}](${resolved})`
   })
   
-  htmlContent.value = String(marked.parse(mdText))
+  let rendered = String(marked.parse(mdText))
+
+  // 移除 HTML 注释标记（已不需要，class 已添加）
+  rendered = rendered.replace(/<!-- (?:warning|success|highlight)-(?:start|end) -->\s*/g, '')
+
+  // 为包含 ⚠️ 或 ✅ 的 blockquote 添加类型 class（兼容嵌套）
+  rendered = rendered.replace(
+    /<blockquote>\s*<p>⚠️/g,
+    '<blockquote class="warning"><p>⚠️'
+  )
+  rendered = rendered.replace(
+    /<blockquote>\s*<p>✅/g,
+    '<blockquote class="success"><p>✅'
+  )
+
+  htmlContent.value = rendered
 }
 
 watch(() => props.mdContent, () => {
@@ -316,6 +340,16 @@ watch(() => props.mdContent, () => {
   color: #475569;
 }
 
+.markdown-content blockquote.warning {
+  border-left-color: #f59e0b;
+  background: #fef3c7;
+}
+
+.markdown-content blockquote.success {
+  border-left-color: #10b981;
+  background: #d1fae5;
+}
+
 .markdown-content blockquote p:first-child {
   margin-top: 0;
 }
@@ -406,6 +440,42 @@ watch(() => props.mdContent, () => {
 
 .markdown-content a:hover {
   border-bottom-color: #0284c7;
+}
+
+.markdown-content .annotation-ref {
+  color: #0284c7;
+  font-weight: bold;
+  cursor: help;
+  position: relative;
+  border-bottom: 1px dashed #0284c7;
+}
+
+.markdown-content .annotation-ref:hover::after {
+  content: attr(data-note);
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: normal;
+  width: 320px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.markdown-content .annotation-ref:hover::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%) translateY(100%);
+  border: 8px solid transparent;
+  border-top-color: #1e293b;
 }
 </style>
 

@@ -400,7 +400,7 @@ const historyFiles = import.meta.glob('./assets/history/*.md', {
   import: 'default'
 }) as RawMdMap
 
-const blogFiles = import.meta.glob('./assets/blog/html/*.html', {
+const blogFiles = import.meta.glob('./assets/blog/*.md', {
   eager: true,
   query: '?raw',
   import: 'default'
@@ -449,9 +449,9 @@ const blogList = computed((): BlogListItem[] => {
   const meta = blogMetaMap
   return Object.keys(blogFiles)
     .map((path) => {
-      const name = stemFromGlobPath(path, 'html')
+      const name = stemFromGlobPath(path, 'md')
       if (!name) return null
-      // 查找对应的 md 路径以匹配 blog-meta.json 的时间戳
+      // MD 路径即为 glob 的 key
       const mdPath = `./assets/blog/${name}.md`
       return { name, path, updatedAt: Number(meta[mdPath] || 0) }
     })
@@ -919,7 +919,7 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
     //   openMdFromMap(hotnewsFiles, value)
     //   break
     case 'blog':
-      openHtmlFromMap(blogFiles, value)
+      openMdFromMap(blogFiles, value)
       break
     // case 'command':
     //   openMdFromMap(commandFiles, value)
