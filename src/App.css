@@ -289,7 +289,7 @@
   min-width: 100%;
   max-height: calc(100vh - 140px);
 }
-.github-link {
+.home-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -297,23 +297,33 @@
   text-decoration: none;
   padding: 6px;
   border-radius: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.github-link:hover {
+.home-link:hover {
   background: #e5e7eb;
   color: #0969da;
 }
 
-.github-link-icon {
+.home-link-icon {
   width: 22px;
   height: 22px;
   color: #1f2937;
   transition: color 0.15s ease;
 }
 
-.github-link:hover .github-link-icon {
+.home-link:hover .home-link-icon {
   color: #0969da;
+}
+
+.footer-github-icon {
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  margin-right: 4px;
 }
 
 .header-time {

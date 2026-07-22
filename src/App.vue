@@ -2,16 +2,14 @@
   <div class="home" :data-theme="themeKey">
     <header class="page-header">
       <div class="header-left">
-        <a
-          href="https://github.com/jsoncc/jcclab"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="github-link"
-          title="查看项目源码与更新"
-          aria-label="查看项目源码与更新（GitHub）"
+        <button
+          type="button"
+          class="home-link"
+          title="返回首页"
+          @click="router.push('/')"
         >
-          <Icon :icon="githubIcon" class="github-link-icon" aria-hidden="true" />
-        </a>
+          <Icon :icon="homeIcon" class="home-link-icon" aria-hidden="true" />
+        </button>
       </div>
       <p class="header-time">
         <Icon class="header-time-icon" :icon="calendarClockOutlineIcon" aria-hidden="true" />
@@ -257,7 +255,8 @@
             href="https://github.com/jsoncc/jcclab"
             target="_blank"
             rel="noopener noreferrer"
-          >GitHub</a>
+          >
+            <Icon :icon="githubIcon" class="footer-github-icon" aria-hidden="true" /> GitHub</a>
         </p>
         <p class="footer-stats" role="status">{{ footerStatsText }}</p>
       </div>
@@ -359,6 +358,7 @@ import qrcodeIcon from '@iconify-icons/mdi/qrcode'
 import starOutlineIcon from '@iconify-icons/mdi/star-outline'
 import paletteIcon from '@iconify-icons/mdi/palette'
 import githubIcon from '@iconify-icons/mdi/github'
+import homeIcon from '@iconify-icons/mdi/home-outline'
 import emailIcon from '@iconify-icons/mdi/email-outline'
 import chartLineIcon from '@iconify-icons/mdi/chart-line'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
