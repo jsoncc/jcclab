@@ -182,6 +182,10 @@
   align-items: start;
 }
 
+.content-layout.no-sidebar {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /**
  * 侧栏 sticky：top 必须落在顶栏之下（见 .home --layout-sticky-header-height），否则滚动后「全部」等会压在 header 下面。
  * z-index 高于主内容、低于 .page-header(60)。

@@ -47,8 +47,8 @@
     </header>
 
     <main class="page-main">
-      <div class="content-layout">
-        <aside class="module-sidebar">
+      <div class="content-layout" :class="{ 'no-sidebar': isBlogPost }">
+        <aside v-if="!isBlogPost" class="module-sidebar">
           <div class="sidebar-nav">
             <template v-for="tab in moduleTabs" :key="tab.key">
               <div
