@@ -37,7 +37,8 @@
     "opencc-js": "^1.0.5",
     "pdfjs-dist": "^4.9.155",
     "solarlunar": "^3.1.0",
-    "vue": "^3.4.0"
+    "vue": "^3.4.0",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",

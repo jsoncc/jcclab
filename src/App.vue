@@ -143,6 +143,8 @@
         </aside>
 
         <div class="module-container" :class="{ 'single-view': activeModule !== 'all' }">
+        <BlogPost v-if="isBlogPost" />
+        <template v-else>
         <template v-for="module in listModules" :key="module.key">
           <div v-if="showModule(module.key)" class="list-card">
             <h2 class="module-title">
@@ -238,6 +240,7 @@
           <Base64FileTool v-else-if="activeTool === 'base64File'" />
           <PdfTools v-else-if="activeTool === 'pdfTools'" />
         </div>
+        </template>
         </div>
       </div>
     </main>
@@ -349,6 +352,7 @@ import {
   type CSSProperties,
   type VNodeRef
 } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import pinTopIcon from '@iconify-icons/radix-icons/pin-top'
 import qrcodeIcon from '@iconify-icons/mdi/qrcode'
@@ -370,6 +374,7 @@ import Base64Decoder from './components/Base64Decoder.vue'
 import Base64FileTool from './components/Base64FileTool.vue'
 import PdfTools from './components/PdfTools.vue'
 import PerpetualCalendar from './components/PerpetualCalendar.vue'
+import BlogPost from './views/BlogPost.vue'
 import blogMeta from './assets/blog/blog-meta.json'
 import homeQrcodeImg from './assets/images/home/qrcode.png'
 
@@ -522,6 +527,9 @@ const latestVpnHtml = computed(() => {
 })
 
 // —— UI 状态 ——
+const route = useRoute()
+const router = useRouter()
+const isBlogPost = computed(() => route.name === 'blog-post')
 const currentMdContent = ref('')
 const currentBlogHtml = ref('')
 const showViewer = ref(false)
@@ -919,7 +927,10 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
     //   openMdFromMap(hotnewsFiles, value)
     //   break
     case 'blog':
-      openMdFromMap(blogFiles, value)
+      const blogName = stemFromGlobPath(value, 'md')
+      if (blogName) {
+        router.push({ name: 'blog-post', params: { name: blogName } })
+      }
       break
     // case 'command':
     //   openMdFromMap(commandFiles, value)
