@@ -546,7 +546,7 @@ const nowText = ref('')
 let clockTimer = 0
 const showThemePicker = ref(false)
 const themeKey = ref(localStorage.getItem('theme') || 'default')
-const footerCollapsed = ref(false)
+const footerCollapsed = ref(true)
 
 /** 主题色板基于 theme-factory skill：
  * - default: Modern Minimalist（白）
