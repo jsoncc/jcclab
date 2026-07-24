@@ -120,8 +120,26 @@
 }
 
 .page-footer.collapsed {
-  background: transparent;
-  border-top-color: #e2e8f0;
+  margin-top: 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.page-footer.collapsed .page-footer-inner {
+  display: none;
+}
+
+.page-footer.collapsed .footer-toggle {
+  height: 16px;
+  transition: height 0.2s ease;
+}
+
+.page-footer.collapsed .footer-toggle-icon {
+  opacity: 0;
+  font-size: 12px;
+}
+
+.page-footer.collapsed .footer-toggle:hover .footer-toggle-icon {
+  opacity: 1;
 }
 
 .footer-toggle {
@@ -131,7 +149,7 @@
   height: 24px;
   cursor: pointer;
   user-select: none;
-  transition: background 0.2s;
+  transition: height 0.2s ease, background 0.2s ease;
 }
 
 .footer-toggle:hover .footer-toggle-icon {
@@ -141,7 +159,7 @@
 .footer-toggle-icon {
   color: #cbd5e1;
   font-size: 14px;
-  transition: transform 0.3s ease, color 0.2s ease;
+  transition: transform 0.3s ease, color 0.2s ease, opacity 0.2s ease;
 }
 
 .footer-toggle-icon.rotated {
