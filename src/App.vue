@@ -606,11 +606,13 @@ const showModule = (moduleKey: ListModuleKey | ModuleTabKey) =>
   activeModule.value === 'all' || activeModule.value === moduleKey
 
 const openToolsDefault = () => {
+  footerCollapsed.value = true
   activeModule.value = 'formatCheck'
   activeTool.value = 'formatCheck'
 }
 
 const openTool = (toolKey: ActiveToolKey) => {
+  footerCollapsed.value = true
   activeModule.value = 'formatCheck'
   activeTool.value = toolKey
   toolsMenuOpen.value = false
@@ -830,6 +832,7 @@ onBeforeUnmount(() => {
 
 /** 根据 glob 表中的路径打开 Markdown 弹窗 */
 const openMdFromMap = (map: RawMdMap, filePath: string) => {
+  footerCollapsed.value = true
   const mod = map[filePath]
   if (!mod) return
   currentMdContent.value = rawFromGlob(mod)
@@ -932,6 +935,7 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
     //   openMdFromMap(hotnewsFiles, value)
     //   break
     case 'blog':
+      footerCollapsed.value = true
       const blogName = stemFromGlobPath(value, 'md')
       if (blogName) {
         router.push({ name: 'blog-post', params: { name: blogName } })
@@ -953,6 +957,7 @@ const headerSearchFocused = ref(false)
 const headerSearchBlurTimer = ref(0)
 
 const toTool = (tool: ActiveToolKey) => {
+  footerCollapsed.value = true
   activeModule.value = 'formatCheck'
   activeTool.value = tool
 }
