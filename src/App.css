@@ -111,6 +111,8 @@
 .page-main {
   flex: 1 1 auto;
   margin-top: 4px;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
 }
 
@@ -227,10 +229,13 @@
   grid-template-columns: 220px minmax(0, 1fr);
   gap: 20px;
   align-items: start;
+  flex: 1;
+  min-height: 0;
 }
 
 .content-layout.no-sidebar {
   grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
 }
 
 /**
@@ -321,6 +326,11 @@
   z-index: 1;
 }
 
+.module-container.single-view {
+  flex: 1;
+  min-height: 0;
+}
+
 .list-card {
   flex: 1;
   min-width: calc(50% - 10px);
@@ -334,7 +344,9 @@
 
 .module-container.single-view .list-card {
   min-width: 100%;
-  max-height: calc(100vh - 140px);
+  flex: 1;
+  min-height: 0;
+  max-height: none;
 }
 .home-link {
   display: inline-flex;
