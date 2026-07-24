@@ -243,8 +243,11 @@
       </div>
     </main>
 
-    <footer class="page-footer">
-      <div class="page-footer-inner">
+    <footer class="page-footer" :class="{ collapsed: footerCollapsed }">
+      <div class="footer-toggle" @click="footerCollapsed = !footerCollapsed" title="切换页脚">
+        <Icon :icon="chevronDownIcon" class="footer-toggle-icon" :class="{ rotated: !footerCollapsed }" aria-hidden="true" />
+      </div>
+      <div class="page-footer-inner" v-show="!footerCollapsed">
         <p class="footer-line">
           <span>每天都有新内容</span>
           <span class="footer-sep" aria-hidden="true">·</span>
@@ -354,6 +357,7 @@ import {
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import pinTopIcon from '@iconify-icons/radix-icons/pin-top'
+import chevronDownIcon from '@iconify-icons/radix-icons/chevron-down'
 import qrcodeIcon from '@iconify-icons/mdi/qrcode'
 import starOutlineIcon from '@iconify-icons/mdi/star-outline'
 import paletteIcon from '@iconify-icons/mdi/palette'
@@ -542,6 +546,7 @@ const nowText = ref('')
 let clockTimer = 0
 const showThemePicker = ref(false)
 const themeKey = ref(localStorage.getItem('theme') || 'default')
+const footerCollapsed = ref(false)
 
 /** 主题色板基于 theme-factory skill：
  * - default: Modern Minimalist（白）
