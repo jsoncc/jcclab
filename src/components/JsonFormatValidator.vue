@@ -406,7 +406,8 @@ onUnmounted(() => {
   border-radius: 2px;
   overflow: hidden;
   min-height: 340px;
-  height: min(70vh, 620px);
+  height: auto;
+  flex: 1;
 }
 
 .jfv-editor-wrapper {
