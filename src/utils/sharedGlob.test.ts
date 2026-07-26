@@ -15,7 +15,7 @@ describe('rawFromGlob', () => {
   })
 
   it('prefers default over other keys', () => {
-    expect(rawFromGlob({ default: 'main', extra: 'other' as any })).toBe('main')
+    expect(rawFromGlob({ default: 'main', extra: 'other' } as any)).toBe('main')
   })
 })
 
