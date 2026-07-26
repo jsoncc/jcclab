@@ -1,5 +1,6 @@
 import { marked } from 'marked'
 import { configureMarked } from '../utils/markedConfig'
+import { rawFromGlob } from '../utils/sharedGlob'
 
 configureMarked()
 

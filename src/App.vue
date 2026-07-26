@@ -392,7 +392,7 @@ import Base64FileTool from './components/Base64FileTool.vue'
 const PdfTools = defineAsyncComponent(() => import('./components/PdfTools.vue'))
 const PerpetualCalendar = defineAsyncComponent(() => import('./components/PerpetualCalendar.vue'))
 import homeQrcodeImg from './assets/images/home/qrcode.png'
-import { rawFromGlob, stemFromGlobPath } from './composables/useBlogData'
+import { rawFromGlob, stemFromGlobPath } from './utils/sharedGlob'
 const BlogPost = defineAsyncComponent(() => import('./views/BlogPost.vue'))
 
 /** Vite ?raw 导入在 eager glob 里可能是 string 或 { default: string } */
