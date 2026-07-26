@@ -40,9 +40,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import PdfToImage from './PdfToImage.vue'
-import PdfToWord from './PdfToWord.vue'
+import { ref, defineAsyncComponent } from 'vue'
+
+const PdfToImage = defineAsyncComponent(() => import('./PdfToImage.vue'))
+const PdfToWord = defineAsyncComponent(() => import('./PdfToWord.vue'))
 
 const activeTab = ref<'image' | 'word'>('image')
 </script>

@@ -368,6 +368,7 @@ import {
   type CSSProperties,
   type VNodeRef
 } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import pinTopIcon from '@iconify-icons/radix-icons/pin-top'
@@ -382,17 +383,17 @@ import CryptoJS from 'crypto-js'
 import { marked } from 'marked'
 import { configureMarked } from './utils/markedConfig'
 configureMarked()
-import MarkdownViewer from './components/MarkdownViewer.vue'
+const MarkdownViewer = defineAsyncComponent(() => import('./components/MarkdownViewer.vue'))
 import JsonFormatValidator from './components/JsonFormatValidator.vue'
 import UuidGenerator from './components/UuidGenerator.vue'
 import MyBatisSqlFormatter from './components/MyBatisSqlFormatter.vue'
 import Base64Decoder from './components/Base64Decoder.vue'
 import Base64FileTool from './components/Base64FileTool.vue'
-import PdfTools from './components/PdfTools.vue'
-import PerpetualCalendar from './components/PerpetualCalendar.vue'
-import BlogPost from './views/BlogPost.vue'
+const PdfTools = defineAsyncComponent(() => import('./components/PdfTools.vue'))
+const PerpetualCalendar = defineAsyncComponent(() => import('./components/PerpetualCalendar.vue'))
 import homeQrcodeImg from './assets/images/home/qrcode.png'
 import { rawFromGlob, stemFromGlobPath } from './composables/useBlogData'
+const BlogPost = defineAsyncComponent(() => import('./views/BlogPost.vue'))
 
 /** Vite ?raw 导入在 eager glob 里可能是 string 或 { default: string } */
 type GlobRawModule = string | { default: string }

@@ -48,6 +48,15 @@ const baiduTranslateProxy = {
 export default defineConfig({
   plugins: [vue()],
   base: './',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'pdf-vendor': ['pdfjs-dist', 'docx', 'jszip']
+        }
+      }
+    }
+  },
   server: {
     port: 3000,
     open: true,

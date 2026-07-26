@@ -1,5 +1,4 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import BlogPost from '../views/BlogPost.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -12,7 +11,7 @@ const router = createRouter({
     {
       path: '/blog/:name',
       name: 'blog-post',
-      component: BlogPost
+      component: () => import('../views/BlogPost.vue')
     }
   ],
   scrollBehavior() {
