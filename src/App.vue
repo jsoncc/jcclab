@@ -415,12 +415,6 @@ const blogFiles = import.meta.glob('./assets/blog/*.md', {
   import: 'default'
 }) as RawMdMap
 
-const commandFiles = import.meta.glob('./assets/command/*.md', {
-  eager: true,
-  query: '?raw',
-  import: 'default'
-}) as RawMdMap
-
 const vpnFiles = import.meta.glob('./assets/vpn/*.md', {
   eager: true,
   query: '?raw',
@@ -467,15 +461,6 @@ const blogList = computed((): BlogListItem[] => {
     .filter((item): item is BlogListItem => item !== null)
     .sort((a, b) => b.updatedAt - a.updatedAt)
 })
-
-const commandList = computed((): MdStemItem[] =>
-  Object.keys(commandFiles)
-    .map((path) => {
-      const name = stemFromGlobPath(path, 'md')
-      return name ? { name, path } : null
-    })
-    .filter((item): item is MdStemItem => item !== null)
-)
 
 const vpnList = computed((): MdStemItem[] =>
   Object.keys(vpnFiles)
