@@ -163,6 +163,20 @@
               <h3 v-if="latestVpnTitle" class="inline-md-title">{{ latestVpnTitle }}</h3>
               <div class="inline-md-content" v-html="latestVpnHtml" />
             </div>
+            <template v-else-if="module.key === 'blog'">
+              <template v-for="group in blogGroups" :key="group.label">
+                <h3 class="list-group-title">{{ group.label }}</h3>
+                <div class="list-item" v-for="item in group.items" :key="item.path">
+                  <a
+                    :href="`#/blog/${item.name}`"
+                    class="date-link"
+                    @click.prevent="openModuleItem('blog', item.path)"
+                  >
+                    {{ item.name }}
+                  </a>
+                </div>
+              </template>
+            </template>
             <template v-else>
               <div class="list-item" v-for="item in module.items" :key="item.key">
                 <a
@@ -379,7 +393,6 @@ import Base64FileTool from './components/Base64FileTool.vue'
 import PdfTools from './components/PdfTools.vue'
 import PerpetualCalendar from './components/PerpetualCalendar.vue'
 import BlogPost from './views/BlogPost.vue'
-import blogMeta from './assets/blog/blog-meta.json'
 import homeQrcodeImg from './assets/images/home/qrcode.png'
 
 /** Vite ?raw 导入在 eager glob 里可能是 string 或 { default: string } */
@@ -428,10 +441,39 @@ const vpnFiles = import.meta.glob('./assets/vpn/*.md', {
 //   import: 'default'
 // }) as RawMdMap
 
-/** 由 scripts/generate-blog-meta.ts 生成：博客文件路径 → 最后更新时间（Unix 秒） */
-const blogMetaMap = blogMeta as Record<string, number>
+type BlogGroup = { label: string; items: { name: string; path: string }[] }
+type MdStemItem = { name: string; path: string }
 
-// —— 各模块在侧栏展示的列表（由 glob 的 key 解析而来）——
+const groupKey = (name: string): string => {
+  if (name.startsWith('Git') || name.startsWith('GIT_')) return 'Git'
+  if (name.startsWith('GitHub')) return 'GitHub'
+  if (name.startsWith('OpenCode') || name.startsWith('opencode')) return 'OpenCode'
+  return '其他'
+}
+
+const groupOrder: Record<string, number> = {
+  'Git': 1,
+  'GitHub': 2,
+  'OpenCode': 3,
+  '其他': 4
+}
+
+const blogGroups = computed((): BlogGroup[] => {
+  const groups = new Map<string, { name: string; path: string }[]>()
+  for (const path of Object.keys(blogFiles)) {
+    const name = stemFromGlobPath(path, 'md')
+    if (!name) continue
+    const key = groupKey(name)
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key)!.push({ name, path })
+  }
+  for (const items of groups.values()) {
+    items.sort((a, b) => a.name.localeCompare(b.name))
+  }
+  return Array.from(groups.entries())
+    .sort((a, b) => (groupOrder[a[0]] ?? 99) - (groupOrder[b[0]] ?? 99))
+    .map(([label, items]) => ({ label, items }))
+})
 const dateList = computed(() => {
   const dates = Object.keys(historyFiles)
     .map(path => {
@@ -443,23 +485,6 @@ const dateList = computed(() => {
     .map(date => ({ date }))
   
   return dates
-})
-
-type BlogListItem = { name: string; path: string; updatedAt: number }
-type MdStemItem = { name: string; path: string }
-
-const blogList = computed((): BlogListItem[] => {
-  const meta = blogMetaMap
-  return Object.keys(blogFiles)
-    .map((path) => {
-      const name = stemFromGlobPath(path, 'md')
-      if (!name) return null
-      // MD 路径即为 glob 的 key
-      const mdPath = `./assets/blog/${name}.md`
-      return { name, path, updatedAt: Number(meta[mdPath] || 0) }
-    })
-    .filter((item): item is BlogListItem => item !== null)
-    .sort((a, b) => b.updatedAt - a.updatedAt)
 })
 
 const vpnList = computed((): MdStemItem[] =>
@@ -881,12 +906,14 @@ const listModules = computed((): ListModule[] => [
   {
     key: 'blog',
     title: '博客',
-    items: blogList.value.map(item => ({
-      key: item.path,
-      label: item.name,
-      value: item.path,
-      href: `#/blog/${item.name}`
-    }))
+    items: blogGroups.value.flatMap(group =>
+      group.items.map(item => ({
+        key: item.path,
+        label: item.name,
+        value: item.path,
+        href: `#/blog/${item.name}`
+      }))
+    )
   },
   // {
   //   key: 'command',
@@ -1005,7 +1032,7 @@ const headerSearchCandidates = computed<HeaderSearchItem[]>(() => [
   //   tags: ['热榜', 'hotnews', item.name],
   //   action: () => openModuleItem('hotnews', item.path)
   // })),
-  ...blogList.value.slice(0, 40).map((item) => ({
+  ...blogGroups.value.flatMap(g => g.items).slice(0, 40).map((item) => ({
     key: `blog-${item.path}`,
     title: `博客：${item.name}`,
     meta: '博客模块',

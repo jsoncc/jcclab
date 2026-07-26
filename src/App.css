@@ -317,6 +317,19 @@
   font-weight: 600;
 }
 
+.list-group-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin: 12px 0 4px;
+  padding: 0 4px;
+  letter-spacing: 0.05em;
+}
+
+.list-group-title:first-of-type {
+  margin-top: 0;
+}
+
 /** 主内容堆叠低于 .module-sidebar(10)，避免带 overflow 的卡片滚动时盖住左侧导航 */
 .module-container {
   display: flex;

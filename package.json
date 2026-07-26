@@ -7,10 +7,10 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "predev": "tsx scripts/generate-blog-meta.ts",
+    "predev": "tsx scripts/convert-html-to-md.ts",
     "dev": "vite",
     "dev:full": "concurrently \"npm run dev\" \"npm run workers:dev\"",
-    "prebuild": "tsx scripts/generate-blog-meta.ts",
+    "prebuild": "tsx scripts/convert-html-to-md.ts",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
