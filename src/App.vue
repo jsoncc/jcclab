@@ -541,10 +541,10 @@ const footerCollapsed = ref(true)
  * - desert: Desert Rose（沙漠玫）
  */
 const themes = [
-  { key: 'default', label: '极简白', pageBg: '#ffffff', headerBg: '#fafafa', headerText: '#36454f', headerTextSecondary: '#708090', headerLink: '#0969da', color: '#d3d3d3' },
-  { key: 'dark', label: '深夜蓝', pageBg: '#1e1e1e', headerBg: '#0a0a0a', headerText: '#ffffff', headerTextSecondary: '#c0c0c0', headerLink: '#00ffff', color: '#1e1e1e' },
-  { key: 'sunset', label: '暖阳橙', pageBg: '#fff5e6', headerBg: '#264653', headerText: '#ffffff', headerTextSecondary: '#e9c46a', headerLink: '#e76f51', color: '#e76f51' },
-  { key: 'desert', label: '沙漠玫', pageBg: '#faf3ee', headerBg: '#5d2e46', headerText: '#ffffff', headerTextSecondary: '#e8d5c4', headerLink: '#b87d6d', color: '#b87d6d' },
+  { key: 'default', label: '极简白', pageBg: '#ffffff', headerBg: '#fafafa', headerText: '#36454f', headerTextSecondary: '#708090', headerLink: '#0969da', bgSecondary: '#f8fafc', bgCard: '#ffffff', textPrimary: '#1f2937', textSecondary: '#64748b', borderColor: '#e2e8f0', color: '#d3d3d3' },
+  { key: 'dark', label: '深夜蓝', pageBg: '#1e1e1e', headerBg: '#0a0a0a', headerText: '#ffffff', headerTextSecondary: '#c0c0c0', headerLink: '#00ffff', bgSecondary: '#2d2d2d', bgCard: '#2a2a2a', textPrimary: '#e0e0e0', textSecondary: '#a0a0a0', borderColor: '#404040', color: '#1e1e1e' },
+  { key: 'sunset', label: '暖阳橙', pageBg: '#fff5e6', headerBg: '#264653', headerText: '#ffffff', headerTextSecondary: '#e9c46a', headerLink: '#e76f51', bgSecondary: '#fdf2e9', bgCard: '#ffffff', textPrimary: '#2d2d2d', textSecondary: '#6b5b4a', borderColor: '#e8d5c4', color: '#e76f51' },
+  { key: 'desert', label: '沙漠玫', pageBg: '#faf3ee', headerBg: '#5d2e46', headerText: '#ffffff', headerTextSecondary: '#e8d5c4', headerLink: '#b87d6d', bgSecondary: '#f5ede5', bgCard: '#ffffff', textPrimary: '#3d2d30', textSecondary: '#8a7a6a', borderColor: '#e0d0c0', color: '#b87d6d' },
 ]
 
 watch(themeKey, (val) => {
@@ -557,6 +557,11 @@ watch(themeKey, (val) => {
   root.style.setProperty('--header-text', theme.headerText)
   root.style.setProperty('--header-text-secondary', theme.headerTextSecondary)
   root.style.setProperty('--header-link', theme.headerLink)
+  root.style.setProperty('--bg-secondary', theme.bgSecondary)
+  root.style.setProperty('--bg-card', theme.bgCard)
+  root.style.setProperty('--text-primary', theme.textPrimary)
+  root.style.setProperty('--text-secondary', theme.textSecondary)
+  root.style.setProperty('--border-color', theme.borderColor)
 }, { immediate: true })
 
 const setTheme = (key: string) => {
