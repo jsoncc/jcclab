@@ -532,19 +532,34 @@ const showThemePicker = ref(false)
 const themeKey = ref(localStorage.getItem('theme') || 'default')
 const footerCollapsed = ref(true)
 
-/** 主题色板基于 theme-factory skill：
- * - default: Modern Minimalist（白）
- * - dark: Tech Innovation（深夜蓝/暗色）
- * - midnight: Midnight Galaxy（暮色紫）
- * - sunset: Sunset Boulevard（暖阳橙）
- * - forest: Forest Canopy（森系绿）
- * - desert: Desert Rose（沙漠玫）
+/**
+ * 主题色板基于 theme-factory skill（Modern Minimalist / Tech Innovation / Sunset Boulevard / Desert Rose）
  */
 const themes = [
-  { key: 'default', label: '极简白', pageBg: '#ffffff', headerBg: '#fafafa', headerText: '#36454f', headerTextSecondary: '#708090', headerLink: '#0969da', bgSecondary: '#f8fafc', bgCard: '#ffffff', textPrimary: '#1f2937', textSecondary: '#64748b', borderColor: '#e2e8f0', color: '#d3d3d3' },
-  { key: 'dark', label: '深夜蓝', pageBg: '#1e1e1e', headerBg: '#0a0a0a', headerText: '#ffffff', headerTextSecondary: '#c0c0c0', headerLink: '#00ffff', bgSecondary: '#2d2d2d', bgCard: '#2a2a2a', textPrimary: '#e0e0e0', textSecondary: '#a0a0a0', borderColor: '#404040', color: '#1e1e1e' },
-  { key: 'sunset', label: '暖阳橙', pageBg: '#fff5e6', headerBg: '#264653', headerText: '#ffffff', headerTextSecondary: '#e9c46a', headerLink: '#e76f51', bgSecondary: '#fdf2e9', bgCard: '#ffffff', textPrimary: '#2d2d2d', textSecondary: '#6b5b4a', borderColor: '#e8d5c4', color: '#e76f51' },
-  { key: 'desert', label: '沙漠玫', pageBg: '#faf3ee', headerBg: '#5d2e46', headerText: '#ffffff', headerTextSecondary: '#e8d5c4', headerLink: '#b87d6d', bgSecondary: '#f5ede5', bgCard: '#ffffff', textPrimary: '#3d2d30', textSecondary: '#8a7a6a', borderColor: '#e0d0c0', color: '#b87d6d' },
+  {
+    key: 'default', label: '极简白',
+    pageBg: '#ffffff', headerBg: '#fafafa', headerText: '#36454f', headerTextSecondary: '#708090', headerLink: '#0969da',
+    bgSecondary: '#d3d3d3', bgCard: '#ffffff', textPrimary: '#36454f', textSecondary: '#708090', borderColor: '#d3d3d3',
+    color: '#d3d3d3'
+  },
+  {
+    key: 'dark', label: '深夜蓝',
+    pageBg: '#1e1e1e', headerBg: '#1e1e1e', headerText: '#ffffff', headerTextSecondary: '#ffffff', headerLink: '#0066ff',
+    bgSecondary: '#1e1e1e', bgCard: '#1e1e1e', textPrimary: '#ffffff', textSecondary: '#a0a0a0', borderColor: '#333333',
+    color: '#1e1e1e'
+  },
+  {
+    key: 'sunset', label: '暖阳橙',
+    pageBg: '#264653', headerBg: '#264653', headerText: '#ffffff', headerTextSecondary: '#e9c46a', headerLink: '#f4a261',
+    bgSecondary: '#e9c46a', bgCard: '#ffffff', textPrimary: '#264653', textSecondary: '#f4a261', borderColor: '#e8d5c4',
+    color: '#e76f51'
+  },
+  {
+    key: 'desert', label: '沙漠玫',
+    pageBg: '#faf3ee', headerBg: '#5d2e46', headerText: '#ffffff', headerTextSecondary: '#e8d5c4', headerLink: '#b87d6d',
+    bgSecondary: '#e8d5c4', bgCard: '#faf3ee', textPrimary: '#3d2d30', textSecondary: '#8a7a6a', borderColor: '#e8d5c4',
+    color: '#b87d6d'
+  },
 ]
 
 watch(themeKey, (val) => {

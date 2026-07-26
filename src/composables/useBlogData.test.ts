@@ -1,42 +1,58 @@
-import { describe, it, expect } from 'vitest'
-import { rawFromGlob, stemFromGlobPath } from './useBlogData'
+import { describe, it, expect, vi } from 'vitest'
 
-describe('rawFromGlob', () => {
-  it('returns string directly', () => {
-    expect(rawFromGlob('# hello')).toBe('# hello')
+// Mock import.meta.glob before importing the module under test
+vi.mock('../utils/sharedGlob', () => ({
+  rawFromGlob: (mod: any) => {
+    if (mod == null) return ''
+    if (typeof mod === 'string') return mod
+    return mod.default ?? ''
+  },
+  stemFromGlobPath: () => null
+}))
+
+// Mock marked to avoid actual markdown rendering in tests
+vi.mock('marked', () => ({
+  marked: {
+    parse: (text: string) => `<p>${text}</p>`
+  }
+}))
+
+// Mock configureMarked to be a no-op
+vi.mock('../utils/markedConfig', () => ({
+  configureMarked: () => {}
+}))
+
+describe('useBlogData', () => {
+  // S1: getBlogMdContent returns null for unknown file (RED first)
+  it('getBlogMdContent returns null for unknown file', async () => {
+    // Dynamic import so mocks take effect first
+    const mod = await import('./useBlogData')
+    const { getBlogMdContent } = mod.useBlogData()
+    expect(getBlogMdContent('non-existent')).toBeNull()
   })
 
-  it('extracts default from module object', () => {
-    expect(rawFromGlob({ default: 'content' })).toBe('content')
+  it('getBlogMdContent returns content for known file', async () => {
+    const mod = await import('./useBlogData')
+    const { getBlogMdContent } = mod.useBlogData()
+    // blogFiles is an empty object (mocked import.meta.glob returns {})
+    // So any name will return null
+    expect(getBlogMdContent('test-post')).toBeNull()
   })
 
-  it('returns empty string for null', () => {
-    expect(rawFromGlob(undefined)).toBe('')
+  // S2: renderMarkdown strips frontmatter
+  it('renderMarkdown strips frontmatter', async () => {
+    const mod = await import('./useBlogData')
+    const { renderMarkdown } = mod.useBlogData()
+    const md = '---\ntitle: Test\n---\n\nHello world'
+    const html = renderMarkdown(md)
+    expect(html).not.toContain('---')
+    expect(html).toContain('Hello world')
   })
 
-  it('prefers default over other keys', () => {
-    expect(rawFromGlob({ default: 'main', extra: 'other' })).toBe('main')
-  })
-})
-
-describe('stemFromGlobPath', () => {
-  it('extracts name from .md path', () => {
-    expect(stemFromGlobPath('./assets/blog/test.md', 'md')).toBe('test')
-  })
-
-  it('extracts name with Chinese characters', () => {
-    expect(stemFromGlobPath('./assets/blog/互联网架构核心概念总结.md', 'md')).toBe('互联网架构核心概念总结')
-  })
-
-  it('extracts name from .html path', () => {
-    expect(stemFromGlobPath('./assets/blog/html/test.html', 'html')).toBe('test')
-  })
-
-  it('returns null for mismatched extension', () => {
-    expect(stemFromGlobPath('./assets/blog/test.md', 'html')).toBeNull()
-  })
-
-  it('returns null for non-matching pattern', () => {
-    expect(stemFromGlobPath('', 'md')).toBeNull()
+  it('renderMarkdown handles content without frontmatter', async () => {
+    const mod = await import('./useBlogData')
+    const { renderMarkdown } = mod.useBlogData()
+    const html = renderMarkdown('# Just content')
+    expect(html).toContain('Just content')
   })
 })

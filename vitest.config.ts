@@ -3,9 +3,6 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
-  define: {
-    'import.meta.glob': 'undefined'
-  },
   test: {
     environment: 'jsdom',
     globals: true,
