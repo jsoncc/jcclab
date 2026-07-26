@@ -377,8 +377,6 @@ import starOutlineIcon from '@iconify-icons/mdi/star-outline'
 import paletteIcon from '@iconify-icons/mdi/palette'
 import githubIcon from '@iconify-icons/mdi/github'
 import homeIcon from '@iconify-icons/mdi/home-outline'
-import emailIcon from '@iconify-icons/mdi/email-outline'
-import chartLineIcon from '@iconify-icons/mdi/chart-line'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
 import CryptoJS from 'crypto-js'
 import { marked } from 'marked'
@@ -394,23 +392,11 @@ import PdfTools from './components/PdfTools.vue'
 import PerpetualCalendar from './components/PerpetualCalendar.vue'
 import BlogPost from './views/BlogPost.vue'
 import homeQrcodeImg from './assets/images/home/qrcode.png'
+import { rawFromGlob, stemFromGlobPath } from './composables/useBlogData'
 
 /** Vite ?raw 导入在 eager glob 里可能是 string 或 { default: string } */
 type GlobRawModule = string | { default: string }
 type RawMdMap = Record<string, GlobRawModule>
-
-const rawFromGlob = (mod: GlobRawModule | undefined): string => {
-  if (mod == null) return ''
-  if (typeof mod === 'string') return mod
-  return mod.default ?? ''
-}
-
-/** 从 glob 的 key（如 `./assets/blog/标题.md`）取出不含扩展名的文件名 */
-const stemFromGlobPath = (globKey: string, ext: string): string | null => {
-  const escaped = ext.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const m = globKey.match(new RegExp(`/([^/]+)\\.${escaped}$`))
-  return m ? m[1] : null
-}
 
 type ModuleTabKey = 'all' | 'blog' | 'vpn' | 'formatCheck' | 'translate'
 type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode' | 'base64File' | 'pdfTools'
@@ -474,19 +460,6 @@ const blogGroups = computed((): BlogGroup[] => {
     .sort((a, b) => (groupOrder[a[0]] ?? 99) - (groupOrder[b[0]] ?? 99))
     .map(([label, items]) => ({ label, items }))
 })
-const dateList = computed(() => {
-  const dates = Object.keys(historyFiles)
-    .map(path => {
-      const match = path.match(/history-(\d{4}-\d{2}-\d{2})\.md$/)
-      return match ? match[1] : null
-    })
-    .filter((date): date is string => date !== null)
-    .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
-    .map(date => ({ date }))
-  
-  return dates
-})
-
 const vpnList = computed((): MdStemItem[] =>
   Object.keys(vpnFiles)
     .map((path) => {
@@ -841,24 +814,6 @@ onBeforeUnmount(() => {
 })
 
 /** 根据 glob 表中的路径打开 Markdown 弹窗 */
-const openMdFromMap = (map: RawMdMap, filePath: string) => {
-  footerCollapsed.value = true
-  const mod = map[filePath]
-  if (!mod) return
-  currentMdContent.value = rawFromGlob(mod)
-  currentBlogHtml.value = ''
-  showViewer.value = true
-}
-
-/** 根据 glob 表中的路径打开博客 HTML 弹窗 */
-const openHtmlFromMap = (map: RawMdMap, filePath: string) => {
-  const mod = map[filePath]
-  if (!mod) return
-  currentBlogHtml.value = rawFromGlob(mod)
-  currentMdContent.value = ''
-  showViewer.value = true
-}
-
 type ListModuleKey = 'blog' | 'vpn'
 
 interface ListModule {
