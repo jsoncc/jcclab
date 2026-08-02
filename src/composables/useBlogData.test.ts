@@ -10,16 +10,12 @@ vi.mock('../utils/sharedGlob', () => ({
   stemFromGlobPath: () => null
 }))
 
-// Mock marked to avoid actual markdown rendering in tests
-vi.mock('marked', () => ({
+// Mock markedConfig：提供简单的 marked.parse，避免测试中触发 highlight.js 等副作用
+vi.mock('../utils/markedConfig', () => ({
+  configureMarked: () => {},
   marked: {
     parse: (text: string) => `<p>${text}</p>`
   }
-}))
-
-// Mock configureMarked to be a no-op
-vi.mock('../utils/markedConfig', () => ({
-  configureMarked: () => {}
 }))
 
 describe('useBlogData', () => {

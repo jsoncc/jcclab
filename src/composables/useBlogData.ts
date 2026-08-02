@@ -1,8 +1,5 @@
-import { marked } from 'marked'
-import { configureMarked } from '../utils/markedConfig'
+import { marked } from '../utils/markedConfig'
 import { rawFromGlob } from '../utils/sharedGlob'
-
-configureMarked()
 
 type GlobRawModule = string | { default: string }
 type RawMdMap = Record<string, GlobRawModule>

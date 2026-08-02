@@ -380,9 +380,7 @@ import githubIcon from '@iconify-icons/mdi/github'
 import homeIcon from '@iconify-icons/mdi/home-outline'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
 import CryptoJS from 'crypto-js'
-import { marked } from 'marked'
-import { configureMarked } from './utils/markedConfig'
-configureMarked()
+import { marked } from './utils/markedConfig'
 const MarkdownViewer = defineAsyncComponent(() => import('./components/MarkdownViewer.vue'))
 import JsonFormatValidator from './components/JsonFormatValidator.vue'
 import UuidGenerator from './components/UuidGenerator.vue'

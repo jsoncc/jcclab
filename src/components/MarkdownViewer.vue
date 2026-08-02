@@ -24,11 +24,91 @@
  *   - blogHtml：博客预生成的完整 HTML，自带内联样式
  *   - mdContent：Markdown 原文，由 marked 动态渲染
  */
-import { computed, ref, watch } from 'vue'
-import { marked } from 'marked'
-import { configureMarked } from '../utils/markedConfig'
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
+import { marked } from '../utils/markedConfig'
+import 'highlight.js/styles/github.css'
 
-configureMarked()
+// ══════════════════════════════════════════════════════════════════
+// 代码块头部注入（语言标签 + 复制按钮）
+// ══════════════════════════════════════════════════════════════════
+
+/** 从 hljs class 中提取语言名（如 "hljs language-bash" → "bash"） */
+function extractLanguage(codeEl: HTMLElement): string {
+  const cls = codeEl.className || ''
+  const m = cls.match(/language-(\w[\w-]*)/)
+  return m ? m[1] : ''
+}
+
+/** 为指定容器内所有 <pre> 注入 code-header（语言标签 + 复制按钮） */
+function injectCodeHeaders(container: Element): void {
+  const pres = container.querySelectorAll('pre')
+  pres.forEach((pre) => {
+    // 跳过已经注入过的
+    if (pre.querySelector('.code-header')) return
+
+    const code = pre.querySelector('code')
+    const lang = code ? extractLanguage(code) : ''
+
+    // 创建头部条
+    const header = document.createElement('div')
+    header.className = 'code-header'
+
+    // 语言标签
+    const langLabel = document.createElement('span')
+    langLabel.className = 'code-lang'
+    langLabel.textContent = lang || 'code'
+
+    // 复制按钮
+    const copyBtn = document.createElement('button')
+    copyBtn.className = 'code-copy-btn'
+    copyBtn.textContent = '复制'
+    copyBtn.addEventListener('click', () => handleCopyCode(pre, copyBtn))
+
+    header.appendChild(langLabel)
+    header.appendChild(copyBtn)
+    pre.prepend(header)
+  })
+}
+
+/** 复制代码块内容到剪贴板 */
+async function handleCopyCode(pre: HTMLElement, btn: HTMLButtonElement): Promise<void> {
+  const code = pre.querySelector('code')
+  const text = code?.textContent ?? ''
+  try {
+    await navigator.clipboard.writeText(text)
+    btn.textContent = '✓ 已复制'
+    btn.style.background = '#1a7f37'
+    btn.style.color = '#ffffff'
+    btn.style.borderColor = '#1a7f37'
+    setTimeout(() => {
+      btn.textContent = '复制'
+      btn.style.background = ''
+      btn.style.color = ''
+      btn.style.borderColor = ''
+    }, 1500)
+  } catch {
+    console.error('clipboard.writeText 失败，尝试 fallback')
+    // fallback: document.execCommand（旧浏览器兼容）
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.style.position = 'fixed'
+    ta.style.opacity = '0'
+    document.body.appendChild(ta)
+    ta.select()
+    document.execCommand('copy')
+    document.body.removeChild(ta)
+    btn.textContent = '✓ 已复制'
+    btn.style.background = '#1a7f37'
+    btn.style.color = '#ffffff'
+    btn.style.borderColor = '#1a7f37'
+    setTimeout(() => {
+      btn.textContent = '复制'
+      btn.style.background = ''
+      btn.style.color = ''
+      btn.style.borderColor = ''
+    }, 1500)
+  }
+}
 
 const props = defineProps<{
   mdContent?: string
@@ -134,9 +214,32 @@ const processMarkdown = () => {
 watch(() => props.mdContent, () => {
   processMarkdown()
 }, { immediate: true })
+
+/** 渲染后注入代码块头部（.markdown-content 路径） */
+watch(htmlContent, async () => {
+  await nextTick()
+  const el = document.querySelector('.markdown-content')
+  if (el) injectCodeHeaders(el)
+})
+
+/** 博客 HTML 渲染后注入代码块头部（.blog-html-wrapper 路径） */
+watch(fullBlogHtml, async () => {
+  await nextTick()
+  const el = document.querySelector('.blog-html-wrapper')
+  if (el) injectCodeHeaders(el)
+})
+
+onMounted(async () => {
+  await nextTick()
+  // 首次挂载时扫描已有内容
+  const mdEl = document.querySelector('.markdown-content')
+  if (mdEl) injectCodeHeaders(mdEl)
+  const blogEl = document.querySelector('.blog-html-wrapper')
+  if (blogEl) injectCodeHeaders(blogEl)
+})
 </script>
 
-<style scoped>
+<style>
 .markdown-modal-overlay {
   position: fixed;
   top: 0;
@@ -276,178 +379,421 @@ watch(() => props.mdContent, () => {
   background: #94a3b8;
 }
 
+/* ===== 基础排版 ===== */
 .markdown-content {
-  line-height: 1.85;
-  color: #334155;
-  font-size: 16px;
+  line-height: 1.7;
+  color: #1f2328;
+  font-size: 15px;
+  font-family: -apple-system, "Segoe UI", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  word-wrap: break-word;
+}
+
+.markdown-content > *:first-child {
+  margin-top: 0 !important;
+}
+
+/* ===== 标题 (h1 - h6) ===== */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1f2328;
+  position: relative;
 }
 
 .markdown-content h1 {
   margin: 0 0 24px 0;
-  font-size: 32px;
-  color: #0f172a;
-  border-bottom: 3px solid #e2e8f0;
-  padding-bottom: 16px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  padding-bottom: 10px;
+  font-size: 2em;
+  font-weight: 700;
+  border-bottom: 1px solid #d0d7de;
 }
 
 .markdown-content h2 {
-  margin: 32px 0 16px;
-  font-size: 24px;
-  color: #1e293b;
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 10px;
-  font-weight: 700;
+  padding-bottom: 8px;
+  font-size: 1.5em;
+  font-weight: 600;
+  border-bottom: 1px solid #d0d7de;
 }
 
 .markdown-content h3 {
-  margin: 28px 0 14px;
-  font-size: 20px;
-  color: #334155;
-  font-weight: 600;
+  font-size: 1.25em;
+  padding-left: 12px;
+  border-left: 3px solid #0969da;
 }
 
 .markdown-content h4 {
-  margin: 24px 0 12px;
-  font-size: 17px;
-  color: #475569;
-  font-weight: 600;
+  font-size: 1em;
+  padding-left: 10px;
+  border-left: 2px solid #d0d7de;
 }
 
+.markdown-content h5 {
+  font-size: 0.9em;
+  padding-left: 8px;
+  border-left: 2px solid #d0d7de;
+}
+.markdown-content h6 {
+  font-size: 0.85em;
+  padding-left: 8px;
+  border-left: 2px solid #d0d7de;
+}
+
+/* 标题锚点 */
+.markdown-content h1:hover .heading-anchor,
+.markdown-content h2:hover .heading-anchor,
+.markdown-content h3:hover .heading-anchor,
+.markdown-content h4:hover .heading-anchor {
+  opacity: 1;
+}
+
+.heading-anchor {
+  opacity: 0;
+  position: absolute;
+  left: -1.2em;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0969da;
+  text-decoration: none;
+  font-size: 0.85em;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+/* ===== 段落 ===== */
 .markdown-content p {
-  margin: 16px 0;
-  line-height: 1.9;
+  margin: 0 0 16px 0;
 }
 
+/* ===== 列表 ===== */
 .markdown-content ul,
 .markdown-content ol {
   padding-left: 2em;
-  margin: 16px 0;
+  margin: 0 0 16px 0;
 }
 
 .markdown-content li {
-  margin: 10px 0;
-  line-height: 1.8;
+  margin: 4px 0;
 }
 
+.markdown-content li > p {
+  margin: 8px 0;
+}
+
+.markdown-content ul ul,
+.markdown-content ul ol,
+.markdown-content ol ul,
+.markdown-content ol ol {
+  margin: 4px 0;
+}
+
+/* 自定义列表 marker */
+.markdown-content ul {
+  list-style-type: none;
+}
+.markdown-content ul > li::before {
+  content: "▸";
+  color: #0969da;
+  display: inline-block;
+  width: 1.3em;
+  margin-left: -1.3em;
+  font-size: 0.85em;
+}
+.markdown-content ul ul > li::before,
+.markdown-content ul ul ul > li::before {
+  content: "▸";
+  color: #0969da;
+  display: inline-block;
+  width: 1.3em;
+  margin-left: -1.3em;
+  font-size: 0.85em;
+}
+
+/* 任务列表 */
+.markdown-content .task-list-item {
+  list-style-type: none;
+}
+.markdown-content .task-list-item::before {
+  content: none;
+}
+.markdown-content .task-list-item input[type="checkbox"] {
+  margin: 0 8px 2px -1.5em;
+  accent-color: #0969da;
+  vertical-align: middle;
+}
+.markdown-content .task-list-item input[type="checkbox"]:checked + * {
+  text-decoration: line-through;
+  color: #59636e;
+}
+
+/* ===== 引用块 ===== */
 .markdown-content blockquote {
-  margin: 20px 0;
-  padding: 16px 20px;
-  border-left: 4px solid #0284c7;
-  background: #f0f9ff;
-  border-radius: 0 8px 8px 0;
-  color: #475569;
+  margin: 0 0 16px 0;
+  padding: 12px 16px;
+  border-left: 4px solid #0969da;
+  background: #f6f8fa;
+  border-radius: 0 6px 6px 0;
+  color: #59636e;
 }
 
-.markdown-content blockquote.warning {
-  border-left-color: #f59e0b;
-  background: #fef3c7;
-}
-
-.markdown-content blockquote.success {
-  border-left-color: #10b981;
-  background: #d1fae5;
-}
-
-.markdown-content blockquote p:first-child {
+.markdown-content blockquote > :first-child {
   margin-top: 0;
 }
-
-.markdown-content blockquote p:last-child {
+.markdown-content blockquote > :last-child {
   margin-bottom: 0;
 }
 
-.markdown-content code {
-  font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
-  font-size: 0.9em;
-  padding: 3px 8px;
-  background: #f1f5f9;
-  border-radius: 6px;
-  color: #0369a1;
-  border: 1px solid #e2e8f0;
+/* 引用块类型 */
+.markdown-content blockquote.warning {
+  border-left-color: #d4a72c;
+  background: #fff8c5;
+  color: #5c4b1f;
+}
+.markdown-content blockquote.success {
+  border-left-color: #1a7f37;
+  background: #dafbe1;
+  color: #1a3d21;
+}
+.markdown-content blockquote.info {
+  border-left-color: #0969da;
+  background: #ddf4ff;
+  color: #0a3069;
+}
+.markdown-content blockquote.tip {
+  border-left-color: #8256d0;
+  background: #fbefff;
+  color: #3d2161;
+}
+
+/* 嵌套引用块 */
+.markdown-content blockquote blockquote {
+  margin: 8px 0 0 0;
+  border-left-color: #8b949e;
+}
+.markdown-content blockquote blockquote blockquote {
+  border-left-color: #afb8c1;
+}
+
+/* ===== 行内代码 ===== */
+.markdown-content :not(pre) > code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875em;
+  padding: 2px 6px;
+  background: rgba(175, 184, 193, 0.2);
+  border-radius: 4px;
+  color: #cf222e;
+}
+
+/* ===== 代码块 ===== */
+.markdown-content pre {
+  margin: 0 0 16px 0;
+  position: relative;
 }
 
 .markdown-content pre {
-  margin: 20px 0;
-  padding: 20px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  overflow-x: auto;
-  line-height: 1.6;
+  padding: 0;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
+  line-height: 1.5;
 }
 
 .markdown-content pre code {
-  padding: 0;
-  background: none;
+  display: block;
+  padding: 44px 16px 16px 16px;
+  background: transparent;
   border: none;
-  color: #1e293b;
+  color: #1f2328;
+  font-size: 13.6px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  overflow-x: auto;
+  line-height: 1.5;
+  word-wrap: normal;
+  white-space: pre;
+}
+
+/* 代码块头部：语言标签 + 复制按钮（注入 v-html，必须用 ） */
+.code-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 16px;
+  background: #e8eaed;
+  border-bottom: 1px solid #d0d7de;
+  border-radius: 8px 8px 0 0;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.code-lang {
+  color: #59636e;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  text-transform: lowercase;
+}
+
+.code-copy-btn {
+  padding: 3px 10px;
+  font-size: 12px;
+  color: #59636e;
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.code-copy-btn:hover {
+  background: #0969da;
+  color: #ffffff;
+  border-color: #0969da;
+}
+
+/* ===== 表格 ===== */
+.markdown-content table {
+  width: 100%;
+  margin: 0 0 16px 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
   font-size: 14px;
 }
 
-.markdown-content table {
-  width: 100%;
-  margin: 20px 0;
-  border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.markdown-content th {
-  background: #f8fafc;
+.markdown-content thead th {
+  position: sticky;
+  top: 0;
+  background: #f6f8fa;
   font-weight: 600;
   text-align: left;
   padding: 12px 16px;
-  border-bottom: 2px solid #e2e8f0;
-  color: #1e293b;
+  border-bottom: 2px solid #d0d7de;
+  color: #1f2328;
+  white-space: nowrap;
+}
+
+.markdown-content th:not(:last-child),
+.markdown-content td:not(:last-child) {
+  border-right: 1px solid #d0d7de;
 }
 
 .markdown-content td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  color: #475569;
+  padding: 10px 16px;
+  border-bottom: 1px solid #d0d7de;
+  color: #1f2328;
+  vertical-align: top;
 }
 
-.markdown-content tr:last-child td {
+.markdown-content tbody tr:last-child td {
   border-bottom: none;
 }
 
-.markdown-content tr:nth-child(even) {
-  background: #f8fafc;
+.markdown-content tbody tr:nth-child(even) {
+  background: #f6f8fa;
 }
 
+.markdown-content tbody tr:hover {
+  background: #ddf4ff;
+}
+
+/* ===== 图片 ===== */
 .markdown-content img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  margin: 20px 0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin: 8px 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.markdown-content hr {
-  margin: 32px 0;
-  border: none;
-  border-top: 2px solid #e5e7eb;
+.markdown-content img:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
+/* ===== 链接 ===== */
 .markdown-content a {
-  color: #0284c7;
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
+  color: #0969da;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
 }
 
 .markdown-content a:hover {
-  border-bottom-color: #0284c7;
+  color: #0550ae;
 }
 
+.markdown-content a[target="_blank"]::after {
+  content: " ↗";
+  font-size: 0.7em;
+  opacity: 0.5;
+}
+
+/* ===== 分隔线 ===== */
+.markdown-content hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 2px dashed #d0d7de;
+}
+
+/* ===== 键盘按键 ===== */
+.markdown-content kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.825em;
+  line-height: 1.4;
+  color: #1f2328;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  box-shadow: 0 1px 0 #d0d7de, inset 0 1px 0 #ffffff;
+  vertical-align: middle;
+}
+
+/* ===== 高亮 ===== */
+.markdown-content mark {
+  background: #fff8c5;
+  color: #1f2328;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+/* ===== 上标/下标 ===== */
+.markdown-content sup {
+  font-size: 0.8em;
+  vertical-align: super;
+}
+.markdown-content sub {
+  font-size: 0.8em;
+  vertical-align: sub;
+}
+
+/* ===== 删除线 ===== */
+.markdown-content del {
+  color: #59636e;
+}
+
+/* ===== 注解引用（保留） ===== */
 .markdown-content .annotation-ref {
-  color: #0284c7;
+  color: #0969da;
   font-weight: bold;
   cursor: help;
   position: relative;
-  border-bottom: 1px dashed #0284c7;
+  border-bottom: 1px dashed #0969da;
 }
 
 .markdown-content .annotation-ref:hover::after {
@@ -456,7 +802,7 @@ watch(() => props.mdContent, () => {
   left: 50%;
   bottom: 100%;
   transform: translateX(-50%);
-  background: #1e293b;
+  background: #1f2328;
   color: #fff;
   padding: 12px 16px;
   border-radius: 8px;
@@ -475,64 +821,340 @@ watch(() => props.mdContent, () => {
   bottom: 100%;
   transform: translateX(-50%) translateY(100%);
   border: 8px solid transparent;
-  border-top-color: #1e293b;
+  border-top-color: #1f2328;
 }
-</style>
 
-<style>
-/** 博客 HTML 独立样式：作用于 v-html 注入的内容 
- * 基于 theme-factory 的 Modern Minimalist 和 Ocean Depths 主题
+/* ===== details/summary 折叠块 ===== */
+.markdown-content details {
+  margin: 0 0 16px 0;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.markdown-content details > summary {
+  font-weight: 600;
+  cursor: pointer;
+  color: #0969da;
+}
+
+/* ===== 描述列表 ===== */
+.markdown-content dl {
+  margin: 0 0 16px 0;
+}
+.markdown-content dt {
+  font-weight: 600;
+  margin-top: 12px;
+}
+.markdown-content dd {
+  margin-left: 1.5em;
+  color: #59636e;
+}
+
+
+/**
+ * 博客 HTML 独立样式：作用于 v-html 注入的内容 与 运行时注入的 DOM 元素
+ * 确保构建期生成的 HTML 和 marked 客户端渲染效果一致
  */
+
+/* ===== 基础排版 ===== */
 .blog-html-wrapper {
-  color: #334155;
-  font-size: 16px;
-  line-height: 1.85;
+  color: #1f2328;
+  font-size: 15px;
+  line-height: 1.7;
+  font-family: -apple-system, "Segoe UI", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  word-wrap: break-word;
 }
 
+.blog-html-wrapper > *:first-child { margin-top: 0 !important; }
+
+/* ===== 标题 ===== */
 .blog-html-wrapper h1,
 .blog-html-wrapper h2,
 .blog-html-wrapper h3,
-.blog-html-wrapper h4 {
-  margin-top: 28px;
-  margin-bottom: 14px;
+.blog-html-wrapper h4,
+.blog-html-wrapper h5,
+.blog-html-wrapper h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1f2328;
+}
+
+.blog-html-wrapper h1 {
+  margin-top: 0;
+  padding-bottom: 10px;
+  font-size: 2em;
   font-weight: 700;
-  color: #0f172a;
+  border-bottom: 1px solid #d0d7de;
 }
 
-.blog-html-wrapper p {
-  margin: 16px 0;
-  line-height: 1.9;
+.blog-html-wrapper h2 {
+  padding-bottom: 8px;
+  font-size: 1.5em;
+  border-bottom: 1px solid #d0d7de;
 }
 
+.blog-html-wrapper h3 {
+  font-size: 1.25em;
+  padding-left: 12px;
+  border-left: 3px solid #0969da;
+}
+
+.blog-html-wrapper h4 {
+  font-size: 1em;
+  padding-left: 10px;
+  border-left: 2px solid #d0d7de;
+}
+
+.blog-html-wrapper h5 { font-size: 0.875em; color: #59636e; }
+.blog-html-wrapper h6 { font-size: 0.85em; color: #59636e; }
+
+/* ===== 段落 ===== */
+.blog-html-wrapper p { margin: 0 0 16px 0; }
+
+/* ===== 列表 ===== */
+.blog-html-wrapper ul,
+.blog-html-wrapper ol {
+  padding-left: 2em;
+  margin: 0 0 16px 0;
+}
+
+.blog-html-wrapper li { margin: 4px 0; }
+.blog-html-wrapper li > p { margin: 8px 0; }
+
+.blog-html-wrapper ul ul,
+.blog-html-wrapper ul ol,
+.blog-html-wrapper ol ul,
+.blog-html-wrapper ol ol {
+  margin: 4px 0;
+}
+
+/* ===== 行内代码 ===== */
+.blog-html-wrapper :not(pre) > code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875em;
+  padding: 2px 6px;
+  background: rgba(175, 184, 193, 0.2);
+  border-radius: 4px;
+  color: #cf222e;
+}
+
+/* ===== 代码块 ===== */
+.blog-html-wrapper pre {
+  margin: 0 0 16px 0;
+  padding: 0;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  line-height: 1.5;
+}
+
+.blog-html-wrapper pre code {
+  display: block;
+  padding: 44px 16px 16px 16px;
+  background: transparent;
+  border: none;
+  color: #1f2328;
+  font-size: 13.6px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  overflow-x: auto;
+  line-height: 1.5;
+  word-wrap: normal;
+  white-space: pre;
+}
+
+/* ===== 代码块头部 (运行时注入) ===== */
+.blog-html-wrapper .code-header,
+.markdown-content .code-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 16px;
+  background: #e8eaed;
+  border-bottom: 1px solid #d0d7de;
+  border-radius: 8px 8px 0 0;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.blog-html-wrapper .code-lang,
+.markdown-content .code-lang {
+  color: #59636e;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  text-transform: lowercase;
+}
+
+.blog-html-wrapper .code-copy-btn,
+.markdown-content .code-copy-btn {
+  padding: 3px 10px;
+  font-size: 12px;
+  color: #59636e;
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  transition: all 0.15s ease;
+}
+
+.blog-html-wrapper .code-copy-btn:hover,
+.markdown-content .code-copy-btn:hover {
+  background: #0969da;
+  color: #ffffff;
+  border-color: #0969da;
+}
+
+/* ===== 表格 ===== */
+.blog-html-wrapper table {
+  width: 100%;
+  margin: 0 0 16px 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.blog-html-wrapper thead th {
+  background: #f6f8fa;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 2px solid #d0d7de;
+  color: #1f2328;
+}
+
+.blog-html-wrapper th:not(:last-child),
+.blog-html-wrapper td:not(:last-child) {
+  border-right: 1px solid #d0d7de;
+}
+
+.blog-html-wrapper td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #d0d7de;
+  color: #1f2328;
+  vertical-align: top;
+}
+
+.blog-html-wrapper tbody tr:last-child td { border-bottom: none; }
+.blog-html-wrapper tbody tr:nth-child(even) { background: #f6f8fa; }
+.blog-html-wrapper tbody tr:hover { background: #ddf4ff; }
+
+/* ===== 图片 ===== */
 .blog-html-wrapper img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  margin: 20px 0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin: 8px 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.blog-html-wrapper pre {
-  background: #f8fafc;
-  color: #1e293b;
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  overflow-x: auto;
-  margin: 20px 0;
+.blog-html-wrapper img:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
-.blog-html-wrapper code {
-  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  font-size: 0.9em;
+/* ===== 链接 ===== */
+.blog-html-wrapper a {
+  color: #0969da;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
+.blog-html-wrapper a:hover { color: #0550ae; }
+.blog-html-wrapper a[target="_blank"]::after {
+  content: " ↗";
+  font-size: 0.7em;
+  opacity: 0.5;
+}
+
+/* ===== 引用块 ===== */
 .blog-html-wrapper blockquote {
-  margin: 20px 0;
-  padding: 16px 20px;
-  border-left: 4px solid #0284c7;
-  background: #f0f9ff;
-  border-radius: 0 8px 8px 0;
-  color: #475569;
+  margin: 0 0 16px 0;
+  padding: 12px 16px;
+  border-left: 4px solid #0969da;
+  background: #f6f8fa;
+  border-radius: 0 6px 6px 0;
+  color: #59636e;
 }
+
+.blog-html-wrapper blockquote > :first-child { margin-top: 0; }
+.blog-html-wrapper blockquote > :last-child { margin-bottom: 0; }
+
+.blog-html-wrapper blockquote blockquote {
+  margin: 8px 0 0 0;
+  border-left-color: #8b949e;
+}
+
+/* ===== 分隔线 ===== */
+.blog-html-wrapper hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 2px dashed #d0d7de;
+}
+
+/* ===== 键盘按键 ===== */
+.blog-html-wrapper kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.825em;
+  color: #1f2328;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  box-shadow: 0 1px 0 #d0d7de, inset 0 1px 0 #fff;
+  vertical-align: middle;
+}
+
+/* ===== 高亮 ===== */
+.blog-html-wrapper mark {
+  background: #fff8c5;
+  color: #1f2328;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+/* ===== 上标/下标/删除线 ===== */
+.blog-html-wrapper sup { font-size: 0.75em; vertical-align: super; line-height: 0; }
+.blog-html-wrapper sub { font-size: 0.75em; vertical-align: sub; line-height: 0; }
+.blog-html-wrapper del { color: #59636e; }
+
+/* ===== 任务列表 ===== */
+.blog-html-wrapper .task-list-item { list-style-type: none; }
+.blog-html-wrapper .task-list-item input[type="checkbox"] {
+  margin: 0 8px 2px -1.5em;
+  accent-color: #0969da;
+  vertical-align: middle;
+}
+
+/* ===== details/summary ===== */
+.blog-html-wrapper details {
+  margin: 0 0 16px 0;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.blog-html-wrapper details > summary {
+  font-weight: 600;
+  cursor: pointer;
+  color: #0969da;
+}
+
+/* ===== 描述列表 ===== */
+.blog-html-wrapper dl { margin: 0 0 16px 0; }
+.blog-html-wrapper dt { font-weight: 600; margin-top: 12px; }
+.blog-html-wrapper dd { margin-left: 1.5em; color: #59636e; }
 </style>

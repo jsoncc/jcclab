@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import arrowLeftIcon from '@iconify-icons/radix-icons/arrow-left'
@@ -93,9 +93,68 @@ const copyContent = async () => {
     alert('复制失败，请手动复制')
   }
 }
+
+// 代码块头部注入（语言标签 + 复制按钮）
+function extractLanguage(codeEl: HTMLElement): string {
+  const cls = codeEl.className || ''
+  const m = cls.match(/language-(\w[\w-]*)/)
+  return m ? m[1] : ''
+}
+
+async function handleCopyCode(pre: HTMLElement, btn: HTMLButtonElement): Promise<void> {
+  const code = pre.querySelector('code')
+  const text = code?.textContent ?? ''
+  try {
+    await navigator.clipboard.writeText(text)
+    btn.textContent = '✓ 已复制'
+    btn.style.background = '#1a7f37'
+    btn.style.color = '#ffffff'
+    btn.style.borderColor = '#1a7f37'
+    setTimeout(() => { btn.textContent = '复制'; btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = '' }, 1500)
+  } catch {
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.style.cssText = 'position:fixed;opacity:0'
+    document.body.appendChild(ta)
+    ta.select()
+    document.execCommand('copy')
+    document.body.removeChild(ta)
+    btn.textContent = '✓ 已复制'
+    btn.style.background = '#1a7f37'
+    btn.style.color = '#ffffff'
+    btn.style.borderColor = '#1a7f37'
+    setTimeout(() => { btn.textContent = '复制'; btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = '' }, 1500)
+  }
+}
+
+function injectCodeHeaders(): void {
+  const container = document.querySelector('.markdown-content')
+  if (!container) return
+  container.querySelectorAll('pre').forEach((pre) => {
+    if (pre.querySelector('.code-header')) return
+    const code = pre.querySelector('code')
+    const lang = code ? extractLanguage(code) : ''
+    const header = document.createElement('div')
+    header.className = 'code-header'
+    const langLabel = document.createElement('span')
+    langLabel.className = 'code-lang'
+    langLabel.textContent = lang || 'code'
+    const copyBtn = document.createElement('button')
+    copyBtn.className = 'code-copy-btn'
+    copyBtn.textContent = '复制'
+    copyBtn.addEventListener('click', () => handleCopyCode(pre, copyBtn))
+    header.appendChild(langLabel)
+    header.appendChild(copyBtn)
+    pre.prepend(header)
+  })
+}
+
+watch(htmlContent, async () => { await nextTick(); injectCodeHeaders() })
+onMounted(async () => { await nextTick(); injectCodeHeaders() })
 </script>
 
-<style scoped>
+<style>
+/* ===== 组件布局（使用 .blog-post- 命名空间防止泄漏） ===== */
 .blog-post-page {
   padding: 24px 32px;
   max-width: 900px;
@@ -111,7 +170,7 @@ const copyContent = async () => {
   border-bottom: 1px solid #e5e7eb;
 }
 
-.back-btn {
+.blog-post-page > .blog-post-header > .back-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -126,18 +185,18 @@ const copyContent = async () => {
   transition: all 0.2s;
 }
 
-.back-btn:hover {
+.blog-post-page > .blog-post-header > .back-btn:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
   color: #1e293b;
 }
 
-.back-icon {
+.blog-post-page > .blog-post-header > .back-btn .back-icon {
   width: 16px;
   height: 16px;
 }
 
-.copy-btn {
+.blog-post-page > .blog-post-header > .copy-btn {
   background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: white;
   border: none;
@@ -150,13 +209,13 @@ const copyContent = async () => {
   box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
 }
 
-.copy-btn:hover {
+.blog-post-page > .blog-post-header > .copy-btn:hover {
   background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
 }
 
-.copy-btn:active {
+.blog-post-page > .blog-post-header > .copy-btn:active {
   transform: translateY(0);
 }
 
@@ -175,6 +234,10 @@ const copyContent = async () => {
 .blog-not-found p {
   margin-bottom: 24px;
 }
+
+/* ============================================================ */
+/*  v-html 内容样式（全局，确保对动态注入的 HTML 生效）            */
+/* ============================================================ */
 
 .markdown-content {
   line-height: 1.85;
@@ -270,20 +333,65 @@ const copyContent = async () => {
 
 .markdown-content pre {
   margin: 20px 0;
-  padding: 20px;
+  padding: 0;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   overflow-x: auto;
   line-height: 1.6;
+  position: relative;
 }
 
 .markdown-content pre code {
-  padding: 0;
+  display: block;
+  padding: 16px 20px;
+  padding-top: 36px;
   background: none;
   border: none;
   color: #1e293b;
   font-size: 14px;
+}
+
+/* ===== 代码块头部（运行时注入） ===== */
+.code-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 16px;
+  background: #e8eaed;
+  border-bottom: 1px solid #d0d7de;
+  border-radius: 8px 8px 0 0;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.code-lang {
+  color: #59636e;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  text-transform: lowercase;
+}
+
+.code-copy-btn {
+  padding: 3px 10px;
+  font-size: 12px;
+  color: #59636e;
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  transition: all 0.15s ease;
+}
+
+.code-copy-btn:hover {
+  background: #0969da;
+  color: #ffffff;
+  border-color: #0969da;
 }
 
 .markdown-content table {
