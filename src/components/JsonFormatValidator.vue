@@ -30,17 +30,6 @@
         />
       </div>
 
-      <div class="jfv-editor-actions">
-        <button
-          v-if="showExpandBtn"
-          type="button"
-          class="jfv-editor-btn"
-          title="展开"
-          @click="showExpanded = true"
-        >
-          <Icon :icon="fullscreenIcon" />
-        </button>
-      </div>
       <div class="jfv-editor-footer">
         <button
           type="button"
@@ -66,6 +55,15 @@
     <div class="jfv-actionsbar">
       <button type="button" class="jfv-action primary" :disabled="!canRun" @click="run">格式化校验</button>
       <button type="button" class="jfv-action" :disabled="!canRun" @click="compressAndCopy">压缩</button>
+      <button
+        v-if="showExpandBtn"
+        type="button"
+        class="jfv-action"
+        title="展开"
+        @click="showExpanded = true"
+      >
+        展开
+      </button>
     </div>
 
     <div
@@ -125,12 +123,11 @@
 /**
  * JSON 格式化 / 校验 / 压缩：左侧行号 gutter 与 textarea 同步滚动；错误时在对应行做浅色高亮。
  */
-import { computed, nextTick, onMounted, onUnmounted, ref, watch, type CSSProperties } from 'vue'
+import { computed, nextTick, ref, type CSSProperties } from 'vue'
 import { Icon } from '@iconify/vue'
 import checkBold from '@iconify-icons/mdi/check-bold'
 import closeThick from '@iconify-icons/mdi/close-thick'
 import informationVariant from '@iconify-icons/mdi/information-variant'
-import fullscreenIcon from '@iconify-icons/mdi/fullscreen'
 import fullscreenExitIcon from '@iconify-icons/mdi/fullscreen-exit'
 import contentCopyIcon from '@iconify-icons/mdi/content-copy'
 import trashCanOutlineIcon from '@iconify-icons/mdi/trash-can-outline'
@@ -152,7 +149,6 @@ const gutterRef = ref<HTMLDivElement | null>(null)
 const highlightRef = ref<HTMLElement | null>(null)
 const showExpanded = ref(false)
 const showExpandBtn = ref(false)
-let resizeObserver: ResizeObserver | null = null
 
 /** 与 gutter 单行高度一致，用于把错误行映射成 textarea 背景高亮条 */
 const LINE_HEIGHT_PX = 22
@@ -260,6 +256,7 @@ const clearAll = () => {
   statusKind.value = 'idle'
   statusText.value = '请输入 JSON 后点击“格式化校验”'
   errorDetail.value = null
+  showExpandBtn.value = false
 }
 
 const compressAndCopy = () => {
@@ -334,12 +331,6 @@ const syncScroll = () => {
   }
 }
 
-const checkOverflow = () => {
-  const ta = textareaRef.value
-  if (!ta) { showExpandBtn.value = false; return }
-  showExpandBtn.value = ta.scrollHeight > ta.clientHeight && Boolean(inputText.value)
-}
-
 const run = () => {
   const raw = inputText.value
   const trimmed = raw.trim()
@@ -356,7 +347,8 @@ const run = () => {
     inputText.value = JSON.stringify(parsed, null, 2)
     statusKind.value = 'ok'
     statusText.value = '正确的 JSON'
-    nextTick(() => { syncScroll(); checkOverflow() })
+    showExpandBtn.value = true
+    nextTick(() => syncScroll())
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'JSON 解析失败'
     const pos = extractPositionFromErrorMessage(msg)
@@ -378,22 +370,6 @@ const run = () => {
     })
   }
 }
-
-watch(inputText, () => {
-  nextTick(checkOverflow)
-})
-
-onMounted(() => {
-  const ta = textareaRef.value
-  if (ta) {
-    resizeObserver = new ResizeObserver(checkOverflow)
-    resizeObserver.observe(ta)
-  }
-})
-
-onUnmounted(() => {
-  resizeObserver?.disconnect()
-})
 </script>
 
 <style scoped>
@@ -573,15 +549,6 @@ onUnmounted(() => {
 .jfv-json-null {
   color: #0c3a97;
   font-weight: 600;
-}
-
-.jfv-editor-actions {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
 }
 
 .jfv-editor-btn {
