@@ -453,7 +453,7 @@ const clearAll = () => {
   height: 44px;
   border-radius: 12px;
   background: linear-gradient(135deg, var(--accent-success), var(--accent-success));
-  color: var(--bg-card);
+  color: var(--on-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -600,7 +600,7 @@ const clearAll = () => {
 .p2w-btn-primary {
   background: var(--accent-blue);
   border-color: var(--accent-blue);
-  color: var(--bg-card);
+  color: var(--on-accent);
 }
 
 .p2w-btn-primary:hover:not(:disabled) {

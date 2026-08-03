@@ -286,7 +286,7 @@ const clear = () => {
 .uuid-btn.primary {
   background: var(--accent-success);
   border-color: var(--accent-success);
-  color: var(--bg-card);
+  color: var(--on-accent);
   font-weight: 600;
 }
 

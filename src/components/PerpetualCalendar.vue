@@ -464,7 +464,7 @@ const selectedDetail = computed(() => {
   height: 16px;
   border-radius: 6px;
   background: var(--accent-error);
-  color: var(--bg-card);
+  color: var(--on-accent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -552,7 +552,7 @@ const selectedDetail = computed(() => {
   width: 18px;
   height: 18px;
   border-radius: 5px;
-  color: var(--bg-card);
+  color: var(--on-accent);
   font-size: 11px;
   flex: 0 0 auto;
 }
@@ -562,7 +562,8 @@ const selectedDetail = computed(() => {
 }
 
 .pc-tag.ji {
-  background: var(--text-primary);
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .pc-tag-text {

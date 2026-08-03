@@ -390,7 +390,7 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 
 .code-copy-btn:hover {
   background: var(--link-color);
-  color: var(--bg-card);
+  color: var(--on-accent);
   border-color: var(--link-color);
 }
 
@@ -449,4 +449,19 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 .markdown-content a:hover {
   border-bottom-color: var(--accent-blue);
 }
+
+/* ===== hljs 深色适配 ===== */
+:root[data-theme="dark"] .markdown-content pre {
+  background: #0d1117;
+  border-color: #30363d;
+}
+:root[data-theme="dark"] .markdown-content pre code {
+  color: #c9d1d9;
+}
+:root[data-theme="dark"] .markdown-content .hljs-keyword { color: #ff7b72; }
+:root[data-theme="dark"] .markdown-content .hljs-string { color: #a5d6ff; }
+:root[data-theme="dark"] .markdown-content .hljs-number { color: #79c0ff; }
+:root[data-theme="dark"] .markdown-content .hljs-comment { color: #8b949e; }
+:root[data-theme="dark"] .markdown-content .hljs-title { color: #d2a8ff; }
+:root[data-theme="dark"] .markdown-content .hljs-attr { color: #79c0ff; }
 </style>

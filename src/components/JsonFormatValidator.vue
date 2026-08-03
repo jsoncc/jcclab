@@ -615,7 +615,7 @@ const run = () => {
 
 .jfv-action.primary {
   background: var(--accent-blue);
-  color: var(--bg-card);
+  color: var(--on-accent);
   font-weight: 700;
 }
 
@@ -649,7 +649,7 @@ const run = () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--bg-card);
+  color: var(--on-accent);
   background: var(--border-color-light);
   flex: 0 0 auto;
 }

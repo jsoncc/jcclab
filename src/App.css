@@ -1,4 +1,4 @@
-﻿/**
+/**
  * --layout-sticky-header-height锛氫笌 .page-header 鍚搁《鍚庣殑瑙嗗彛鍗犱綅楂樺害涓€鑷达紙绾︾瓑浜庡疄娴?height锛夈€? * 宸︿晶 .module-sidebar 涔熸槸 sticky锛屽叾 top 蹇呴』 鈮?璇ラ珮搴︼紝鍚﹀垯浼氳创鍒拌鍙ｉ《绔€佽椤舵爮鐩栦綇銆? *
  * 璁捐 token锛氭祬鑹查粯璁ゅ畾涔夊湪 :root锛屾繁鑹茬敱 JS 鍦?:root 涓?setProperty 瑕嗙洊锛堣 App.vue锛夈€? * 鍏ㄩ儴缁勪欢缁熶竴鐢?var() 寮曠敤锛屽垏涓婚鍙崲鍙橀噺鍊笺€? */
 :root {
@@ -29,6 +29,7 @@
   --accent-success: #16a34a;
   --accent-error: #dc2626;
   --accent-active: #dbeafe;
+  --on-accent: #ffffff;
 
   /* 闃村奖 */
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);

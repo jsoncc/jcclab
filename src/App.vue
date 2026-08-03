@@ -541,25 +541,23 @@ const footerCollapsed = ref(true)
 const themes = [
   {
     key: 'light', label: '浅色',
-    pageBg: '#f6f8fa', headerBg: '#f6f8fa', headerText: '#1f2937', headerTextSecondary: '#64748b', headerLink: '#0969da',
-    bgSecondary: '#f8fafc', bgCard: '#ffffff', bgTertiary: '#f6f8fa',
-    textPrimary: '#1f2937', textSecondary: '#64748b', textMuted: '#6b7280',
-    borderColor: '#e2e8f0', borderColorLight: '#d0d7de',
+    bgPrimary: '#f6f8fa', bgSecondary: '#f8fafc', bgTertiary: '#f6f8fa', bgCard: '#ffffff',
+    textPrimary: '#1f2937', textSecondary: '#64748b', textMuted: '#6b7280', textHeading: '#1f2328',
+    borderColor: '#e2e8f0', borderColorLight: '#d0d7de', borderColorInput: '#d0d7de',
     linkColor: '#0969da', linkHover: '#1d4ed8',
     accentBlue: '#1677ff', accentSuccess: '#16a34a', accentWarning: '#f59e0b', accentError: '#dc2626',
-    accentActive: '#dbeafe',
+    accentActive: '#dbeafe', onAccent: '#ffffff',
     color: '#ffffff'
   },
   {
     key: 'dark', label: '深色',
-    pageBg: '#1e1e1e', headerBg: '#1e1e1e', headerText: '#e8e8e8', headerTextSecondary: '#9aa0a6', headerLink: '#58a6ff',
-    bgSecondary: '#343438', bgCard: '#2a2a2c', bgTertiary: '#262628',
-    textPrimary: '#e8e8e8', textSecondary: '#9aa0a6', textMuted: '#8b8b90',
-    borderColor: '#3f3f42', borderColorLight: '#4a4a4e',
+    bgPrimary: '#2a2a2c', bgSecondary: '#343438', bgTertiary: '#262628', bgCard: '#2a2a2c',
+    textPrimary: '#e8e8e8', textSecondary: '#9aa0a6', textMuted: '#8b8b90', textHeading: '#e8e8e8',
+    borderColor: '#3f3f42', borderColorLight: '#4a4a4e', borderColorInput: '#4a4a4e',
     linkColor: '#58a6ff', linkHover: '#79b8ff',
     accentBlue: '#3b82f6', accentSuccess: '#22c55e', accentWarning: '#fbbf24', accentError: '#f87171',
-    accentActive: '#1d4ed8',
-    color: '#1e1e1e'
+    accentActive: '#1d4ed8', onAccent: '#ffffff',
+    color: '#2a2a2c'
   },
 ]
 
@@ -568,19 +566,17 @@ watch(themeKey, (val) => {
   const theme = themes.find(t => t.key === val)
   if (!theme) return
   const root = document.documentElement
-  root.style.setProperty('--page-bg', theme.pageBg)
-  root.style.setProperty('--header-bg', theme.headerBg)
-  root.style.setProperty('--header-text', theme.headerText)
-  root.style.setProperty('--header-text-secondary', theme.headerTextSecondary)
-  root.style.setProperty('--header-link', theme.headerLink)
+  root.style.setProperty('--bg-primary', theme.bgPrimary)
   root.style.setProperty('--bg-secondary', theme.bgSecondary)
-  root.style.setProperty('--bg-card', theme.bgCard)
   root.style.setProperty('--bg-tertiary', theme.bgTertiary)
+  root.style.setProperty('--bg-card', theme.bgCard)
   root.style.setProperty('--text-primary', theme.textPrimary)
   root.style.setProperty('--text-secondary', theme.textSecondary)
   root.style.setProperty('--text-muted', theme.textMuted)
+  root.style.setProperty('--text-heading', theme.textHeading)
   root.style.setProperty('--border-color', theme.borderColor)
   root.style.setProperty('--border-color-light', theme.borderColorLight)
+  root.style.setProperty('--border-color-input', theme.borderColorInput)
   root.style.setProperty('--link-color', theme.linkColor)
   root.style.setProperty('--link-hover', theme.linkHover)
   root.style.setProperty('--accent-blue', theme.accentBlue)
@@ -588,6 +584,7 @@ watch(themeKey, (val) => {
   root.style.setProperty('--accent-warning', theme.accentWarning)
   root.style.setProperty('--accent-error', theme.accentError)
   root.style.setProperty('--accent-active', theme.accentActive)
+  root.style.setProperty('--on-accent', theme.onAccent)
   root.style.colorScheme = val === 'dark' ? 'dark' : 'light'
 }, { immediate: true })
 

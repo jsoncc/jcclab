@@ -246,7 +246,7 @@ const clearAll = () => {
 
 .b64-mode-btn.active {
   background: var(--accent-blue);
-  color: var(--bg-card);
+  color: var(--on-accent);
 }
 
 .b64-hint,
@@ -290,7 +290,7 @@ const clearAll = () => {
 .b64-btn.primary {
   background: var(--accent-blue);
   border-color: var(--accent-blue);
-  color: var(--bg-card);
+  color: var(--on-accent);
 }
 
 .b64-btn:disabled {

@@ -552,7 +552,7 @@ onMounted(async () => {
 /* 引用块类型 */
 .markdown-content blockquote.warning {
   border-left-color: #d4a72c;
-  background: var(--bg-card)8c5;
+  background: #fff8c5;
   color: #5c4b1f;
 }
 .markdown-content blockquote.success {
@@ -657,7 +657,7 @@ onMounted(async () => {
 
 .code-copy-btn:hover {
   background: var(--link-color);
-  color: var(--bg-card);
+  color: var(--on-accent);
   border-color: var(--link-color);
 }
 
@@ -766,7 +766,7 @@ onMounted(async () => {
 
 /* ===== 高亮 ===== */
 .markdown-content mark {
-  background: var(--bg-card)8c5;
+  background: #fff8c5;
   color: #1f2328;
   padding: 1px 4px;
   border-radius: 3px;
@@ -802,7 +802,7 @@ onMounted(async () => {
   left: 50%;
   bottom: 100%;
   transform: translateX(-50%);
-  background: #1f2328;
+  background: var(--text-primary);
   color: var(--bg-card);
   padding: 12px 16px;
   border-radius: 8px;
@@ -1009,7 +1009,7 @@ onMounted(async () => {
 .blog-html-wrapper .code-copy-btn:hover,
 .markdown-content .code-copy-btn:hover {
   background: var(--link-color);
-  color: var(--bg-card);
+  color: var(--on-accent);
   border-color: var(--link-color);
 }
 
@@ -1120,7 +1120,7 @@ onMounted(async () => {
 
 /* ===== 高亮 ===== */
 .blog-html-wrapper mark {
-  background: var(--bg-card)8c5;
+  background: #fff8c5;
   color: #1f2328;
   padding: 1px 4px;
   border-radius: 3px;

@@ -272,7 +272,7 @@ const clearAll = () => {
 .mbsf-btn.primary {
   background: var(--accent-blue);
   border-color: var(--accent-blue);
-  color: var(--bg-card);
+  color: var(--on-accent);
   font-weight: 600;
 }
 

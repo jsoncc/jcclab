@@ -365,7 +365,7 @@ const copyOutput = async () => {
 .b64f-btn.primary {
   background: var(--accent-blue);
   border-color: var(--accent-blue);
-  color: var(--bg-card);
+  color: var(--on-accent);
 }
 
 .b64f-btn:disabled {
