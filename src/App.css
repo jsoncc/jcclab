@@ -1,29 +1,33 @@
 /**
- * --layout-sticky-header-height锛氫笌 .page-header 鍚搁《鍚庣殑瑙嗗彛鍗犱綅楂樺害涓€鑷达紙绾︾瓑浜庡疄娴?height锛夈€? * 宸︿晶 .module-sidebar 涔熸槸 sticky锛屽叾 top 蹇呴』 鈮?璇ラ珮搴︼紝鍚﹀垯浼氳创鍒拌鍙ｉ《绔€佽椤舵爮鐩栦綇銆? *
- * 璁捐 token锛氭祬鑹查粯璁ゅ畾涔夊湪 :root锛屾繁鑹茬敱 JS 鍦?:root 涓?setProperty 瑕嗙洊锛堣 App.vue锛夈€? * 鍏ㄩ儴缁勪欢缁熶竴鐢?var() 寮曠敤锛屽垏涓婚鍙崲鍙橀噺鍊笺€? */
+ * --layout-sticky-header-height：与 .page-header 吸顶后的视口占位高度一致（约等于实测 height）。
+ * 左侧 .module-sidebar 也是 sticky，其 top 必须 ≥ 该高度，否则会贴到视口顶端、被顶栏盖住。
+ *
+ * 设计 token：浅色默认定义在 :root，深色由 JS 在 :root 上 setProperty 覆盖（见 App.vue）。
+ * 全部组件统一用 var() 引用，切主题只换变量值。
+ */
 :root {
-  /* 鑳屾櫙鑹?*/
+  /* 背景色 */
   --bg-primary: #f6f8fa;
   --bg-secondary: #f8fafc;
   --bg-tertiary: #f6f8fa;
   --bg-card: #ffffff;
 
-  /* 鏂囧瓧鑹?*/
+  /* 文字色 */
   --text-primary: #1f2937;
   --text-secondary: #64748b;
   --text-muted: #6b7280;
   --text-heading: #1f2328;
 
-  /* 杈规 */
+  /* 边框 */
   --border-color: #e2e8f0;
   --border-color-light: #d0d7de;
   --border-color-input: #d0d7de;
 
-  /* 閾炬帴 */
+  /* 链接 */
   --link-color: #0969da;
   --link-hover: #1d4ed8;
 
-  /* 寮鸿皟鑹?*/
+  /* 强调色 */
   --accent-blue: #1677ff;
   --accent-warning: #f59e0b;
   --accent-success: #16a34a;
@@ -31,17 +35,17 @@
   --accent-active: #dbeafe;
   --on-accent: #ffffff;
 
-  /* 闃村奖 */
+  /* 阴影 */
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
   --shadow-search: 0 8px 26px rgba(15, 23, 42, 0.12);
   --shadow-modal: 0 25px 80px rgba(0, 0, 0, 0.35);
 
-  /* 鍦嗚 */
+  /* 圆角 */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
 
-  /* 闂磋窛 */
+  /* 间距 */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -288,7 +292,9 @@
 }
 
 /**
- * 渚ф爮 sticky锛歵op 蹇呴』钀藉湪椤舵爮涔嬩笅锛堣 .home --layout-sticky-header-height锛夛紝鍚﹀垯婊氬姩鍚庛€屽叏閮ㄣ€嶇瓑浼氬帇鍦?header 涓嬮潰銆? * z-index 楂樹簬涓诲唴瀹广€佷綆浜?.page-header(60)銆? */
+ * 侧栏 sticky：top 必须落在顶栏之下（见 .home --layout-sticky-header-height），否则滚动后「全部」等会压在 header 下面。
+ * z-index 高于主内容、低于 .page-header(60)。
+ */
 .module-sidebar {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -377,7 +383,7 @@
   margin-top: 0;
 }
 
-/** 涓诲唴瀹瑰爢鍙犱綆浜?.module-sidebar(10)锛岄伩鍏嶅甫 overflow 鐨勫崱鐗囨粴鍔ㄦ椂鐩栦綇宸︿晶瀵艰埅 */
+/** 主内容堆叠低于 .module-sidebar(10)，避免带 overflow 的卡片滚动时盖住左侧导航 */
 .module-container {
   display: flex;
   flex-wrap: wrap;
@@ -488,7 +494,7 @@
 
 @media (max-width: 720px) {
   .home {
-    /* 椤舵爮鏀逛负鍗曞垪灞呬腑鍚庢槗鎶樿锛屽崰浣嶆洿楂橈紝閬垮厤渚ф爮/妯粦瀵艰埅浠嶉《鍦?0 琚洊浣?*/
+    /* 顶栏改为单列居中后易折行，占位更高，避免侧栏/横滑导航仍顶到 0 被盖住 */
     --layout-sticky-header-height: 152px;
   }
 
@@ -612,7 +618,7 @@
 }
 
 .back-to-top::after {
-  content: '杩斿洖\A椤堕儴';
+  content: '返回\A顶部';
   position: absolute;
   inset: 0;
   display: flex;
@@ -931,7 +937,7 @@
 
 }
 
-/* 鈥斺€?涓婚閫夋嫨鍣?鈥斺€?*/
+/* —— 主题选择器 —— */
 
 .theme-tool {
   position: relative;
