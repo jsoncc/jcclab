@@ -265,7 +265,12 @@
         <p class="footer-line">
           <span>每天都有新内容</span>
           <span class="footer-sep" aria-hidden="true">·</span>
-          <a class="footer-link" href="mailto:13233768245@163.com">13233768245@163.com</a>
+          <a
+            class="footer-link footer-email-link"
+            href="mailto:13233768245@163.com"
+            title="13233768245@163.com"
+          >
+            <Icon :icon="emailOutlineIcon" class="footer-email-icon" aria-hidden="true" /> 邮箱</a>
           <span class="footer-sep" aria-hidden="true">·</span>
           <a
             class="footer-link"
@@ -379,6 +384,7 @@ import starOutlineIcon from '@iconify-icons/mdi/star-outline'
 import themeSunnyIcon from '@iconify-icons/mdi/weather-sunny'
 import themeNightIcon from '@iconify-icons/mdi/weather-night'
 import githubIcon from '@iconify-icons/mdi/github'
+import emailOutlineIcon from '@iconify-icons/mdi/email-outline'
 import homeIcon from '@iconify-icons/mdi/home-outline'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
 import CryptoJS from 'crypto-js'
