@@ -413,7 +413,7 @@ const run = () => {
 
 .jfv-gutter-line.active {
   background: var(--accent-error);
-  color: var(--accent-error);
+  color: var(--on-accent);
   font-weight: 700;
 }
 
@@ -747,7 +747,7 @@ const run = () => {
 .jfv-modal-close:hover {
   background: var(--accent-error);
   border-color: var(--accent-error);
-  color: var(--accent-error);
+  color: var(--on-accent);
 }
 
 .jfv-modal-content {

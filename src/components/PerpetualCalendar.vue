@@ -589,7 +589,7 @@ const selectedDetail = computed(() => {
 
 .pc-pill.festival {
   background: var(--accent-error);
-  color: var(--accent-error);
+  color: var(--on-accent);
 }
 
 .pc-pill.jieqi {
