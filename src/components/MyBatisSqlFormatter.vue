@@ -198,8 +198,8 @@ const clearAll = () => {
 }
 
 .mbsf-guide {
-  border: 1px solid #dbeafe;
-  background: #eff6ff;
+  border: 1px solid var(--accent-active);
+  background: var(--accent-active);
   border-radius: 8px;
   padding: 10px 12px;
 }
@@ -208,14 +208,14 @@ const clearAll = () => {
   margin: 0 0 4px;
   font-size: 13px;
   font-weight: 700;
-  color: #1d4ed8;
+  color: var(--link-hover);
 }
 
 .mbsf-guide-text {
   margin: 0;
   font-size: 12px;
   line-height: 1.55;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .mbsf-guide-text + .mbsf-guide-text {
@@ -226,13 +226,13 @@ const clearAll = () => {
   margin: 6px 0 0;
   font-size: 12px;
   line-height: 1.55;
-  color: #4b5563;
+  color: var(--text-secondary);
 }
 
 .mbsf-guide code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   background: rgba(255, 255, 255, 0.72);
-  border: 1px solid #dbeafe;
+  border: 1px solid var(--accent-active);
   border-radius: 4px;
   padding: 1px 4px;
 }
@@ -240,7 +240,7 @@ const clearAll = () => {
 .mbsf-input,
 .mbsf-output {
   width: 100%;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 10px 12px;
   box-sizing: border-box;
@@ -249,7 +249,7 @@ const clearAll = () => {
   font-size: 13px;
   line-height: 1.55;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .mbsf-actions {
@@ -260,19 +260,19 @@ const clearAll = () => {
 }
 
 .mbsf-btn {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: #fff;
-  color: #374151;
+  background: var(--bg-card);
+  color: var(--text-primary);
   font-size: 13px;
   padding: 7px 14px;
   cursor: pointer;
 }
 
 .mbsf-btn.primary {
-  background: #1e9fff;
-  border-color: #1e9fff;
-  color: #fff;
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: var(--bg-card);
   font-weight: 600;
 }
 
@@ -284,14 +284,14 @@ const clearAll = () => {
 .mbsf-status {
   margin-left: 6px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .mbsf-status.ok {
-  color: #16a34a;
+  color: var(--accent-success);
 }
 
 .mbsf-status.error {
-  color: #dc2626;
+  color: var(--accent-error);
 }
 </style>

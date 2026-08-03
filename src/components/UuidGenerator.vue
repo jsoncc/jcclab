@@ -219,16 +219,16 @@ const clear = () => {
 
 .uuid-label {
   font-size: 13px;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .uuid-select {
   width: 100%;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 13px;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .uuid-count {
@@ -239,16 +239,16 @@ const clear = () => {
 
 .uuid-input {
   width: 120px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 13px;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .uuid-hint {
   font-size: 12px;
-  color: #b45309;
+  color: var(--accent-warning);
   white-space: nowrap;
 }
 
@@ -257,7 +257,7 @@ const clear = () => {
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #374151;
+  color: var(--text-primary);
   user-select: none;
 }
 
@@ -277,16 +277,16 @@ const clear = () => {
 .uuid-btn {
   padding: 7px 14px;
   font-size: 13px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: #fff;
+  background: var(--bg-card);
   cursor: pointer;
 }
 
 .uuid-btn.primary {
-  background: #16a34a;
-  border-color: #16a34a;
-  color: #fff;
+  background: var(--accent-success);
+  border-color: var(--accent-success);
+  color: var(--bg-card);
   font-weight: 600;
 }
 
@@ -297,22 +297,22 @@ const clear = () => {
 
 .uuid-status {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-muted);
   margin-left: 6px;
 }
 
 .uuid-status.ok {
-  color: #16a34a;
+  color: var(--accent-success);
 }
 
 .uuid-status.error {
-  color: #ef4444;
+  color: var(--accent-error);
 }
 
 .uuid-result {
   width: 100%;
   min-height: 220px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 12px;
   font-size: 13px;

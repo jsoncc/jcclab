@@ -312,7 +312,8 @@
           aria-label="切换主题"
           @click.stop="showThemePicker = !showThemePicker"
         >
-          <Icon class="theme-icon" :icon="paletteIcon" aria-hidden="true" />
+          <Icon v-if="themeKey === 'dark'" class="theme-icon" :icon="themeNightIcon" aria-hidden="true" />
+          <Icon v-else class="theme-icon" :icon="themeSunnyIcon" aria-hidden="true" />
         </button>
         <div v-if="showThemePicker" class="theme-picker" @click.stop>
           <button
@@ -375,7 +376,8 @@ import pinTopIcon from '@iconify-icons/radix-icons/pin-top'
 import chevronDownIcon from '@iconify-icons/radix-icons/chevron-down'
 import qrcodeIcon from '@iconify-icons/mdi/qrcode'
 import starOutlineIcon from '@iconify-icons/mdi/star-outline'
-import paletteIcon from '@iconify-icons/mdi/palette'
+import themeSunnyIcon from '@iconify-icons/mdi/weather-sunny'
+import themeNightIcon from '@iconify-icons/mdi/weather-night'
 import githubIcon from '@iconify-icons/mdi/github'
 import homeIcon from '@iconify-icons/mdi/home-outline'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
@@ -527,36 +529,37 @@ const toolsAnchorRef = ref<HTMLButtonElement | null>(null)
 const nowText = ref('')
 let clockTimer = 0
 const showThemePicker = ref(false)
-const themeKey = ref(localStorage.getItem('theme') || 'default')
+/** 旧主题值迁移：default/sunset/desert → light，dark → dark，无值 → light */
+const migrateTheme = (v: string | null): 'light' | 'dark' =>
+  v === 'dark' ? 'dark' : 'light'
+const themeKey = ref<'light' | 'dark'>(migrateTheme(localStorage.getItem('theme')))
 const footerCollapsed = ref(true)
 
 /**
- * 主题色板基于 theme-factory skill（Modern Minimalist / Tech Innovation / Sunset Boulevard / Desert Rose）
+ * 主题色板：浅色（白纸极简）/ 深色（深夜蓝，参考 doc2md）
  */
 const themes = [
   {
-    key: 'default', label: '极简白',
-    pageBg: '#ffffff', headerBg: '#fafafa', headerText: '#36454f', headerTextSecondary: '#708090', headerLink: '#0969da',
-    bgSecondary: '#d3d3d3', bgCard: '#ffffff', textPrimary: '#36454f', textSecondary: '#708090', borderColor: '#d3d3d3',
-    color: '#d3d3d3'
+    key: 'light', label: '浅色',
+    pageBg: '#f6f8fa', headerBg: '#f6f8fa', headerText: '#1f2937', headerTextSecondary: '#64748b', headerLink: '#0969da',
+    bgSecondary: '#f8fafc', bgCard: '#ffffff', bgTertiary: '#f6f8fa',
+    textPrimary: '#1f2937', textSecondary: '#64748b', textMuted: '#6b7280',
+    borderColor: '#e2e8f0', borderColorLight: '#d0d7de',
+    linkColor: '#0969da', linkHover: '#1d4ed8',
+    accentBlue: '#1677ff', accentSuccess: '#16a34a', accentWarning: '#f59e0b', accentError: '#dc2626',
+    accentActive: '#dbeafe',
+    color: '#ffffff'
   },
   {
-    key: 'dark', label: '深夜蓝',
-    pageBg: '#1e1e1e', headerBg: '#1e1e1e', headerText: '#ffffff', headerTextSecondary: '#ffffff', headerLink: '#0066ff',
-    bgSecondary: '#1e1e1e', bgCard: '#1e1e1e', textPrimary: '#ffffff', textSecondary: '#a0a0a0', borderColor: '#333333',
+    key: 'dark', label: '深色',
+    pageBg: '#1e1e1e', headerBg: '#1e1e1e', headerText: '#e8e8e8', headerTextSecondary: '#9aa0a6', headerLink: '#58a6ff',
+    bgSecondary: '#343438', bgCard: '#2a2a2c', bgTertiary: '#262628',
+    textPrimary: '#e8e8e8', textSecondary: '#9aa0a6', textMuted: '#8b8b90',
+    borderColor: '#3f3f42', borderColorLight: '#4a4a4e',
+    linkColor: '#58a6ff', linkHover: '#79b8ff',
+    accentBlue: '#3b82f6', accentSuccess: '#22c55e', accentWarning: '#fbbf24', accentError: '#f87171',
+    accentActive: '#1d4ed8',
     color: '#1e1e1e'
-  },
-  {
-    key: 'sunset', label: '暖阳橙',
-    pageBg: '#264653', headerBg: '#264653', headerText: '#ffffff', headerTextSecondary: '#e9c46a', headerLink: '#f4a261',
-    bgSecondary: '#e9c46a', bgCard: '#ffffff', textPrimary: '#264653', textSecondary: '#f4a261', borderColor: '#e8d5c4',
-    color: '#e76f51'
-  },
-  {
-    key: 'desert', label: '沙漠玫',
-    pageBg: '#faf3ee', headerBg: '#5d2e46', headerText: '#ffffff', headerTextSecondary: '#e8d5c4', headerLink: '#b87d6d',
-    bgSecondary: '#e8d5c4', bgCard: '#faf3ee', textPrimary: '#3d2d30', textSecondary: '#8a7a6a', borderColor: '#e8d5c4',
-    color: '#b87d6d'
   },
 ]
 
@@ -572,13 +575,24 @@ watch(themeKey, (val) => {
   root.style.setProperty('--header-link', theme.headerLink)
   root.style.setProperty('--bg-secondary', theme.bgSecondary)
   root.style.setProperty('--bg-card', theme.bgCard)
+  root.style.setProperty('--bg-tertiary', theme.bgTertiary)
   root.style.setProperty('--text-primary', theme.textPrimary)
   root.style.setProperty('--text-secondary', theme.textSecondary)
+  root.style.setProperty('--text-muted', theme.textMuted)
   root.style.setProperty('--border-color', theme.borderColor)
+  root.style.setProperty('--border-color-light', theme.borderColorLight)
+  root.style.setProperty('--link-color', theme.linkColor)
+  root.style.setProperty('--link-hover', theme.linkHover)
+  root.style.setProperty('--accent-blue', theme.accentBlue)
+  root.style.setProperty('--accent-success', theme.accentSuccess)
+  root.style.setProperty('--accent-warning', theme.accentWarning)
+  root.style.setProperty('--accent-error', theme.accentError)
+  root.style.setProperty('--accent-active', theme.accentActive)
+  root.style.colorScheme = val === 'dark' ? 'dark' : 'light'
 }, { immediate: true })
 
 const setTheme = (key: string) => {
-  themeKey.value = key
+  if (key === 'dark' || key === 'light') themeKey.value = key
   showThemePicker.value = false
 }
 

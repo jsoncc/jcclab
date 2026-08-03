@@ -226,9 +226,9 @@ const clearAll = () => {
 .b64-mode-switch {
   display: inline-flex;
   align-items: center;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  background: #f8fafc;
+  background: var(--bg-secondary);
   padding: 3px;
   width: fit-content;
 }
@@ -236,7 +236,7 @@ const clearAll = () => {
 .b64-mode-btn {
   border: none;
   background: transparent;
-  color: #475569;
+  color: var(--text-secondary);
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
@@ -245,21 +245,21 @@ const clearAll = () => {
 }
 
 .b64-mode-btn.active {
-  background: #1e9fff;
-  color: #fff;
+  background: var(--accent-blue);
+  color: var(--bg-card);
 }
 
 .b64-hint,
 .b64-label {
   margin: 0;
   font-size: 14px;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .b64-input,
 .b64-output {
   width: 100%;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 10px 12px;
   box-sizing: border-box;
@@ -267,7 +267,7 @@ const clearAll = () => {
   line-height: 1.55;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   resize: vertical;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .b64-actions {
@@ -278,9 +278,9 @@ const clearAll = () => {
 }
 
 .b64-btn {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
   border-radius: 6px;
   font-size: 14px;
   padding: 7px 14px;
@@ -288,9 +288,9 @@ const clearAll = () => {
 }
 
 .b64-btn.primary {
-  background: #1e9fff;
-  border-color: #1e9fff;
-  color: #fff;
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: var(--bg-card);
 }
 
 .b64-btn:disabled {
@@ -301,7 +301,7 @@ const clearAll = () => {
 .b64-link-btn {
   border: none;
   background: transparent;
-  color: #2563eb;
+  color: var(--link-color);
   font-size: 14px;
   cursor: pointer;
   padding: 0 2px;
@@ -314,14 +314,14 @@ const clearAll = () => {
 .b64-status {
   margin: 0;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .b64-status.ok {
-  color: #16a34a;
+  color: var(--accent-success);
 }
 
 .b64-status.error {
-  color: #dc2626;
+  color: var(--accent-error);
 }
 </style>

@@ -227,12 +227,12 @@ const copyOutput = async () => {
   margin: 0;
   font-size: 30px;
   line-height: 1.2;
-  color: #1677ff;
+  color: var(--accent-blue);
   font-weight: 500;
 }
 
 .b64f-guide {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
   padding-top: 10px;
 }
 
@@ -240,25 +240,25 @@ const copyOutput = async () => {
   margin: 0 0 6px;
   font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .b64f-guide-text {
   margin: 0;
   font-size: 17px;
   line-height: 1.55;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .b64f-label {
   margin: 0;
   font-size: 16px;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .b64f-dropzone {
   position: relative;
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--border-color);
   border-radius: 8px;
   padding: 24px;
   text-align: center;
@@ -272,12 +272,12 @@ const copyOutput = async () => {
 
 .b64f-dropzone:hover,
 .b64f-dropzone.active {
-  border-color: #1677ff;
-  background-color: #f0f7ff;
+  border-color: var(--accent-blue);
+  background-color: var(--accent-active);
 }
 
 .b64f-dropzone.active {
-  background-color: #e6f2ff;
+  background-color: var(--accent-active);
 }
 
 .b64f-file-input {
@@ -293,11 +293,11 @@ const copyOutput = async () => {
 .b64f-dropzone-hint {
   margin: 0;
   font-size: 15px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .b64f-dropzone-link {
-  color: #1677ff;
+  color: var(--accent-blue);
   text-decoration: underline;
 }
 
@@ -306,7 +306,7 @@ const copyOutput = async () => {
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #374151;
+  color: var(--text-primary);
   max-width: 100%;
   overflow: hidden;
 }
@@ -325,7 +325,7 @@ const copyOutput = async () => {
 }
 
 .b64f-file-size {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 12px;
   flex-shrink: 0;
 }
@@ -333,7 +333,7 @@ const copyOutput = async () => {
 .b64f-file-clear {
   border: none;
   background: transparent;
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 18px;
   cursor: pointer;
   padding: 0 4px;
@@ -342,7 +342,7 @@ const copyOutput = async () => {
 }
 
 .b64f-file-clear:hover {
-  color: #dc2626;
+  color: var(--accent-error);
 }
 
 .b64f-actions {
@@ -353,19 +353,19 @@ const copyOutput = async () => {
 }
 
 .b64f-btn {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #fff;
-  color: #374151;
+  background: var(--bg-card);
+  color: var(--text-primary);
   padding: 10px 18px;
   font-size: 15px;
   cursor: pointer;
 }
 
 .b64f-btn.primary {
-  background: #1677ff;
-  border-color: #1677ff;
-  color: #fff;
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: var(--bg-card);
 }
 
 .b64f-btn:disabled {
@@ -376,15 +376,15 @@ const copyOutput = async () => {
 .b64f-status {
   margin: 0;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .b64f-status.ok {
-  color: #16a34a;
+  color: var(--accent-success);
 }
 
 .b64f-status.error {
-  color: #dc2626;
+  color: var(--accent-error);
 }
 
 .b64f-output-section {
@@ -402,32 +402,32 @@ const copyOutput = async () => {
 .b64f-output-label {
   font-size: 15px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .b64f-copy-btn {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: #fff;
-  color: #374151;
+  background: var(--bg-card);
+  color: var(--text-primary);
   padding: 4px 12px;
   font-size: 13px;
   cursor: pointer;
 }
 
 .b64f-copy-btn:hover {
-  border-color: #1677ff;
-  color: #1677ff;
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
 }
 
 .b64f-copy-btn.copied {
-  border-color: #16a34a;
-  color: #16a34a;
+  border-color: var(--accent-success);
+  color: var(--accent-success);
 }
 
 .b64f-output {
   width: 100%;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   box-sizing: border-box;
   padding: 12px;
@@ -435,13 +435,13 @@ const copyOutput = async () => {
   line-height: 1.5;
   resize: vertical;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  background: #f9fafb;
+  background: var(--bg-tertiary);
   word-break: break-all;
 }
 
 .b64f-output-size {
   margin: 0;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 </style>

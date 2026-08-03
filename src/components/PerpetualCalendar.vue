@@ -338,8 +338,8 @@ const selectedDetail = computed(() => {
 
 .pc-panel {
   width: min(760px, 95vw);
-  background: #eef3f7;
-  border: 1px solid #dbe4ee;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   box-shadow: 0 20px 45px rgba(2, 8, 23, 0.2);
   padding: 14px;
@@ -366,9 +366,9 @@ const selectedDetail = computed(() => {
 }
 
 .pc-ym-input {
-  border: 1px solid #cfd9e3;
-  background: #fff;
-  color: #1f2937;
+  border: 1px solid var(--border-color-light);
+  background: var(--bg-card);
+  color: var(--text-primary);
   border-radius: 8px;
   height: 32px;
   box-sizing: border-box;
@@ -387,19 +387,19 @@ const selectedDetail = computed(() => {
 
 .pc-ym-input:focus {
   outline: none;
-  border-color: #60a5fa;
+  border-color: var(--accent-blue);
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
 }
 
 .pc-ym-unit {
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
 .pc-btn {
-  border: 1px solid #cfd9e3;
-  background: #fff;
-  color: #334155;
+  border: 1px solid var(--border-color-light);
+  background: var(--bg-card);
+  color: var(--text-secondary);
   border-radius: 8px;
   min-width: 34px;
   height: 32px;
@@ -420,7 +420,7 @@ const selectedDetail = computed(() => {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -433,7 +433,7 @@ const selectedDetail = computed(() => {
 
 .pc-day {
   border: none;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 10px;
   min-height: 68px;
   text-align: left;
@@ -445,7 +445,7 @@ const selectedDetail = computed(() => {
 }
 
 .pc-day:hover {
-  box-shadow: 0 0 0 1px #93c5fd inset;
+  box-shadow: 0 0 0 1px var(--accent-blue) inset;
 }
 
 .pc-day.muted {
@@ -453,7 +453,7 @@ const selectedDetail = computed(() => {
 }
 
 .pc-day.weekend .pc-day-solar {
-  color: #ef4444;
+  color: var(--accent-error);
 }
 
 .pc-day-rest {
@@ -463,8 +463,8 @@ const selectedDetail = computed(() => {
   width: 16px;
   height: 16px;
   border-radius: 6px;
-  background: #ef4444;
-  color: #fff;
+  background: var(--accent-error);
+  color: var(--bg-card);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -474,40 +474,40 @@ const selectedDetail = computed(() => {
 }
 
 .pc-day-rest.work {
-  background: #1d4ed8;
+  background: var(--link-hover);
 }
 
 .pc-day.today {
-  box-shadow: 0 0 0 1px #60a5fa inset;
+  box-shadow: 0 0 0 1px var(--accent-blue) inset;
 }
 
 .pc-day.selected {
-  box-shadow: 0 0 0 2px #3b82f6 inset;
-  background: #eff6ff;
+  box-shadow: 0 0 0 2px var(--accent-blue) inset;
+  background: var(--accent-active);
 }
 
 .pc-day-solar {
   font-size: 20px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .pc-day-lunar {
   margin-top: 2px;
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .pc-day-festival {
   margin-top: auto;
   font-size: 11px;
-  color: #ef4444;
+  color: var(--accent-error);
 }
 
 .pc-detail {
   margin-top: 10px;
-  background: #fff;
-  border: 1px solid #dbe4ee;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 10px 12px 8px;
 }
@@ -523,13 +523,13 @@ const selectedDetail = computed(() => {
   font-size: 34px;
   font-weight: 700;
   line-height: 1.1;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .pc-detail-sub {
   margin: 6px 0 0;
   font-size: 14px;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 .pc-detail-right {
@@ -552,22 +552,22 @@ const selectedDetail = computed(() => {
   width: 18px;
   height: 18px;
   border-radius: 5px;
-  color: #fff;
+  color: var(--bg-card);
   font-size: 11px;
   flex: 0 0 auto;
 }
 
 .pc-tag.yi {
-  background: #ef4444;
+  background: var(--accent-error);
 }
 
 .pc-tag.ji {
-  background: #111827;
+  background: var(--text-primary);
 }
 
 .pc-tag-text {
   font-size: 14px;
-  color: #111827;
+  color: var(--text-primary);
   line-height: 1.45;
 }
 
@@ -587,28 +587,28 @@ const selectedDetail = computed(() => {
 }
 
 .pc-pill.festival {
-  background: #fef2f2;
-  color: #dc2626;
+  background: var(--accent-error);
+  color: var(--accent-error);
 }
 
 .pc-pill.jieqi {
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--accent-active);
+  color: var(--link-hover);
 }
 
 .pc-detail-countdown {
   margin: 8px 0 0;
   padding-top: 8px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border-color);
   font-size: 13px;
-  color: #334155;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .pc-detail-countdown-icon {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   width: 14px;
   height: 14px;

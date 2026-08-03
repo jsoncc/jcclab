@@ -167,7 +167,7 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
   align-items: center;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .blog-post-page > .blog-post-header > .back-btn {
@@ -175,20 +175,20 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
   align-items: center;
   gap: 6px;
   background: none;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
-  color: #475569;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .blog-post-page > .blog-post-header > .back-btn:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  color: #1e293b;
+  background: var(--bg-secondary);
+  border-color: var(--border-color-light);
+  color: var(--text-primary);
 }
 
 .blog-post-page > .blog-post-header > .back-btn .back-icon {
@@ -197,7 +197,7 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 }
 
 .blog-post-page > .blog-post-header > .copy-btn {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue) 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -210,7 +210,7 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 }
 
 .blog-post-page > .blog-post-header > .copy-btn:hover {
-  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue) 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
 }
@@ -222,12 +222,12 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 .blog-not-found {
   text-align: center;
   padding: 80px 20px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .blog-not-found h2 {
   font-size: 24px;
-  color: #1e293b;
+  color: var(--text-primary);
   margin-bottom: 12px;
 }
 
@@ -241,15 +241,15 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 
 .markdown-content {
   line-height: 1.85;
-  color: #334155;
+  color: var(--text-secondary);
   font-size: 16px;
 }
 
 .markdown-content h1 {
   margin: 0 0 24px 0;
   font-size: 32px;
-  color: #0f172a;
-  border-bottom: 3px solid #e2e8f0;
+  color: var(--text-primary);
+  border-bottom: 3px solid var(--border-color);
   padding-bottom: 16px;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -258,8 +258,8 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 .markdown-content h2 {
   margin: 32px 0 16px;
   font-size: 24px;
-  color: #1e293b;
-  border-bottom: 2px solid #e2e8f0;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border-color);
   padding-bottom: 10px;
   font-weight: 700;
 }
@@ -267,14 +267,14 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 .markdown-content h3 {
   margin: 28px 0 14px;
   font-size: 20px;
-  color: #334155;
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
 .markdown-content h4 {
   margin: 24px 0 12px;
   font-size: 17px;
-  color: #475569;
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
@@ -297,20 +297,20 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 .markdown-content blockquote {
   margin: 20px 0;
   padding: 16px 20px;
-  border-left: 4px solid #0284c7;
-  background: #f0f9ff;
+  border-left: 4px solid var(--accent-blue);
+  background: var(--accent-active);
   border-radius: 0 8px 8px 0;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .markdown-content blockquote.warning {
-  border-left-color: #f59e0b;
-  background: #fef3c7;
+  border-left-color: var(--accent-warning);
+  background: var(--accent-warning);
 }
 
 .markdown-content blockquote.success {
-  border-left-color: #10b981;
-  background: #d1fae5;
+  border-left-color: var(--accent-success);
+  background: var(--accent-success);
 }
 
 .markdown-content blockquote p:first-child {
@@ -325,17 +325,17 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
   font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
   font-size: 0.9em;
   padding: 3px 8px;
-  background: #f1f5f9;
+  background: var(--bg-tertiary);
   border-radius: 6px;
-  color: #0369a1;
-  border: 1px solid #e2e8f0;
+  color: var(--accent-blue);
+  border: 1px solid var(--border-color);
 }
 
 .markdown-content pre {
   margin: 20px 0;
   padding: 0;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   overflow-x: auto;
   line-height: 1.6;
@@ -348,7 +348,7 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
   padding-top: 36px;
   background: none;
   border: none;
-  color: #1e293b;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
@@ -362,15 +362,15 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
   justify-content: space-between;
   align-items: center;
   padding: 6px 16px;
-  background: #e8eaed;
-  border-bottom: 1px solid #d0d7de;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color-light);
   border-radius: 8px 8px 0 0;
   font-size: 12px;
   z-index: 1;
 }
 
 .code-lang {
-  color: #59636e;
+  color: var(--text-secondary);
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-size: 11px;
   text-transform: lowercase;
@@ -379,9 +379,9 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 .code-copy-btn {
   padding: 3px 10px;
   font-size: 12px;
-  color: #59636e;
-  background: #ffffff;
-  border: 1px solid #d0d7de;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color-light);
   border-radius: 5px;
   cursor: pointer;
   font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -389,9 +389,9 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 }
 
 .code-copy-btn:hover {
-  background: #0969da;
-  color: #ffffff;
-  border-color: #0969da;
+  background: var(--link-color);
+  color: var(--bg-card);
+  border-color: var(--link-color);
 }
 
 .markdown-content table {
@@ -403,18 +403,18 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 }
 
 .markdown-content th {
-  background: #f8fafc;
+  background: var(--bg-secondary);
   font-weight: 600;
   text-align: left;
   padding: 12px 16px;
-  border-bottom: 2px solid #e2e8f0;
-  color: #1e293b;
+  border-bottom: 2px solid var(--border-color);
+  color: var(--text-primary);
 }
 
 .markdown-content td {
   padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  color: #475569;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
 }
 
 .markdown-content tr:last-child td {
@@ -422,7 +422,7 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 }
 
 .markdown-content tr:nth-child(even) {
-  background: #f8fafc;
+  background: var(--bg-secondary);
 }
 
 .markdown-content img {
@@ -436,17 +436,17 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 .markdown-content hr {
   margin: 32px 0;
   border: none;
-  border-top: 2px solid #e5e7eb;
+  border-top: 2px solid var(--border-color);
 }
 
 .markdown-content a {
-  color: #0284c7;
+  color: var(--accent-blue);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s;
 }
 
 .markdown-content a:hover {
-  border-bottom-color: #0284c7;
+  border-bottom-color: var(--accent-blue);
 }
 </style>

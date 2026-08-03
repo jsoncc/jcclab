@@ -262,7 +262,7 @@ onMounted(async () => {
 }
 
 .markdown-modal {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 16px;
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.15);
   max-width: 1400px;
@@ -290,8 +290,8 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   padding: 24px 32px;
-  border-bottom: 1px solid #e5e7eb;
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
 }
 
 .modal-title {
@@ -333,9 +333,9 @@ onMounted(async () => {
 
 .close-btn {
   background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   font-size: 22px;
-  color: #64748b;
+  color: var(--text-secondary);
   cursor: pointer;
   line-height: 1;
   padding: 0;
@@ -349,7 +349,7 @@ onMounted(async () => {
 }
 
 .close-btn:hover {
-  background: #e2e8f0;
+  background: var(--border-color);
   color: #1e293b;
   transform: rotate(90deg);
 }
@@ -358,7 +358,7 @@ onMounted(async () => {
   padding: 32px 40px;
   overflow-y: auto;
   flex: 1;
-  background: #ffffff;
+  background: var(--bg-card);
 }
 
 .modal-body::-webkit-scrollbar {
@@ -371,7 +371,7 @@ onMounted(async () => {
 }
 
 .modal-body::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border-color-light);
   border-radius: 4px;
 }
 
@@ -412,37 +412,37 @@ onMounted(async () => {
   padding-bottom: 10px;
   font-size: 2em;
   font-weight: 700;
-  border-bottom: 1px solid #d0d7de;
+  border-bottom: 1px solid var(--border-color-light);
 }
 
 .markdown-content h2 {
   padding-bottom: 8px;
   font-size: 1.5em;
   font-weight: 600;
-  border-bottom: 1px solid #d0d7de;
+  border-bottom: 1px solid var(--border-color-light);
 }
 
 .markdown-content h3 {
   font-size: 1.25em;
   padding-left: 12px;
-  border-left: 3px solid #0969da;
+  border-left: 3px solid var(--link-color);
 }
 
 .markdown-content h4 {
   font-size: 1em;
   padding-left: 10px;
-  border-left: 2px solid #d0d7de;
+  border-left: 2px solid var(--border-color-light);
 }
 
 .markdown-content h5 {
   font-size: 0.9em;
   padding-left: 8px;
-  border-left: 2px solid #d0d7de;
+  border-left: 2px solid var(--border-color-light);
 }
 .markdown-content h6 {
   font-size: 0.85em;
   padding-left: 8px;
-  border-left: 2px solid #d0d7de;
+  border-left: 2px solid var(--border-color-light);
 }
 
 /* 标题锚点 */
@@ -459,7 +459,7 @@ onMounted(async () => {
   left: -1.2em;
   top: 50%;
   transform: translateY(-50%);
-  color: #0969da;
+  color: var(--link-color);
   text-decoration: none;
   font-size: 0.85em;
   font-weight: 400;
@@ -499,7 +499,7 @@ onMounted(async () => {
 }
 .markdown-content ul > li::before {
   content: "▸";
-  color: #0969da;
+  color: var(--link-color);
   display: inline-block;
   width: 1.3em;
   margin-left: -1.3em;
@@ -508,7 +508,7 @@ onMounted(async () => {
 .markdown-content ul ul > li::before,
 .markdown-content ul ul ul > li::before {
   content: "▸";
-  color: #0969da;
+  color: var(--link-color);
   display: inline-block;
   width: 1.3em;
   margin-left: -1.3em;
@@ -524,22 +524,22 @@ onMounted(async () => {
 }
 .markdown-content .task-list-item input[type="checkbox"] {
   margin: 0 8px 2px -1.5em;
-  accent-color: #0969da;
+  accent-color: var(--link-color);
   vertical-align: middle;
 }
 .markdown-content .task-list-item input[type="checkbox"]:checked + * {
   text-decoration: line-through;
-  color: #59636e;
+  color: var(--text-secondary);
 }
 
 /* ===== 引用块 ===== */
 .markdown-content blockquote {
   margin: 0 0 16px 0;
   padding: 12px 16px;
-  border-left: 4px solid #0969da;
-  background: #f6f8fa;
+  border-left: 4px solid var(--link-color);
+  background: var(--bg-tertiary);
   border-radius: 0 6px 6px 0;
-  color: #59636e;
+  color: var(--text-secondary);
 }
 
 .markdown-content blockquote > :first-child {
@@ -552,16 +552,16 @@ onMounted(async () => {
 /* 引用块类型 */
 .markdown-content blockquote.warning {
   border-left-color: #d4a72c;
-  background: #fff8c5;
+  background: var(--bg-card)8c5;
   color: #5c4b1f;
 }
 .markdown-content blockquote.success {
-  border-left-color: #1a7f37;
+  border-left-color: var(--accent-success);
   background: #dafbe1;
   color: #1a3d21;
 }
 .markdown-content blockquote.info {
-  border-left-color: #0969da;
+  border-left-color: var(--link-color);
   background: #ddf4ff;
   color: #0a3069;
 }
@@ -598,8 +598,8 @@ onMounted(async () => {
 
 .markdown-content pre {
   padding: 0;
-  background: #f6f8fa;
-  border: 1px solid #d0d7de;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color-light);
   border-radius: 8px;
   overflow: hidden;
   line-height: 1.5;
@@ -630,14 +630,14 @@ onMounted(async () => {
   align-items: center;
   padding: 6px 16px;
   background: #e8eaed;
-  border-bottom: 1px solid #d0d7de;
+  border-bottom: 1px solid var(--border-color-light);
   border-radius: 8px 8px 0 0;
   font-size: 12px;
   z-index: 1;
 }
 
 .code-lang {
-  color: #59636e;
+  color: var(--text-secondary);
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-size: 11px;
   text-transform: lowercase;
@@ -646,9 +646,9 @@ onMounted(async () => {
 .code-copy-btn {
   padding: 3px 10px;
   font-size: 12px;
-  color: #59636e;
-  background: #ffffff;
-  border: 1px solid #d0d7de;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color-light);
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -656,9 +656,9 @@ onMounted(async () => {
 }
 
 .code-copy-btn:hover {
-  background: #0969da;
-  color: #ffffff;
-  border-color: #0969da;
+  background: var(--link-color);
+  color: var(--bg-card);
+  border-color: var(--link-color);
 }
 
 /* ===== 表格 ===== */
@@ -667,7 +667,7 @@ onMounted(async () => {
   margin: 0 0 16px 0;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid #d0d7de;
+  border: 1px solid var(--border-color-light);
   border-radius: 8px;
   overflow: hidden;
   font-size: 14px;
@@ -676,23 +676,23 @@ onMounted(async () => {
 .markdown-content thead th {
   position: sticky;
   top: 0;
-  background: #f6f8fa;
+  background: var(--bg-tertiary);
   font-weight: 600;
   text-align: left;
   padding: 12px 16px;
-  border-bottom: 2px solid #d0d7de;
+  border-bottom: 2px solid var(--border-color-light);
   color: #1f2328;
   white-space: nowrap;
 }
 
 .markdown-content th:not(:last-child),
 .markdown-content td:not(:last-child) {
-  border-right: 1px solid #d0d7de;
+  border-right: 1px solid var(--border-color-light);
 }
 
 .markdown-content td {
   padding: 10px 16px;
-  border-bottom: 1px solid #d0d7de;
+  border-bottom: 1px solid var(--border-color-light);
   color: #1f2328;
   vertical-align: top;
 }
@@ -702,7 +702,7 @@ onMounted(async () => {
 }
 
 .markdown-content tbody tr:nth-child(even) {
-  background: #f6f8fa;
+  background: var(--bg-tertiary);
 }
 
 .markdown-content tbody tr:hover {
@@ -726,7 +726,7 @@ onMounted(async () => {
 
 /* ===== 链接 ===== */
 .markdown-content a {
-  color: #0969da;
+  color: var(--link-color);
   text-decoration: underline;
   text-underline-offset: 2px;
   transition: color 0.15s;
@@ -746,7 +746,7 @@ onMounted(async () => {
 .markdown-content hr {
   margin: 24px 0;
   border: none;
-  border-top: 2px dashed #d0d7de;
+  border-top: 2px dashed var(--border-color-light);
 }
 
 /* ===== 键盘按键 ===== */
@@ -757,16 +757,16 @@ onMounted(async () => {
   font-size: 0.825em;
   line-height: 1.4;
   color: #1f2328;
-  background: #f6f8fa;
-  border: 1px solid #d0d7de;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color-light);
   border-radius: 4px;
-  box-shadow: 0 1px 0 #d0d7de, inset 0 1px 0 #ffffff;
+  box-shadow: 0 1px 0 var(--border-color-light), inset 0 1px 0 var(--bg-card);
   vertical-align: middle;
 }
 
 /* ===== 高亮 ===== */
 .markdown-content mark {
-  background: #fff8c5;
+  background: var(--bg-card)8c5;
   color: #1f2328;
   padding: 1px 4px;
   border-radius: 3px;
@@ -784,16 +784,16 @@ onMounted(async () => {
 
 /* ===== 删除线 ===== */
 .markdown-content del {
-  color: #59636e;
+  color: var(--text-secondary);
 }
 
 /* ===== 注解引用（保留） ===== */
 .markdown-content .annotation-ref {
-  color: #0969da;
+  color: var(--link-color);
   font-weight: bold;
   cursor: help;
   position: relative;
-  border-bottom: 1px dashed #0969da;
+  border-bottom: 1px dashed var(--link-color);
 }
 
 .markdown-content .annotation-ref:hover::after {
@@ -803,7 +803,7 @@ onMounted(async () => {
   bottom: 100%;
   transform: translateX(-50%);
   background: #1f2328;
-  color: #fff;
+  color: var(--bg-card);
   padding: 12px 16px;
   border-radius: 8px;
   font-size: 14px;
@@ -827,7 +827,7 @@ onMounted(async () => {
 /* ===== details/summary 折叠块 ===== */
 .markdown-content details {
   margin: 0 0 16px 0;
-  border: 1px solid #d0d7de;
+  border: 1px solid var(--border-color-light);
   border-radius: 6px;
   padding: 12px 16px;
 }
@@ -835,7 +835,7 @@ onMounted(async () => {
 .markdown-content details > summary {
   font-weight: 600;
   cursor: pointer;
-  color: #0969da;
+  color: var(--link-color);
 }
 
 /* ===== 描述列表 ===== */
@@ -848,7 +848,7 @@ onMounted(async () => {
 }
 .markdown-content dd {
   margin-left: 1.5em;
-  color: #59636e;
+  color: var(--text-secondary);
 }
 
 
@@ -887,29 +887,29 @@ onMounted(async () => {
   padding-bottom: 10px;
   font-size: 2em;
   font-weight: 700;
-  border-bottom: 1px solid #d0d7de;
+  border-bottom: 1px solid var(--border-color-light);
 }
 
 .blog-html-wrapper h2 {
   padding-bottom: 8px;
   font-size: 1.5em;
-  border-bottom: 1px solid #d0d7de;
+  border-bottom: 1px solid var(--border-color-light);
 }
 
 .blog-html-wrapper h3 {
   font-size: 1.25em;
   padding-left: 12px;
-  border-left: 3px solid #0969da;
+  border-left: 3px solid var(--link-color);
 }
 
 .blog-html-wrapper h4 {
   font-size: 1em;
   padding-left: 10px;
-  border-left: 2px solid #d0d7de;
+  border-left: 2px solid var(--border-color-light);
 }
 
-.blog-html-wrapper h5 { font-size: 0.875em; color: #59636e; }
-.blog-html-wrapper h6 { font-size: 0.85em; color: #59636e; }
+.blog-html-wrapper h5 { font-size: 0.875em; color: var(--text-secondary); }
+.blog-html-wrapper h6 { font-size: 0.85em; color: var(--text-secondary); }
 
 /* ===== 段落 ===== */
 .blog-html-wrapper p { margin: 0 0 16px 0; }
@@ -945,8 +945,8 @@ onMounted(async () => {
 .blog-html-wrapper pre {
   margin: 0 0 16px 0;
   padding: 0;
-  background: #f6f8fa;
-  border: 1px solid #d0d7de;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color-light);
   border-radius: 8px;
   overflow: hidden;
   position: relative;
@@ -979,7 +979,7 @@ onMounted(async () => {
   align-items: center;
   padding: 6px 16px;
   background: #e8eaed;
-  border-bottom: 1px solid #d0d7de;
+  border-bottom: 1px solid var(--border-color-light);
   border-radius: 8px 8px 0 0;
   font-size: 12px;
   z-index: 1;
@@ -987,7 +987,7 @@ onMounted(async () => {
 
 .blog-html-wrapper .code-lang,
 .markdown-content .code-lang {
-  color: #59636e;
+  color: var(--text-secondary);
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-size: 11px;
   text-transform: lowercase;
@@ -997,9 +997,9 @@ onMounted(async () => {
 .markdown-content .code-copy-btn {
   padding: 3px 10px;
   font-size: 12px;
-  color: #59636e;
-  background: #ffffff;
-  border: 1px solid #d0d7de;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color-light);
   border-radius: 5px;
   cursor: pointer;
   font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -1008,9 +1008,9 @@ onMounted(async () => {
 
 .blog-html-wrapper .code-copy-btn:hover,
 .markdown-content .code-copy-btn:hover {
-  background: #0969da;
-  color: #ffffff;
-  border-color: #0969da;
+  background: var(--link-color);
+  color: var(--bg-card);
+  border-color: var(--link-color);
 }
 
 /* ===== 表格 ===== */
@@ -1019,35 +1019,35 @@ onMounted(async () => {
   margin: 0 0 16px 0;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid #d0d7de;
+  border: 1px solid var(--border-color-light);
   border-radius: 8px;
   overflow: hidden;
   font-size: 14px;
 }
 
 .blog-html-wrapper thead th {
-  background: #f6f8fa;
+  background: var(--bg-tertiary);
   font-weight: 600;
   text-align: left;
   padding: 12px 16px;
-  border-bottom: 2px solid #d0d7de;
+  border-bottom: 2px solid var(--border-color-light);
   color: #1f2328;
 }
 
 .blog-html-wrapper th:not(:last-child),
 .blog-html-wrapper td:not(:last-child) {
-  border-right: 1px solid #d0d7de;
+  border-right: 1px solid var(--border-color-light);
 }
 
 .blog-html-wrapper td {
   padding: 10px 16px;
-  border-bottom: 1px solid #d0d7de;
+  border-bottom: 1px solid var(--border-color-light);
   color: #1f2328;
   vertical-align: top;
 }
 
 .blog-html-wrapper tbody tr:last-child td { border-bottom: none; }
-.blog-html-wrapper tbody tr:nth-child(even) { background: #f6f8fa; }
+.blog-html-wrapper tbody tr:nth-child(even) { background: var(--bg-tertiary); }
 .blog-html-wrapper tbody tr:hover { background: #ddf4ff; }
 
 /* ===== 图片 ===== */
@@ -1067,7 +1067,7 @@ onMounted(async () => {
 
 /* ===== 链接 ===== */
 .blog-html-wrapper a {
-  color: #0969da;
+  color: var(--link-color);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -1083,10 +1083,10 @@ onMounted(async () => {
 .blog-html-wrapper blockquote {
   margin: 0 0 16px 0;
   padding: 12px 16px;
-  border-left: 4px solid #0969da;
-  background: #f6f8fa;
+  border-left: 4px solid var(--link-color);
+  background: var(--bg-tertiary);
   border-radius: 0 6px 6px 0;
-  color: #59636e;
+  color: var(--text-secondary);
 }
 
 .blog-html-wrapper blockquote > :first-child { margin-top: 0; }
@@ -1101,7 +1101,7 @@ onMounted(async () => {
 .blog-html-wrapper hr {
   margin: 24px 0;
   border: none;
-  border-top: 2px dashed #d0d7de;
+  border-top: 2px dashed var(--border-color-light);
 }
 
 /* ===== 键盘按键 ===== */
@@ -1111,16 +1111,16 @@ onMounted(async () => {
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.825em;
   color: #1f2328;
-  background: #f6f8fa;
-  border: 1px solid #d0d7de;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color-light);
   border-radius: 4px;
-  box-shadow: 0 1px 0 #d0d7de, inset 0 1px 0 #fff;
+  box-shadow: 0 1px 0 var(--border-color-light), inset 0 1px 0 var(--bg-card);
   vertical-align: middle;
 }
 
 /* ===== 高亮 ===== */
 .blog-html-wrapper mark {
-  background: #fff8c5;
+  background: var(--bg-card)8c5;
   color: #1f2328;
   padding: 1px 4px;
   border-radius: 3px;
@@ -1129,20 +1129,20 @@ onMounted(async () => {
 /* ===== 上标/下标/删除线 ===== */
 .blog-html-wrapper sup { font-size: 0.75em; vertical-align: super; line-height: 0; }
 .blog-html-wrapper sub { font-size: 0.75em; vertical-align: sub; line-height: 0; }
-.blog-html-wrapper del { color: #59636e; }
+.blog-html-wrapper del { color: var(--text-secondary); }
 
 /* ===== 任务列表 ===== */
 .blog-html-wrapper .task-list-item { list-style-type: none; }
 .blog-html-wrapper .task-list-item input[type="checkbox"] {
   margin: 0 8px 2px -1.5em;
-  accent-color: #0969da;
+  accent-color: var(--link-color);
   vertical-align: middle;
 }
 
 /* ===== details/summary ===== */
 .blog-html-wrapper details {
   margin: 0 0 16px 0;
-  border: 1px solid #d0d7de;
+  border: 1px solid var(--border-color-light);
   border-radius: 6px;
   padding: 12px 16px;
 }
@@ -1150,11 +1150,38 @@ onMounted(async () => {
 .blog-html-wrapper details > summary {
   font-weight: 600;
   cursor: pointer;
-  color: #0969da;
+  color: var(--link-color);
 }
 
 /* ===== 描述列表 ===== */
 .blog-html-wrapper dl { margin: 0 0 16px 0; }
 .blog-html-wrapper dt { font-weight: 600; margin-top: 12px; }
-.blog-html-wrapper dd { margin-left: 1.5em; color: #59636e; }
+.blog-html-wrapper dd { margin-left: 1.5em; color: var(--text-secondary); }
+
+/* ===== hljs 深色适配：浅色默认，深色模式切换 github-dark token ===== */
+:root:not([data-theme="dark"]) .hljs {
+  background: var(--bg-tertiary);
+  color: #24292e;
+}
+:root[data-theme="dark"] .markdown-content pre,
+:root[data-theme="dark"] .blog-html-wrapper pre {
+  background: #0d1117;
+  border-color: #30363d;
+}
+:root[data-theme="dark"] .markdown-content pre code,
+:root[data-theme="dark"] .blog-html-wrapper pre code {
+  color: #c9d1d9;
+}
+:root[data-theme="dark"] .markdown-content .hljs-keyword,
+:root[data-theme="dark"] .blog-html-wrapper .hljs-keyword { color: #ff7b72; }
+:root[data-theme="dark"] .markdown-content .hljs-string,
+:root[data-theme="dark"] .blog-html-wrapper .hljs-string { color: #a5d6ff; }
+:root[data-theme="dark"] .markdown-content .hljs-number,
+:root[data-theme="dark"] .blog-html-wrapper .hljs-number { color: #79c0ff; }
+:root[data-theme="dark"] .markdown-content .hljs-comment,
+:root[data-theme="dark"] .blog-html-wrapper .hljs-comment { color: #8b949e; }
+:root[data-theme="dark"] .markdown-content .hljs-title,
+:root[data-theme="dark"] .blog-html-wrapper .hljs-title { color: #d2a8ff; }
+:root[data-theme="dark"] .markdown-content .hljs-attr,
+:root[data-theme="dark"] .blog-html-wrapper .hljs-attr { color: #79c0ff; }
 </style>

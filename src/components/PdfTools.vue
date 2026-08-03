@@ -58,7 +58,7 @@ const activeTab = ref<'image' | 'word'>('image')
 .pdf-tabs {
   display: flex;
   gap: 2px;
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
   border-radius: 10px;
   padding: 3px;
   margin-bottom: 16px;
@@ -74,19 +74,19 @@ const activeTab = ref<'image' | 'word'>('image')
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-muted);
   background: transparent;
   cursor: pointer;
   transition: all .2s;
 }
 
 .pdf-tab:hover {
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .pdf-tab.active {
-  color: #1677ff;
-  background: #fff;
+  color: var(--accent-blue);
+  background: var(--bg-card);
   box-shadow: 0 1px 3px rgba(0,0,0,.08);
 }
 

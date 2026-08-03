@@ -210,12 +210,12 @@ const fillExamplePdf = () => {
   margin: 0;
   font-size: 30px;
   line-height: 1.2;
-  color: #1677ff;
+  color: var(--accent-blue);
   font-weight: 500;
 }
 
 .b64f-guide {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
   padding-top: 10px;
 }
 
@@ -223,26 +223,26 @@ const fillExamplePdf = () => {
   margin: 0 0 6px;
   font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .b64f-guide-text {
   margin: 0;
   font-size: 17px;
   line-height: 1.55;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .b64f-label {
   margin: 0;
   font-size: 16px;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .b64f-input {
   width: 100%;
   min-height: 220px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   box-sizing: border-box;
   padding: 12px;
@@ -260,19 +260,19 @@ const fillExamplePdf = () => {
 }
 
 .b64f-btn {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #fff;
-  color: #374151;
+  background: var(--bg-card);
+  color: var(--text-primary);
   padding: 10px 18px;
   font-size: 15px;
   cursor: pointer;
 }
 
 .b64f-btn.primary {
-  background: #1677ff;
-  border-color: #1677ff;
-  color: #fff;
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: var(--bg-card);
 }
 
 .b64f-btn:disabled {
@@ -283,7 +283,7 @@ const fillExamplePdf = () => {
 .b64f-link-btn {
   border: none;
   background: transparent;
-  color: #2563eb;
+  color: var(--link-color);
   font-size: 15px;
   cursor: pointer;
   padding: 0 4px;
@@ -296,15 +296,15 @@ const fillExamplePdf = () => {
 .b64f-status {
   margin: 0;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .b64f-status.ok {
-  color: #16a34a;
+  color: var(--accent-success);
 }
 
 .b64f-status.error {
-  color: #dc2626;
+  color: var(--accent-error);
 }
 
 .b64f-info {
@@ -312,6 +312,6 @@ const fillExamplePdf = () => {
   flex-wrap: wrap;
   gap: 8px 18px;
   font-size: 13px;
-  color: #374151;
+  color: var(--text-primary);
 }
 </style>

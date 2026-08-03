@@ -452,8 +452,8 @@ const clearAll = () => {
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #2d5a27, #3a7d33);
-  color: #fff;
+  background: linear-gradient(135deg, var(--accent-success), var(--accent-success));
+  color: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -464,18 +464,18 @@ const clearAll = () => {
   margin: 0;
   font-size: 26px;
   font-weight: 500;
-  color: #1f2937;
+  color: var(--text-primary);
   line-height: 1.2;
 }
 
 .p2w-subtitle {
   margin: 2px 0 0;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .p2w-zone {
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--border-color);
   border-radius: 12px;
   padding: 28px 16px;
   text-align: center;
@@ -486,50 +486,50 @@ const clearAll = () => {
 
 .p2w-zone:hover,
 .p2w-zone-active {
-  border-color: #1677ff;
-  background: #f0f7ff;
+  border-color: var(--accent-blue);
+  background: var(--accent-active);
 }
 
 .p2w-zone-filled {
   border-style: solid;
-  border-color: #1677ff;
-  background: #f8faff;
+  border-color: var(--accent-blue);
+  background: var(--bg-secondary);
 }
 
 .p2w-hidden { display: none; }
 
 .p2w-zone-icon {
-  color: #9ca3af;
+  color: var(--text-muted);
   margin-bottom: 8px;
   transition: color .25s;
 }
 
 .p2w-zone:hover .p2w-zone-icon,
 .p2w-zone-active .p2w-zone-icon {
-  color: #1677ff;
+  color: var(--accent-blue);
 }
 
 .p2w-zone-text {
   margin: 0;
   font-size: 15px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .p2w-zone-hint {
   margin: 4px 0 0;
   font-size: 13px;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .p2w-panel {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #fafbfc;
+  background: var(--bg-tertiary);
 }
 
 .p2w-panel-row {
@@ -543,34 +543,34 @@ const clearAll = () => {
   min-width: 72px;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .p2w-select {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 14px;
-  color: #374151;
-  background: #fff;
+  color: var(--text-primary);
+  background: var(--bg-card);
   cursor: pointer;
 }
 
 .p2w-input {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 14px;
-  color: #374151;
+  color: var(--text-primary);
   width: 130px;
 }
 
 .p2w-hint {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
-.p2w-hint.error { color: #dc2626; }
+.p2w-hint.error { color: var(--accent-error); }
 
 .p2w-actions {
   display: flex;
@@ -582,10 +582,10 @@ const clearAll = () => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #fff;
-  color: #374151;
+  background: var(--bg-card);
+  color: var(--text-primary);
   padding: 9px 16px;
   font-size: 14px;
   cursor: pointer;
@@ -593,19 +593,19 @@ const clearAll = () => {
 }
 
 .p2w-btn:hover:not(:disabled) {
-  border-color: #9ca3af;
-  background: #f9fafb;
+  border-color: var(--text-muted);
+  background: var(--bg-tertiary);
 }
 
 .p2w-btn-primary {
-  background: #1677ff;
-  border-color: #1677ff;
-  color: #fff;
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: var(--bg-card);
 }
 
 .p2w-btn-primary:hover:not(:disabled) {
-  background: #0d5fd9;
-  border-color: #0d5fd9;
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
 }
 
 .p2w-btn:disabled {
@@ -616,15 +616,15 @@ const clearAll = () => {
 .p2w-status {
   margin: 0;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
-.p2w-status.ok { color: #16a34a; }
-.p2w-status.error { color: #dc2626; }
+.p2w-status.ok { color: var(--accent-success); }
+.p2w-status.error { color: var(--accent-error); }
 
 .p2w-bar-wrap {
   height: 20px;
-  background: #e5e7eb;
+  background: var(--border-color);
   border-radius: 10px;
   position: relative;
   overflow: hidden;
@@ -632,7 +632,7 @@ const clearAll = () => {
 
 .p2w-bar {
   height: 100%;
-  background: linear-gradient(90deg, #1677ff, #6366f1);
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue));
   border-radius: 10px;
   transition: width .3s ease;
 }
@@ -644,12 +644,12 @@ const clearAll = () => {
   align-items: center;
   justify-content: center;
   font-size: 11px;
-  color: #374151;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
 .p2w-preview {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -659,11 +659,11 @@ const clearAll = () => {
   align-items: center;
   gap: 6px;
   padding: 10px 14px;
-  background: #f9fafb;
+  background: var(--bg-tertiary);
   font-size: 13px;
   font-weight: 500;
-  color: #6b7280;
-  border-bottom: 1px solid #e5e7eb;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .p2w-preview-body {
@@ -671,7 +671,7 @@ const clearAll = () => {
   padding: 14px;
   font-size: 13px;
   line-height: 1.7;
-  color: #374151;
+  color: var(--text-primary);
   white-space: pre-wrap;
   word-break: break-word;
   max-height: 320px;

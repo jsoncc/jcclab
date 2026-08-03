@@ -8,10 +8,10 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { height: 100%; }
-    body { min-height: 100%; background: var(--page-bg, #f6f8fa); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto; transition: background 0.3s ease; }
+    body { min-height: 100%; background: var(--bg-primary, #f6f8fa); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto; transition: background 0.3s ease; }
     #app { min-height: 100vh; display: flex; flex-direction: column; align-items: stretch; }
   </style>
-  <script>!function(){var t=localStorage.getItem('theme');if(t&&t!=='default'){var e={'dark':'#1e1e1e','sunset':'#fff5e6','desert':'#faf3ee'};var b=e[t];if(b)document.documentElement.style.setProperty('--page-bg',b)}}();</script>
+  <script>!function(){var t=localStorage.getItem('theme');if(t==='dark'){var e={'--bg-primary':'#1e1e1e','--bg-secondary':'#343438','--bg-card':'#2a2a2c','--bg-tertiary':'#262628','--text-primary':'#e8e8e8','--text-secondary':'#9aa0a6','--text-muted':'#8b8b90','--border-color':'#3f3f42','--border-color-light':'#4a4a4e','--link-color':'#58a6ff','--link-hover':'#79b8ff','--accent-blue':'#3b82f6','--accent-success':'#22c55e','--accent-warning':'#fbbf24','--accent-error':'#f87171','--accent-active':'#1d4ed8'};var r=document.documentElement;for(var k in e){r.style.setProperty(k,e[k])}r.style.colorScheme='dark'}}();</script>
 </head>
 <body>
   <div id="app"></div>

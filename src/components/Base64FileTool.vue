@@ -57,7 +57,7 @@ const activeTab = ref<'decode' | 'encode'>('decode')
 .base64-file-tabs {
   display: flex;
   gap: 2px;
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
   border-radius: 8px;
   padding: 3px;
   width: fit-content;
@@ -72,19 +72,19 @@ const activeTab = ref<'decode' | 'encode'>('decode')
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
 
 .base64-file-tab:hover {
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .base64-file-tab.active {
-  background: #fff;
-  color: #1677ff;
+  background: var(--bg-card);
+  color: var(--accent-blue);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 

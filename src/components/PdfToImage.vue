@@ -462,12 +462,12 @@ const clearAll = () => {
   margin: 0;
   font-size: 30px;
   line-height: 1.2;
-  color: #1677ff;
+  color: var(--accent-blue);
   font-weight: 500;
 }
 
 .p2i-guide {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
   padding-top: 10px;
 }
 
@@ -475,18 +475,18 @@ const clearAll = () => {
   margin: 0 0 6px;
   font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .p2i-guide-text {
   margin: 0;
   font-size: 17px;
   line-height: 1.55;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .p2i-dropzone {
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--border-color);
   border-radius: 8px;
   padding: 32px 16px;
   text-align: center;
@@ -497,14 +497,14 @@ const clearAll = () => {
 
 .p2i-dropzone:hover,
 .p2i-dropzone-active {
-  border-color: #1677ff;
-  background-color: #f0f7ff;
+  border-color: var(--accent-blue);
+  background-color: var(--accent-active);
 }
 
 .p2i-dropzone-filled {
   border-style: solid;
-  border-color: #1677ff;
-  background-color: #f9fafb;
+  border-color: var(--accent-blue);
+  background-color: var(--bg-tertiary);
 }
 
 .p2i-file-input {
@@ -514,20 +514,20 @@ const clearAll = () => {
 .p2i-dropzone-text {
   margin: 0;
   font-size: 16px;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .p2i-dropzone-meta {
   margin: 4px 0 0;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .p2i-settings {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px;
 }
@@ -542,32 +542,32 @@ const clearAll = () => {
 .p2i-label {
   min-width: 80px;
   font-size: 15px;
-  color: #374151;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .p2i-label-hint {
   font-weight: 400;
   font-size: 13px;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .p2i-select {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 14px;
-  color: #374151;
-  background: #fff;
+  color: var(--text-primary);
+  background: var(--bg-card);
   cursor: pointer;
 }
 
 .p2i-input {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 14px;
-  color: #374151;
+  color: var(--text-primary);
   width: 140px;
 }
 
@@ -584,17 +584,17 @@ const clearAll = () => {
 
 .p2i-range-value {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
   min-width: 36px;
 }
 
 .p2i-setting-hint {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .p2i-setting-hint.error {
-  color: #dc2626;
+  color: var(--accent-error);
 }
 
 .p2i-actions {
@@ -605,19 +605,19 @@ const clearAll = () => {
 }
 
 .p2i-btn {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #fff;
-  color: #374151;
+  background: var(--bg-card);
+  color: var(--text-primary);
   padding: 10px 18px;
   font-size: 15px;
   cursor: pointer;
 }
 
 .p2i-btn.primary {
-  background: #1677ff;
-  border-color: #1677ff;
-  color: #fff;
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: var(--bg-card);
 }
 
 .p2i-btn.small {
@@ -633,20 +633,20 @@ const clearAll = () => {
 .p2i-status {
   margin: 0;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .p2i-status.ok {
-  color: #16a34a;
+  color: var(--accent-success);
 }
 
 .p2i-status.error {
-  color: #dc2626;
+  color: var(--accent-error);
 }
 
 .p2i-progress-bar-wrap {
   height: 20px;
-  background: #e5e7eb;
+  background: var(--border-color);
   border-radius: 10px;
   position: relative;
   overflow: hidden;
@@ -654,7 +654,7 @@ const clearAll = () => {
 
 .p2i-progress-bar {
   height: 100%;
-  background: #1677ff;
+  background: var(--accent-blue);
   border-radius: 10px;
   transition: width 0.3s ease;
 }
@@ -666,7 +666,7 @@ const clearAll = () => {
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: #374151;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -677,18 +677,18 @@ const clearAll = () => {
 }
 
 .p2i-page-card {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .p2i-page-img {
   width: 100%;
   display: block;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .p2i-page-info {
@@ -697,7 +697,7 @@ const clearAll = () => {
   gap: 4px 12px;
   padding: 8px 10px;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .p2i-page-card .p2i-btn {
@@ -714,16 +714,16 @@ const clearAll = () => {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .p2i-long-img {
   max-width: 100%;
   display: block;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
 }
 </style>

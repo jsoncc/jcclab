@@ -377,8 +377,8 @@ const run = () => {
   position: relative;
   display: grid;
   grid-template-columns: 46px 1fr;
-  border: 1px solid #e6e6e6;
-  background: #fff;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
   border-radius: 2px;
   overflow: hidden;
   min-height: 340px;
@@ -392,8 +392,8 @@ const run = () => {
 }
 
 .jfv-gutter {
-  background: #fbfbfb;
-  border-right: 1px solid #e6e6e6;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
   overflow: hidden;
   padding: 10px 0;
   height: 100%;
@@ -403,7 +403,7 @@ const run = () => {
   height: 22px;
   line-height: 22px;
   font-size: 12px;
-  color: #999;
+  color: var(--text-muted);
   text-align: right;
   padding-right: 10px;
   user-select: none;
@@ -412,8 +412,8 @@ const run = () => {
 }
 
 .jfv-gutter-line.active {
-  background: #f6d3d3;
-  color: #c00;
+  background: var(--accent-error);
+  color: var(--accent-error);
   font-weight: 700;
 }
 
@@ -429,8 +429,8 @@ const run = () => {
   box-sizing: border-box;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   color: transparent;
-  background: #fff;
-  caret-color: #333;
+  background: var(--bg-card);
+  caret-color: var(--text-primary);
 }
 
 .jfv-highlight {
@@ -441,8 +441,8 @@ const run = () => {
   font-size: 14px;
   line-height: 22px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-  color: #333;
-  background: #fff;
+  color: var(--text-primary);
+  background: var(--bg-card);
   overflow-y: auto;
   white-space: pre;
   word-spacing: 0;
@@ -468,29 +468,29 @@ const run = () => {
 }
 
 .jfv-highlight :deep(.jfv-json-key) {
-  color: #c41a16;
+  color: var(--accent-error);
   font-weight: 400;
 }
 
 .jfv-highlight :deep(.jfv-quote) {
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .jfv-highlight :deep(.jfv-json-string-value) {
-  color: #2563eb;
+  color: var(--link-color);
 }
 
 .jfv-highlight :deep(.jfv-json-number) {
-  color: #16a34a;
+  color: var(--accent-success);
 }
 
 .jfv-highlight :deep(.jfv-json-boolean) {
-  color: #0c3a97;
+  color: var(--accent-blue);
   font-weight: 600;
 }
 
 .jfv-highlight :deep(.jfv-json-null) {
-  color: #0c3a97;
+  color: var(--accent-blue);
   font-weight: 600;
 }
 
@@ -508,10 +508,10 @@ const run = () => {
   box-sizing: border-box;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
   background: transparent;
-  caret-color: #333;
+  caret-color: var(--text-primary);
   overflow-y: auto;
   white-space: pre;
-  color: #333;
+  color: var(--text-primary);
   margin: 0;
   text-align: left;
   letter-spacing: normal;
@@ -525,29 +525,29 @@ const run = () => {
 }
 
 .jfv-textarea.highlight-active:focus {
-  caret-color: #333;
+  caret-color: var(--text-primary);
 }
 
 .jfv-json-key {
-  color: #c41a16;
+  color: var(--accent-error);
   font-weight: 600;
 }
 
 .jfv-json-string {
-  color: #c41a16;
+  color: var(--accent-error);
 }
 
 .jfv-json-number {
-  color: #16a34a;
+  color: var(--accent-success);
 }
 
 .jfv-json-boolean {
-  color: #0c3a97;
+  color: var(--accent-blue);
   font-weight: 600;
 }
 
 .jfv-json-null {
-  color: #0c3a97;
+  color: var(--accent-blue);
   font-weight: 600;
 }
 
@@ -559,9 +559,9 @@ const run = () => {
   height: 30px;
   padding: 0;
   font-size: 16px;
-  color: #666;
-  background: #fff;
-  border: 1px solid #e6e6e6;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   cursor: pointer;
   opacity: 0.75;
@@ -570,7 +570,7 @@ const run = () => {
 
 .jfv-editor-btn:hover {
   opacity: 1;
-  background: #f5f5f5;
+  background: var(--bg-tertiary);
 }
 
 .jfv-editor-btn:disabled {
@@ -598,24 +598,24 @@ const run = () => {
   align-items: center;
   gap: 0;
   margin-top: 10px;
-  border: 1px solid #e6e6e6;
+  border: 1px solid var(--border-color);
   border-top: none;
-  background: #f7f7f7;
+  background: var(--bg-tertiary);
 }
 
 .jfv-action {
   padding: 9px 18px;
   font-size: 13px;
-  color: #333;
+  color: var(--text-primary);
   background: transparent;
   border: none;
-  border-right: 1px solid #e6e6e6;
+  border-right: 1px solid var(--border-color);
   cursor: pointer;
 }
 
 .jfv-action.primary {
-  background: #1e9fff;
-  color: #fff;
+  background: var(--accent-blue);
+  color: var(--bg-card);
   font-weight: 700;
 }
 
@@ -629,17 +629,17 @@ const run = () => {
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  border: 1px solid #e6e6e6;
+  border: 1px solid var(--border-color);
   border-top: none;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .jfv-result.ok {
-  background: #e8f8e8;
+  background: var(--accent-success);
 }
 
 .jfv-result.error {
-  background: #fcecec;
+  background: var(--accent-error);
 }
 
 .jfv-result-icon {
@@ -649,8 +649,8 @@ const run = () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  background: #bdbdbd;
+  color: var(--bg-card);
+  background: var(--border-color-light);
   flex: 0 0 auto;
 }
 
@@ -660,23 +660,23 @@ const run = () => {
 }
 
 .jfv-result.ok .jfv-result-icon {
-  background: #16a34a;
+  background: var(--accent-success);
 }
 
 .jfv-result.error .jfv-result-icon {
-  background: #ef4444;
+  background: var(--accent-error);
 }
 
 .jfv-result-title {
   font-size: 13px;
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .jfv-result-sub {
   margin-top: 2px;
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .jfv-overlay {
@@ -691,7 +691,7 @@ const run = () => {
 }
 
 .jfv-modal {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 10px;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
   width: 100%;
@@ -707,15 +707,15 @@ const run = () => {
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
-  border-bottom: 1px solid #e6e6e6;
-  background: #fafafa;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
   flex: 0 0 auto;
 }
 
 .jfv-modal-title {
   font-size: 15px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .jfv-modal-actions {
@@ -730,24 +730,24 @@ const run = () => {
   gap: 4px;
   padding: 6px 12px;
   font-size: 12px;
-  color: #555;
-  background: #fff;
-  border: 1px solid #d0d0d0;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color-light);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .jfv-modal-btn:hover {
-  background: #f0f0f0;
-  border-color: #bbb;
-  color: #333;
+  background: var(--bg-tertiary);
+  border-color: var(--border-color-light);
+  color: var(--text-primary);
 }
 
 .jfv-modal-close:hover {
-  background: #fee;
-  border-color: #fcc;
-  color: #c00;
+  background: var(--accent-error);
+  border-color: var(--accent-error);
+  color: var(--accent-error);
 }
 
 .jfv-modal-content {
@@ -756,7 +756,7 @@ const run = () => {
   font-size: 14px;
   line-height: 1.6;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  color: #333;
+  color: var(--text-primary);
   white-space: pre-wrap;
   word-break: break-word;
   overflow-y: auto;
@@ -767,8 +767,8 @@ const run = () => {
 
 .jfv-modal-gutter {
   flex: 0 0 46px;
-  background: #fbfbfb;
-  border-right: 1px solid #e6e6e6;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
   padding: 0 10px 0 0;
   text-align: right;
   user-select: none;
@@ -778,7 +778,7 @@ const run = () => {
   height: 22.4px;
   line-height: 22.4px;
   font-size: 12px;
-  color: #999;
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
@@ -795,47 +795,47 @@ const run = () => {
 }
 
 .jfv-modal-pre :deep(.jfv-json-key) {
-  color: #c41a16;
+  color: var(--accent-error);
   font-weight: 400;
 }
 
 .jfv-modal-pre :deep(.jfv-quote) {
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .jfv-modal-pre :deep(.jfv-json-string-value) {
-  color: #2563eb;
+  color: var(--link-color);
 }
 
 .jfv-modal-pre :deep(.jfv-json-number) {
-  color: #16a34a;
+  color: var(--accent-success);
 }
 
 .jfv-modal-pre :deep(.jfv-json-boolean) {
-  color: #0c3a97;
+  color: var(--accent-blue);
   font-weight: 600;
 }
 
 .jfv-modal-pre :deep(.jfv-json-null) {
-  color: #0c3a97;
+  color: var(--accent-blue);
   font-weight: 600;
 }
 
 .jfv-modal-pre .jfv-json-string {
-  color: #c41a16 !important;
+  color: var(--accent-error) !important;
 }
 
 .jfv-modal-pre .jfv-json-number {
-  color: #16a34a !important;
+  color: var(--accent-success) !important;
 }
 
 .jfv-modal-pre .jfv-json-boolean {
-  color: #0c3a97 !important;
+  color: var(--accent-blue) !important;
   font-weight: 600;
 }
 
 .jfv-modal-pre .jfv-json-null {
-  color: #0c3a97 !important;
+  color: var(--accent-blue) !important;
   font-weight: 600;
 }
 
