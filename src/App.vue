@@ -599,6 +599,10 @@ const themes = [
     linkColor: '#0969da', linkHover: '#1d4ed8',
     accentBlue: '#1677ff', accentSuccess: '#16a34a', accentWarning: '#f59e0b', accentError: '#dc2626',
     accentActive: '#dbeafe', onAccent: '#ffffff',
+    calloutWarningBg: '#fff8c5', calloutWarningText: '#5c4b1f',
+    calloutSuccessBg: '#dafbe1', calloutSuccessText: '#1a3d21',
+    calloutInfoBg: '#ddf4ff', calloutInfoText: '#0a3069',
+    calloutTipBg: '#fbefff', calloutTipText: '#3d2161',
     color: '#ffffff'
   },
   {
@@ -609,6 +613,10 @@ const themes = [
     linkColor: '#58a6ff', linkHover: '#79b8ff',
     accentBlue: '#3b82f6', accentSuccess: '#22c55e', accentWarning: '#fbbf24', accentError: '#f87171',
     accentActive: '#1d4ed8', onAccent: '#ffffff',
+    calloutWarningBg: '#3d2e00', calloutWarningText: '#ffd66d',
+    calloutSuccessBg: '#0c2d1d', calloutSuccessText: '#7ee787',
+    calloutInfoBg: '#0c2d48', calloutInfoText: '#79c0ff',
+    calloutTipBg: '#2d1b4e', calloutTipText: '#d2a8ff',
     color: '#2a2a2c'
   },
 ]
@@ -637,6 +645,14 @@ watch(themeKey, (val) => {
   root.style.setProperty('--accent-error', theme.accentError)
   root.style.setProperty('--accent-active', theme.accentActive)
   root.style.setProperty('--on-accent', theme.onAccent)
+  root.style.setProperty('--callout-warning-bg', theme.calloutWarningBg)
+  root.style.setProperty('--callout-warning-text', theme.calloutWarningText)
+  root.style.setProperty('--callout-success-bg', theme.calloutSuccessBg)
+  root.style.setProperty('--callout-success-text', theme.calloutSuccessText)
+  root.style.setProperty('--callout-info-bg', theme.calloutInfoBg)
+  root.style.setProperty('--callout-info-text', theme.calloutInfoText)
+  root.style.setProperty('--callout-tip-bg', theme.calloutTipBg)
+  root.style.setProperty('--callout-tip-text', theme.calloutTipText)
   root.style.colorScheme = val === 'dark' ? 'dark' : 'light'
 }, { immediate: true })
 

@@ -305,12 +305,14 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 
 .markdown-content blockquote.warning {
   border-left-color: var(--accent-warning);
-  background: var(--accent-warning);
+  background: var(--callout-warning-bg);
+  color: var(--callout-warning-text);
 }
 
 .markdown-content blockquote.success {
   border-left-color: var(--accent-success);
-  background: var(--accent-success);
+  background: var(--callout-success-bg);
+  color: var(--callout-success-text);
 }
 
 .markdown-content blockquote p:first-child {

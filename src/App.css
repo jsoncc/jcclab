@@ -35,6 +35,16 @@
   --accent-active: #dbeafe;
   --on-accent: #ffffff;
 
+  /* 引用块 callout 配色（浅色默认，深色由 JS 覆盖） */
+  --callout-warning-bg: #fff8c5;
+  --callout-warning-text: #5c4b1f;
+  --callout-success-bg: #dafbe1;
+  --callout-success-text: #1a3d21;
+  --callout-info-bg: #ddf4ff;
+  --callout-info-text: #0a3069;
+  --callout-tip-bg: #fbefff;
+  --callout-tip-text: #3d2161;
+
   /* 阴影 */
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
   --shadow-search: 0 8px 26px rgba(15, 23, 42, 0.12);

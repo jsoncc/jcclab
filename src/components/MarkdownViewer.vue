@@ -552,23 +552,23 @@ onMounted(async () => {
 /* 引用块类型 */
 .markdown-content blockquote.warning {
   border-left-color: #d4a72c;
-  background: #fff8c5;
-  color: #5c4b1f;
+  background: var(--callout-warning-bg);
+  color: var(--callout-warning-text);
 }
 .markdown-content blockquote.success {
   border-left-color: var(--accent-success);
-  background: #dafbe1;
-  color: #1a3d21;
+  background: var(--callout-success-bg);
+  color: var(--callout-success-text);
 }
 .markdown-content blockquote.info {
   border-left-color: var(--link-color);
-  background: #ddf4ff;
-  color: #0a3069;
+  background: var(--callout-info-bg);
+  color: var(--callout-info-text);
 }
 .markdown-content blockquote.tip {
   border-left-color: #8256d0;
-  background: #fbefff;
-  color: #3d2161;
+  background: var(--callout-tip-bg);
+  color: var(--callout-tip-text);
 }
 
 /* 嵌套引用块 */
@@ -1095,6 +1095,28 @@ onMounted(async () => {
 .blog-html-wrapper blockquote blockquote {
   margin: 8px 0 0 0;
   border-left-color: #8b949e;
+}
+
+/* 引用块类型（HTML 模式） */
+.blog-html-wrapper blockquote.warning {
+  border-left-color: #d4a72c;
+  background: var(--callout-warning-bg);
+  color: var(--callout-warning-text);
+}
+.blog-html-wrapper blockquote.success {
+  border-left-color: var(--accent-success);
+  background: var(--callout-success-bg);
+  color: var(--callout-success-text);
+}
+.blog-html-wrapper blockquote.info {
+  border-left-color: var(--link-color);
+  background: var(--callout-info-bg);
+  color: var(--callout-info-text);
+}
+.blog-html-wrapper blockquote.tip {
+  border-left-color: #8256d0;
+  background: var(--callout-tip-bg);
+  color: var(--callout-tip-text);
 }
 
 /* ===== 分隔线 ===== */
