@@ -383,6 +383,42 @@
   margin-top: 0;
 }
 
+.blog-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.blog-page-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.blog-page-btn:hover:not(:disabled) {
+  background: var(--accent-active);
+  color: var(--link-hover);
+}
+
+.blog-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.blog-page-info {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
 /** 主内容堆叠低于 .module-sidebar(10)，避免带 overflow 的卡片滚动时盖住左侧导航 */
 .module-container {
   display: flex;

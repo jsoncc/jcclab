@@ -164,7 +164,7 @@
               <div class="inline-md-content" v-html="latestVpnHtml" />
             </div>
             <template v-else-if="module.key === 'blog'">
-              <template v-for="group in blogGroups" :key="group.label">
+              <template v-for="group in blogPagedGroups" :key="group.label">
                 <h3 class="list-group-title">{{ group.label }}</h3>
                 <div class="list-item" v-for="item in group.items" :key="item.path">
                   <a
@@ -176,6 +176,25 @@
                   </a>
                 </div>
               </template>
+              <div class="blog-pagination" v-if="blogPageCount > 1">
+                <button
+                  type="button"
+                  class="blog-page-btn"
+                  :disabled="blogCurrentPage <= 1"
+                  @click="blogCurrentPage--"
+                >
+                  上一页
+                </button>
+                <span class="blog-page-info">{{ blogCurrentPage }} / {{ blogPageCount }}</span>
+                <button
+                  type="button"
+                  class="blog-page-btn"
+                  :disabled="blogCurrentPage >= blogPageCount"
+                  @click="blogCurrentPage++"
+                >
+                  下一页
+                </button>
+              </div>
             </template>
             <template v-else>
               <div class="list-item" v-for="item in module.items" :key="item.key">
@@ -467,6 +486,29 @@ const blogGroups = computed((): BlogGroup[] => {
     .sort((a, b) => (groupOrder[a[0]] ?? 99) - (groupOrder[b[0]] ?? 99))
     .map(([label, items]) => ({ label, items }))
 })
+
+/* —— 博客列表分页（主内容区混排分页，保留分组标题）—— */
+const BLOG_PAGE_SIZE = 10
+const blogCurrentPage = ref(1)
+const blogPageCount = computed(() => {
+  const total = blogGroups.value.reduce((n, g) => n + g.items.length, 0)
+  return Math.max(1, Math.ceil(total / BLOG_PAGE_SIZE))
+})
+/** 按当前页切片，保留分组标题结构（跨页时每页只含涉及的分组） */
+const blogPagedGroups = computed((): BlogGroup[] => {
+  const start = (blogCurrentPage.value - 1) * BLOG_PAGE_SIZE
+  const end = start + BLOG_PAGE_SIZE
+  const result: BlogGroup[] = []
+  let index = 0
+  for (const group of blogGroups.value) {
+    const sliced = group.items.filter(() => {
+      const i = index++
+      return i >= start && i < end
+    })
+    if (sliced.length) result.push({ label: group.label, items: sliced })
+  }
+  return result
+})
 const vpnList = computed((): MdStemItem[] =>
   Object.keys(vpnFiles)
     .map((path) => {
@@ -528,6 +570,10 @@ const currentMdContent = ref('')
 const currentBlogHtml = ref('')
 const showViewer = ref(false)
 const activeModule = ref<ModuleTabKey>('all')
+/** 切换模块时博客分页回到第 1 页 */
+watch(activeModule, () => {
+  blogCurrentPage.value = 1
+})
 const activeTool = ref<ActiveToolKey>('formatCheck')
 const toolsMenuOpen = ref(false)
 const toolsMenuTimer = ref(0)
@@ -939,6 +985,7 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
     //   break
     case 'blog':
       footerCollapsed.value = true
+      blogCurrentPage.value = 1
       const blogName = stemFromGlobPath(value, 'md')
       if (blogName) {
         router.push({ name: 'blog-post', params: { name: blogName } })
