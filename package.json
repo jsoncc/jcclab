@@ -14,6 +14,8 @@
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "check:version": "node scripts/check-version.js",
+    "prebuild": "npm run check:version",
     "workers:dev": "wrangler dev --config workers/wrangler.toml",
     "workers:deploy": "wrangler deploy --config workers/wrangler.toml",
     "workers:kv-bind": "tsx scripts/worker-kv-bind.ts",
