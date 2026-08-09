@@ -457,9 +457,12 @@ type BlogGroup = { label: string; items: { name: string; path: string }[] }
 type MdStemItem = { name: string; path: string }
 
 const groupKey = (name: string): string => {
-  if (name.startsWith('Git') || name.startsWith('GIT_')) return 'Git'
+  // 先判断 GitHub，避免被 Git 的 startsWith 拦截
   if (name.startsWith('GitHub')) return 'GitHub'
+  if (name.startsWith('Git') || name.startsWith('GIT_')) return 'Git'
   if (name.startsWith('OpenCode') || name.startsWith('opencode')) return 'OpenCode'
+  if (name.startsWith('Hermes')) return 'Hermes'
+  if (name.startsWith('Obsidian')) return 'Obsidian'
   return '其他'
 }
 
@@ -467,7 +470,9 @@ const groupOrder: Record<string, number> = {
   'Git': 1,
   'GitHub': 2,
   'OpenCode': 3,
-  '其他': 4
+  'Hermes': 4,
+  'Obsidian': 5,
+  '其他': 6
 }
 
 const blogGroups = computed((): BlogGroup[] => {
