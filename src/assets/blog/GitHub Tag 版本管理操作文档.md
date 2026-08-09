@@ -130,6 +130,9 @@ git push origin v1.1.0
 ---
 
 # 七、你的项目真实使用流程（直接照抄）
+
+> 💡 **提示**：下面是用 git tag 手动打版本的方式。更推荐使用「第八节」的 npm 发版脚本，一条命令即可自动完成版本更新 + Tag + 推送。
+
 ## 第一次发版（v1.0.0）
 ```bash
 git add .
@@ -148,3 +151,22 @@ git push origin main
 git tag v1.1.0
 git push origin v1.1.0
 ```
+
+---
+
+# 八、用 npm 脚本自动发版（本项目推荐方式）
+
+本项目在 `package.json` 配置了发版脚本，一条命令即可自动完成「更新版本号 + 同步 package-lock.json + 打 Tag + 推送」。
+
+| 升级类型 | 命令 | 示例 |
+|---------|------|------|
+| 补丁（修 bug） | `npm run release` | 1.7.0 → 1.7.1 |
+| 功能（新功能） | `npm run release:minor` | 1.7.0 → 1.8.0 |
+| 大版本 | `npm run release:major` | 1.7.0 → 2.0.0 |
+
+> 执行前需先 `git commit` 提交本次改动，npm 发版会基于当前版本自动计算下一个版本号。
+
+### 发版后
+- `package.json` 与 `package-lock.json` 的版本号会自动同步更新
+- 自动创建 git Tag（如 `v1.7.0`）并推送到 GitHub
+- 构建前会通过 `scripts/check-version.js` 自动校验版本号一致，防止手工改动导致漂移
