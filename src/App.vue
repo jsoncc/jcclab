@@ -481,11 +481,11 @@ const groupKey = (name: string): string => {
   if (name.startsWith('OpenCode') || name.startsWith('opencode')) return 'OpenCode'
   if (name.startsWith('Hermes')) return 'Hermes'
   if (name.startsWith('Obsidian')) return 'Obsidian'
-  return '其他'
+  return '综合'
 }
 
 const groupOrder: Record<string, number> = {
-  '其他': 0,
+  '综合': 0,
   'Git': 1,
   'GitHub': 2,
   'OpenCode': 3,
