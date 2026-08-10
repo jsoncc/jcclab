@@ -467,12 +467,12 @@ const groupKey = (name: string): string => {
 }
 
 const groupOrder: Record<string, number> = {
+  '其他': 0,
   'Git': 1,
   'GitHub': 2,
   'OpenCode': 3,
   'Hermes': 4,
-  'Obsidian': 5,
-  '其他': 6
+  'Obsidian': 5
 }
 
 const blogGroups = computed((): BlogGroup[] => {
