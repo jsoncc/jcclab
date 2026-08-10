@@ -164,37 +164,55 @@
               <div class="inline-md-content" v-html="latestVpnHtml" />
             </div>
             <template v-else-if="module.key === 'blog'">
-              <template v-for="group in blogPagedGroups" :key="group.label">
-                <h3 class="list-group-title">{{ group.label }}</h3>
-                <div class="list-item" v-for="item in group.items" :key="item.path">
-                  <a
-                    :href="`#/blog/${item.name}`"
-                    class="date-link"
-                    @click.prevent="openModuleItem('blog', item.path)"
+              <!-- 首页「全部」视图：仅展示分类导航，点击跳到博客 tab -->
+              <template v-if="activeModule === 'all'">
+                <div class="blog-categories">
+                  <button
+                    v-for="group in blogGroups"
+                    :key="group.label"
+                    type="button"
+                    class="blog-category"
+                    @click="activeModule = 'blog'"
                   >
-                    {{ item.name }}
-                  </a>
+                    <span class="blog-category-label">{{ group.label }}</span>
+                    <span class="blog-category-count">{{ group.items.length }} 篇</span>
+                  </button>
                 </div>
               </template>
-              <div class="blog-pagination" v-if="blogPageCount > 1">
-                <button
-                  type="button"
-                  class="blog-page-btn"
-                  :disabled="blogCurrentPage <= 1"
-                  @click="blogCurrentPage--"
-                >
-                  上一页
-                </button>
-                <span class="blog-page-info">{{ blogCurrentPage }} / {{ blogPageCount }}</span>
-                <button
-                  type="button"
-                  class="blog-page-btn"
-                  :disabled="blogCurrentPage >= blogPageCount"
-                  @click="blogCurrentPage++"
-                >
-                  下一页
-                </button>
-              </div>
+              <!-- 博客 tab 单视图：完整分组列表 + 分页 -->
+              <template v-else>
+                <template v-for="group in blogPagedGroups" :key="group.label">
+                  <h3 class="list-group-title">{{ group.label }}</h3>
+                  <div class="list-item" v-for="item in group.items" :key="item.path">
+                    <a
+                      :href="`#/blog/${item.name}`"
+                      class="date-link"
+                      @click.prevent="openModuleItem('blog', item.path)"
+                    >
+                      {{ item.name }}
+                    </a>
+                  </div>
+                </template>
+                <div class="blog-pagination" v-if="blogPageCount > 1">
+                  <button
+                    type="button"
+                    class="blog-page-btn"
+                    :disabled="blogCurrentPage <= 1"
+                    @click="blogCurrentPage--"
+                  >
+                    上一页
+                  </button>
+                  <span class="blog-page-info">{{ blogCurrentPage }} / {{ blogPageCount }}</span>
+                  <button
+                    type="button"
+                    class="blog-page-btn"
+                    :disabled="blogCurrentPage >= blogPageCount"
+                    @click="blogCurrentPage++"
+                  >
+                    下一页
+                  </button>
+                </div>
+              </template>
             </template>
             <template v-else>
               <div class="list-item" v-for="item in module.items" :key="item.key">
