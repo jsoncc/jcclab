@@ -157,8 +157,8 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
 /* ===== 组件布局（使用 .blog-post- 命名空间防止泄漏） ===== */
 .blog-post-page {
   padding: 24px 32px;
-  max-width: 900px;
-  margin: 0;
+  max-width: 1040px;
+  margin: 0 auto;
 }
 
 .blog-post-header {
