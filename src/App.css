@@ -387,6 +387,8 @@
   margin: 12px 0 4px;
   padding: 0 4px;
   letter-spacing: 0.05em;
+  /* 从「全部」分类跳转定位时，避开吸顶头部 */
+  scroll-margin-top: calc(var(--layout-sticky-header-height) + 10px);
 }
 
 .list-group-title:first-of-type {

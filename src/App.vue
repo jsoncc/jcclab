@@ -164,7 +164,7 @@
               <div class="inline-md-content" v-html="latestVpnHtml" />
             </div>
             <template v-else-if="module.key === 'blog'">
-              <!-- 首页「全部」视图：仅展示分类导航，点击跳到博客 tab -->
+              <!-- 首页「全部」视图：仅展示分类导航，点击跳到博客 tab 对应分组 -->
               <template v-if="activeModule === 'all'">
                 <div class="blog-categories">
                   <button
@@ -172,7 +172,7 @@
                     :key="group.label"
                     type="button"
                     class="blog-category"
-                    @click="activeModule = 'blog'"
+                    @click="openBlogGroup(group.label)"
                   >
                     <span class="blog-category-label">{{ group.label }}</span>
                     <span class="blog-category-count">{{ group.items.length }} 篇</span>
@@ -182,7 +182,7 @@
               <!-- 博客 tab 单视图：完整分组列表 + 分页 -->
               <template v-else>
                 <template v-for="group in blogPagedGroups" :key="group.label">
-                  <h3 class="list-group-title">{{ group.label }}</h3>
+                  <h3 :id="`blog-group-${group.label}`" class="list-group-title">{{ group.label }}</h3>
                   <div class="list-item" v-for="item in group.items" :key="item.path">
                     <a
                       :href="`#/blog/${item.name}`"
@@ -532,6 +532,28 @@ const blogPagedGroups = computed((): BlogGroup[] => {
   }
   return result
 })
+
+/** 首页「全部」→ 博客分类：切到博客 tab，跳到该分类标题所在页并滚动定位到标题 */
+const openBlogGroup = async (label: string) => {
+  activeModule.value = 'blog'
+  await nextTick() // 等 activeModule 的 watch 把分页重置为第 1 页并渲染
+  // 计算该分类首个条目所在的页码（分页按条目顺序切片）
+  let index = 0
+  let page = 1
+  for (const group of blogGroups.value) {
+    if (group.label === label) {
+      page = Math.floor(index / BLOG_PAGE_SIZE) + 1
+      break
+    }
+    index += group.items.length
+  }
+  blogCurrentPage.value = page
+  await nextTick() // 等目标分页渲染完成
+  document
+    .getElementById(`blog-group-${label}`)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
 const vpnList = computed((): MdStemItem[] =>
   Object.keys(vpnFiles)
     .map((path) => {
