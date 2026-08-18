@@ -266,25 +266,22 @@ const compressAndCopy = () => {
 
   if (!trimmed) return
 
+  let compressed: string
+  let isJson = true
   try {
-    const parsed = JSON.parse(raw)
-    const compressed = JSON.stringify(parsed)
-    inputText.value = compressed
-    statusKind.value = 'ok'
-    statusText.value = '已压缩为一行'
-    nextTick(() => syncScroll())
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : 'JSON 解析失败'
-    const pos = extractPositionFromErrorMessage(msg)
-    const { line, column } = pos == null ? { line: 1, column: 1 } : computeLineColumnFromIndex(raw, pos)
-    errorDetail.value = {
-      message: msg,
-      line,
-      column
-    }
-    statusKind.value = 'error'
-    statusText.value = '压缩失败：JSON 解析错误'
+    compressed = JSON.stringify(JSON.parse(raw))
+  } catch {
+    // 非 JSON 内容（如 PEM 公钥、纯文本日志）：仅去除换行，不改动内容本身
+    isJson = false
+    compressed = raw
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .join('')
   }
+  inputText.value = compressed
+  statusKind.value = 'ok'
+  statusText.value = isJson ? '已压缩为一行' : '已压缩为一行（非 JSON，仅去除换行）'
+  nextTick(() => syncScroll())
 }
 
 const copyInput = async () => {
@@ -635,11 +632,12 @@ const run = () => {
 }
 
 .jfv-result.ok {
-  background: var(--accent-success);
+  /* 浅色底 + 实色图标，避免深色全底导致文字看不清（含深色主题） */
+  background: color-mix(in srgb, var(--accent-success) 12%, var(--bg-card));
 }
 
 .jfv-result.error {
-  background: var(--accent-error);
+  background: color-mix(in srgb, var(--accent-error) 12%, var(--bg-card));
 }
 
 .jfv-result-icon {
@@ -665,6 +663,14 @@ const run = () => {
 
 .jfv-result.error .jfv-result-icon {
   background: var(--accent-error);
+}
+
+.jfv-result.ok .jfv-result-title {
+  color: var(--accent-success);
+}
+
+.jfv-result.error .jfv-result-title {
+  color: var(--accent-error);
 }
 
 .jfv-result-title {
