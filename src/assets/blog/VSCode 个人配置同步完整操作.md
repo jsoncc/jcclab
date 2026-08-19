@@ -28,7 +28,7 @@ VS Code 自带 **「设置同步 (Settings Sync)」** 功能，支持通过 **Gi
 2.  输入命令：`>Preferences: Turn on Settings Sync`
 3.  后续步骤与方法 1 完全一致
 
-![账户同步设置](./images/blog/vsCodePersonalConfigSyncCompleteOperationDocument/2.png)
+![账户同步设置](./images/blog/vscode-sync-2.png)
 
 ---
 
@@ -78,7 +78,7 @@ VS Code 自带 **「设置同步 (Settings Sync)」** 功能，支持通过 **Gi
 
 ## 六、在 GitHub 查看同步的配置数据
 使用 GitHub 账户同步时，配置存储在 **GitHub Gist**（私有存储，仅自己可见）：
-![GitHub Gist cloudSettings](./images/blog/vsCodePersonalConfigSyncCompleteOperationDocument/1.png)
+![GitHub Gist cloudSettings](./images/blog/vscode-sync-1.png)
 1.  打开浏览器，访问 `https://gist.github.com/`，登录你的 GitHub 账户
 2.  找到名称为 **`vscode-sync`** 或 **`cloudSettings`** 的私有 Gist（首次同步自动创建）
 3.  进入后可查看所有同步文件：`settings.json`、`extensions.json`、`keybindings.json` 等

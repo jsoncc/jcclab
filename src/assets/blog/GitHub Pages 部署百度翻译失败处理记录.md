@@ -8,7 +8,7 @@
 
 ## 现象
 
-![部署后翻译模块提示未配置](./images/blog/github-pages-deploy-baidu-fanyi-fix/image.png)
+![部署后翻译模块提示未配置](./images/blog/baidu-fanyi-fix.png)
 
 - 页面提示：请复制 `.env.example` 为 `.env` 并填写 `VITE_BAIDU_APP_ID` 与 `VITE_BAIDU_SECRET`
 - 本地 `npm run dev` 能翻译，线上 `https://jsoncc.github.io/today-history/` 不能翻译

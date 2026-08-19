@@ -111,7 +111,7 @@ git push origin v1.1.0
 
 5. 点击 **Publish release** 完成
    
-![GitHub增加tag](./images/blog/git-version-management-operation-document/image.png)
+![GitHub增加tag](./images/blog/git-tag.png)
 
 ---
 
