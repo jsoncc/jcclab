@@ -85,7 +85,7 @@ npm run preview  # 本地预览 dist
 ## 界面预览
 
 ![首页导航](./src/assets/images/home/1.png)
-![首页导航](./src/assets/images/home/3.png)
+![首页导航](./src/assets/images/home/2.png)
 
 ---
 
