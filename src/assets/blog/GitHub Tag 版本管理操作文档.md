@@ -111,7 +111,7 @@ git push origin v1.1.0
 
 5. 点击 **Publish release** 完成
    
-![GitHub增加tag](./images/blog/git-tag.png)
+![[git-tag.png]]
 
 ---
 
@@ -170,3 +170,33 @@ git push origin v1.1.0
 - `package.json` 与 `package-lock.json` 的版本号会自动同步更新
 - 自动创建 git Tag（如 `v1.7.0`）并推送到 GitHub
 - 构建前会通过 `scripts/check-version.js` 自动校验版本号一致，防止手工改动导致漂移
+
+---
+
+# 九、用 gh CLI 创建/更新 Release（2026-08 起）
+
+> 第八节负责「版本号 + Tag」，本节负责「Release 介绍页」。从 v1.7.1 起这套流程已在本机跑通。
+
+## 1. 一次性准备（已完成）
+- WSL 安装 gh：`sudo apt install gh`
+- 授权登录（Device Flow）：`gh auth login --hostname github.com --git-protocol https --web`，打开 https://github.com/login/device 输入页面代码 → Authorize
+- 登录状态保存在 `~/.config/gh/hosts.yml`，**之后发版无需重复授权**；只有主动在 GitHub 设置里撤销授权后才需要重新登录
+
+## 2. 发版全流程（一条龙）
+```bash
+cd /mnt/d/projects/jcclab
+npm version 1.7.1             # 或 npm run release（自动 +1 补丁号）
+node scripts/check-version.js # 校验三处版本号一致
+git push --follow-tags        # 推送代码 + tag
+gh release create v1.7.1 --title "v1.7.1" --notes-file release-notes.md
+```
+- Release 正文先写进任意 .md 文件，用 `--notes-file` 引用
+- 改正文：`gh release edit v1.7.1 --notes-file xxx.md`
+
+## 3. 中文一句话发版
+对 Hermes 说「发布一下 jcclab，版本 v1.7.2」即可，AI 会执行以上全部步骤；Release 正文也可直接中文描述给 AI，它会照你给的内容写好再创建。
+
+## 4. 小贴士
+- Release 正文想改条目/去重，随时 `gh release edit` 重写
+- 删除 Release（不影响 tag）：`gh release delete v1.7.1`
+- 删除 tag：本地 `git tag -d v1.7.1`，远程 `git push origin :refs/tags/v1.7.1`
