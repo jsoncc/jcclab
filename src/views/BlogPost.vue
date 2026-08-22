@@ -168,6 +168,11 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
   margin-bottom: 24px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-primary);
+  backdrop-filter: blur(8px);
 }
 
 .blog-post-page > .blog-post-header > .back-btn {
