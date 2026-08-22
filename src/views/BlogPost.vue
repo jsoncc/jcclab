@@ -171,7 +171,7 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--bg-primary);
+  background: red;
   backdrop-filter: blur(8px);
 }
 
