@@ -1,5 +1,5 @@
 <template>
-  <div class="home" :data-theme="themeKey">
+  <div class="home" :class="{ 'home--blog-post': isBlogPost }" :data-theme="themeKey">
     <header class="page-header">
       <div class="header-left">
         <button
