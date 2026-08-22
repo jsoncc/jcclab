@@ -1,13 +1,12 @@
 <template>
   <div class="blog-post-page">
-    <div class="blog-post-header" ref="headerEl">
+    <div class="blog-post-header">
       <button class="back-btn" @click="goBack">
         <Icon :icon="arrowLeftIcon" class="back-icon" />
         返回博客列表
       </button>
       <button class="copy-btn" @click="copyContent">复制全文</button>
     </div>
-    <div class="blog-post-header-spacer" ref="spacerEl"></div>
     <article v-if="htmlContent" class="markdown-content" v-html="htmlContent" />
     <div v-else class="blog-not-found">
       <h2>文章未找到</h2>
@@ -18,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, watch, computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import arrowLeftIcon from '@iconify-icons/radix-icons/arrow-left'
@@ -150,34 +149,8 @@ function injectCodeHeaders(): void {
   })
 }
 
-watch(htmlContent, async () => { await nextTick(); injectCodeHeaders(); initStickyHeader() })
-onMounted(async () => { await nextTick(); injectCodeHeaders(); initStickyHeader() })
-
-// JS 吸顶：监听滚动，header 到达顶部时添加 is-sticky 类
-const headerEl = ref<HTMLElement | null>(null)
-const spacerEl = ref<HTMLElement | null>(null)
-
-function initStickyHeader(): void {
-  const header = headerEl.value
-  const page = document.querySelector('.blog-post-page') as HTMLElement | null
-  const spacer = spacerEl.value
-  if (!header || !page || !spacer) return
-
-  const onScroll = () => {
-    const pageRect = page.getBoundingClientRect()
-    if (pageRect.top < 0) {
-      if (!header.classList.contains('is-sticky')) {
-        header.classList.add('is-sticky')
-        spacer.style.height = `${header.offsetHeight}px`
-      }
-    } else {
-      header.classList.remove('is-sticky')
-      spacer.style.height = '0px'
-    }
-  }
-  window.addEventListener('scroll', onScroll, { passive: true })
-  onUnmounted(() => window.removeEventListener('scroll', onScroll))
-}
+watch(htmlContent, async () => { await nextTick(); injectCodeHeaders() })
+onMounted(async () => { await nextTick(); injectCodeHeaders() })
 </script>
 
 <style>
@@ -195,28 +168,6 @@ function initStickyHeader(): void {
   margin-bottom: 24px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border-color);
-  transition: box-shadow 0.2s;
-}
-
-/* JS 吸顶：滚动时固定在顶部 */
-.blog-post-header.is-sticky {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  background: var(--bg-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 0;
-  padding: 12px 32px 16px;
-  border-bottom: 1px solid var(--border-color);
-  border-radius: 0;
-}
-
-/* 占位符：防止吸顶时内容跳动 */
-.blog-post-header-spacer {
-  height: 0;
-  transition: height 0.1s;
 }
 
 .blog-post-page > .blog-post-header > .back-btn {
