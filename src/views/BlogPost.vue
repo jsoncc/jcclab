@@ -170,9 +170,14 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
-  z-index: 50;
-  background: red;
+  z-index: 100;
+  background: var(--bg-primary);
   backdrop-filter: blur(8px);
+}
+
+.markdown-content {
+  position: relative;
+  z-index: 1;
 }
 
 .blog-post-page > .blog-post-header > .back-btn {
