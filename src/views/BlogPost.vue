@@ -1,13 +1,25 @@
 <template>
   <div class="blog-post-page">
-    <div class="blog-post-header">
-      <button class="back-btn" @click="goBack">
-        <Icon :icon="arrowLeftIcon" class="back-icon" />
-        返回博客列表
-      </button>
-      <button class="copy-btn" @click="copyContent">复制全文</button>
+    <div v-if="htmlContent" class="blog-layout">
+      <div class="blog-main">
+        <div class="blog-post-header">
+          <button class="back-btn" @click="goBack">
+            <Icon :icon="arrowLeftIcon" class="back-icon" />
+            返回博客列表
+          </button>
+          <button class="copy-btn" @click="copyContent">复制全文</button>
+        </div>
+        <article class="markdown-content" v-html="htmlContent" />
+      </div>
+      <aside v-if="headings.length" class="blog-toc">
+        <div class="toc-title">目录</div>
+        <nav class="toc-list">
+          <a v-for="h in headings" :key="h.id" :href="'#' + h.id"
+            class="toc-item" :class="['toc-l' + h.level, { active: activeId === h.id }]"
+            @click.prevent="scrollTo(h.id)">{{ h.text }}</a>
+        </nav>
+      </aside>
     </div>
-    <article v-if="htmlContent" class="markdown-content" v-html="htmlContent" />
     <div v-else class="blog-not-found">
       <h2>文章未找到</h2>
       <p>抱歉，请求的博客文章不存在或已被移除。</p>
@@ -17,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, nextTick } from 'vue'
+import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import arrowLeftIcon from '@iconify-icons/radix-icons/arrow-left'
@@ -28,6 +40,9 @@ const router = useRouter()
 const { getBlogMdContent, renderMarkdown } = useBlogData()
 const htmlContent = ref('')
 const blogName = computed(() => (route.params.name as string) || '')
+interface Heading { id: string; text: string; level: number }
+const headings = ref<Heading[]>([])
+const activeId = ref('')
 
 const imageFiles = import.meta.glob('../assets/images/**/*', {
   eager: true,
@@ -46,6 +61,22 @@ const resolveMarkdownImage = (rawUrl: string) => {
   }
   const key = `../assets/${withoutPrefix}`
   return imageFiles[key] || url
+}
+
+// 给标题加 id，提取目录
+function addHeadingIds(html: string): { html: string; items: Heading[] } {
+  const items: Heading[] = []
+  let counter = 0
+  const result = html.replace(
+    /<h([23])[^>]*>([\s\S]*?)<\/h\1>/g,
+    (_m, lvl, inner) => {
+      const text = inner.replace(/<[^>]+>/g, '').trim()
+      const id = `heading-${counter++}`
+      items.push({ id, text, level: Number(lvl) })
+      return `<h${lvl} id="${id}">${inner}</h${lvl}>`
+    }
+  )
+  return { html: result, items }
 }
 
 const processMarkdown = () => {
@@ -70,7 +101,9 @@ const processMarkdown = () => {
     /<blockquote>\s*<p>✅/g,
     '<blockquote class="success"><p>✅'
   )
-  htmlContent.value = rendered
+  const { html, items } = addHeadingIds(rendered)
+  htmlContent.value = html
+  headings.value = items
 }
 
 watch(() => route.params.name, processMarkdown, { immediate: true })
@@ -92,6 +125,31 @@ const copyContent = async () => {
   } catch {
     alert('复制失败，请手动复制')
   }
+}
+
+// 目录：滚动到标题
+function scrollTo(id: string) {
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+// 目录：IntersectionObserver 高亮当前标题
+let observer: IntersectionObserver | null = null
+function setupObserver() {
+  observer?.disconnect()
+  const targets = headings.value
+    .map(h => document.getElementById(h.id))
+    .filter(Boolean) as HTMLElement[]
+  if (!targets.length) return
+  observer = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) { activeId.value = e.target.id; break }
+      }
+    },
+    { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
+  )
+  targets.forEach(el => observer!.observe(el))
 }
 
 // 代码块头部注入（语言标签 + 复制按钮）
@@ -149,18 +207,25 @@ function injectCodeHeaders(): void {
   })
 }
 
-watch(htmlContent, async () => { await nextTick(); injectCodeHeaders() })
-onMounted(async () => { await nextTick(); injectCodeHeaders() })
+watch(htmlContent, async () => { await nextTick(); injectCodeHeaders(); setupObserver() })
+onMounted(async () => { await nextTick(); injectCodeHeaders(); setupObserver() })
+onUnmounted(() => observer?.disconnect())
 </script>
 
 <style>
-/* ===== 组件布局（使用 .blog-post- 命名空间防止泄漏） ===== */
+/* ===== 组件布局 ===== */
 .blog-post-page {
   padding: 24px 32px;
-  max-width: 1500px;
+  max-width: 1400px;
   margin: 0 auto;
 }
-
+.blog-layout {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 32px;
+  align-items: start;
+}
+.blog-main { min-width: 0; }
 .blog-post-header {
   display: flex;
   justify-content: space-between;
@@ -168,6 +233,51 @@ onMounted(async () => { await nextTick(); injectCodeHeaders() })
   margin-bottom: 24px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border-color);
+}
+
+/* ===== 目录 ===== */
+.blog-toc {
+  position: sticky;
+  top: 100px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+.toc-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+.toc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.toc-item {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  line-height: 1.5;
+  padding: 3px 0;
+  border-left: 2px solid transparent;
+  padding-left: 10px;
+  transition: all 0.2s;
+}
+.toc-l3 { padding-left: 24px; font-size: 12px; }
+.toc-item:hover { color: var(--accent-blue); }
+.toc-item.active {
+  color: var(--accent-blue);
+  border-left-color: var(--accent-blue);
+  font-weight: 600;
+}
+
+/* ===== 响应式：小屏隐藏目录 ===== */
+@media (max-width: 1024px) {
+  .blog-layout { grid-template-columns: 1fr; }
+  .blog-toc { display: none; }
 }
 
 .blog-post-page > .blog-post-header > .back-btn {
