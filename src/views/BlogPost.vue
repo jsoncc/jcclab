@@ -114,7 +114,15 @@ const processMarkdown = () => {
 watch(() => route.params.name, processMarkdown, { immediate: true })
 
 const goBack = () => {
-  router.push('/')
+  // 根据文章名推断分组，返回时跳到对应分组
+  const name = blogName.value
+  let group = '综合'
+  if (name.startsWith('GitHub')) group = 'GitHub'
+  else if (name.startsWith('Git') || name.startsWith('GIT_')) group = 'Git'
+  else if (name.startsWith('OpenCode') || name.startsWith('opencode')) group = 'OpenCode'
+  else if (name.startsWith('Hermes')) group = 'Hermes'
+  else if (name.startsWith('Obsidian')) group = 'Obsidian'
+  router.push({ path: '/', query: { blogGroup: group } })
 }
 
 const copyContent = async () => {

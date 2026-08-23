@@ -611,6 +611,21 @@ const latestVpnHtml = computed(() => {
 const route = useRoute()
 const router = useRouter()
 const isBlogPost = computed(() => route.name === 'blog-post')
+
+// 从博客文章返回时，自动切到博客模块并定位到对应分组
+watch(
+  () => route.query.blogGroup,
+  async (group) => {
+    if (group && typeof group === 'string' && !isBlogPost.value) {
+      await nextTick()
+      activeModule.value = 'blog'
+      await nextTick()
+      openBlogGroup(group)
+    }
+  },
+  { immediate: true }
+)
+
 const currentMdContent = ref('')
 const currentBlogHtml = ref('')
 const showViewer = ref(false)
