@@ -219,14 +219,12 @@
                   <span class="blog-page-total">共 {{ blogTotalCount }} 条</span>
                   <span class="blog-page-jump">
                     跳至
-                    <input
-                      v-model="jumpPageInput"
-                      class="blog-page-input"
-                      type="number"
-                      :min="1"
-                      :max="blogPageCount"
-                      @keyup.enter="jumpToPage"
-                    />页
+                    <select
+                      v-model="blogCurrentPage"
+                      class="blog-page-select"
+                    >
+                      <option v-for="p in blogPageCount" :key="p" :value="p">{{ p }}</option>
+                    </select>页
                   </span>
                 </div>
               </template>
@@ -539,7 +537,6 @@ const blogGroups = computed((): BlogGroup[] => {
 /* —— 博客列表分页（主内容区混排分页，保留分组标题）—— */
 const BLOG_PAGE_SIZE = 10
 const blogCurrentPage = ref(1)
-const jumpPageInput = ref('')
 const blogTotalCount = computed(() => blogGroups.value.reduce((n, g) => n + g.items.length, 0))
 const blogPageCount = computed(() => Math.max(1, Math.ceil(blogTotalCount.value / BLOG_PAGE_SIZE)))
 // 生成页码数组（含省略号）
@@ -556,13 +553,6 @@ const blogPageNumbers = computed(() => {
   pages.push(total)
   return pages
 })
-const jumpToPage = () => {
-  const n = parseInt(jumpPageInput.value, 10)
-  if (n >= 1 && n <= blogPageCount.value) {
-    blogCurrentPage.value = n
-    jumpPageInput.value = ''
-  }
-}
 /** 按当前页切片，保留分组标题结构（跨页时每页只含涉及的分组） */
 const blogPagedGroups = computed((): BlogGroup[] => {
   const start = (blogCurrentPage.value - 1) * BLOG_PAGE_SIZE

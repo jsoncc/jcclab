@@ -521,8 +521,8 @@
   color: var(--text-muted);
 }
 
-.blog-page-input {
-  width: 40px;
+.blog-page-select {
+  width: 48px;
   height: 24px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
@@ -531,20 +531,11 @@
   background: var(--bg-card);
   color: var(--text-primary);
   outline: none;
+  cursor: pointer;
 }
 
-.blog-page-input:focus {
+.blog-page-select:focus {
   border-color: var(--accent-blue);
-}
-
-/* 隐藏 number input 的增减按钮 */
-.blog-page-input::-webkit-outer-spin-button,
-.blog-page-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.blog-page-input[type=number] {
-  -moz-appearance: textfield;
 }
 
 /** 主内容堆叠低于 .module-sidebar(10)，避免带 overflow 的卡片滚动时盖住左侧导航 */
