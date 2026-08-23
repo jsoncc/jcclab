@@ -55,6 +55,8 @@
     <div class="jfv-actionsbar">
       <button type="button" class="jfv-action primary" :disabled="!canRun" @click="run">格式化校验</button>
       <button type="button" class="jfv-action" :disabled="!canRun" @click="compressAndCopy">压缩</button>
+      <button type="button" class="jfv-action" :disabled="!canRun" @click="escapeText">转义</button>
+      <button type="button" class="jfv-action" :disabled="!canRun" @click="unescapeText">去除转义</button>
       <button
         v-if="showExpandBtn"
         type="button"
@@ -257,6 +259,34 @@ const clearAll = () => {
   statusText.value = '请输入 JSON 后点击“格式化校验”'
   errorDetail.value = null
   showExpandBtn.value = false
+}
+
+// 转义：将特殊字符加上反斜杠转义符
+const escapeText = () => {
+  const raw = inputText.value
+  if (!raw) return
+  inputText.value = raw
+    .replace(/\\/g, '\\\\')     // \ → \\
+    .replace(/"/g, '\\"')       // " → \"
+    .replace(/\n/g, '\\n')      // 换行 → \n
+    .replace(/\r/g, '\\r')      // 回车 → \r
+    .replace(/\t/g, '\\t')      // 制表符 → \t
+  statusKind.value = 'ok'
+  statusText.value = '已转义'
+}
+
+// 去除转义：将转义符还原为实际字符
+const unescapeText = () => {
+  const raw = inputText.value
+  if (!raw) return
+  inputText.value = raw
+    .replace(/\\n/g, '\n')      // \n → 换行
+    .replace(/\\r/g, '\r')      // \r → 回车
+    .replace(/\\t/g, '\t')      // \t → 制表符
+    .replace(/\\"/g, '"')       // \" → "
+    .replace(/\\\\/g, '\\')     // \\ → \
+  statusKind.value = 'ok'
+  statusText.value = '已去除转义'
 }
 
 const compressAndCopy = () => {
