@@ -1,16 +1,20 @@
 <template>
   <div class="blog-post-page">
     <div v-if="htmlContent" class="blog-layout">
+      <!-- 左栏：操作按钮 -->
+      <div class="blog-actions">
+        <button class="action-btn" @click="goBack" title="返回博客列表">
+          <Icon :icon="arrowLeftIcon" class="action-icon" />
+        </button>
+        <button class="action-btn" @click="copyContent" title="复制全文">
+          <Icon :icon="contentCopyIcon" class="action-icon" />
+        </button>
+      </div>
+      <!-- 中间：正文 -->
       <div class="blog-main">
-        <div class="blog-post-header">
-          <button class="back-btn" @click="goBack">
-            <Icon :icon="arrowLeftIcon" class="back-icon" />
-            返回博客列表
-          </button>
-          <button class="copy-btn" @click="copyContent">复制全文</button>
-        </div>
         <article class="markdown-content" v-html="htmlContent" />
       </div>
+      <!-- 右栏：目录 -->
       <aside v-if="headings.length" class="blog-toc">
         <div class="toc-title">目录</div>
         <nav class="toc-list">
@@ -33,6 +37,7 @@ import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import arrowLeftIcon from '@iconify-icons/radix-icons/arrow-left'
+import contentCopyIcon from '@iconify-icons/mdi/content-copy'
 import { useBlogData } from '../composables/useBlogData'
 
 const route = useRoute()
@@ -215,25 +220,46 @@ onUnmounted(() => observer?.disconnect())
 <style>
 /* ===== 组件布局 ===== */
 .blog-post-page {
-  padding: 24px 32px;
+  padding: 24px 16px;
   max-width: 1400px;
   margin: 0 auto;
 }
 .blog-layout {
   display: grid;
-  grid-template-columns: 1fr 220px;
-  gap: 32px;
+  grid-template-columns: 48px 1fr 220px;
+  gap: 24px;
   align-items: start;
 }
 .blog-main { min-width: 0; }
-.blog-post-header {
+
+/* ===== 左栏操作按钮 ===== */
+.blog-actions {
+  position: sticky;
+  top: 100px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 12px;
   align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-color);
 }
+.action-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.action-btn:hover {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+  background: var(--accent-active);
+}
+.action-icon { width: 20px; height: 20px; }
 
 /* ===== 目录 ===== */
 .blog-toc {
@@ -274,59 +300,11 @@ onUnmounted(() => observer?.disconnect())
   font-weight: 600;
 }
 
-/* ===== 响应式：小屏隐藏目录 ===== */
+/* ===== 响应式：小屏隐藏目录和左栏按钮 ===== */
 @media (max-width: 1024px) {
   .blog-layout { grid-template-columns: 1fr; }
+  .blog-actions { display: none; }
   .blog-toc { display: none; }
-}
-
-.blog-post-page > .blog-post-header > .back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.blog-post-page > .blog-post-header > .back-btn:hover {
-  background: var(--bg-secondary);
-  border-color: var(--border-color-light);
-  color: var(--text-primary);
-}
-
-.blog-post-page > .blog-post-header > .back-btn .back-icon {
-  width: 16px;
-  height: 16px;
-}
-
-.blog-post-page > .blog-post-header > .copy-btn {
-  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue) 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
-}
-
-.blog-post-page > .blog-post-header > .copy-btn:hover {
-  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue) 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
-}
-
-.blog-post-page > .blog-post-header > .copy-btn:active {
-  transform: translateY(0);
 }
 
 .blog-not-found {
@@ -343,6 +321,23 @@ onUnmounted(() => observer?.disconnect())
 
 .blog-not-found p {
   margin-bottom: 24px;
+}
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.back-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 /* ============================================================ */
