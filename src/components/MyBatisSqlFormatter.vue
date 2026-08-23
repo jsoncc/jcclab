@@ -44,16 +44,16 @@ import { computed, ref } from 'vue'
 type Mode = 'raw' | 'pretty'
 type StatusKind = 'idle' | 'ok' | 'error'
 
-const defaultLogTemplate = `[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Preparing: SELECT * FROM user WHERE id = ? AND name = ? AND status = ?
+const exampleLog = `[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Preparing: SELECT * FROM user WHERE id = ? AND name = ? AND status = ?
 [2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Parameters: 1(Long), 张三(String), 1(Integer)`
 
-const inputLog = ref(defaultLogTemplate)
+const inputLog = ref('')
 const outputSql = ref('')
 const statusKind = ref<StatusKind>('idle')
 const statusText = ref('请先粘贴 MyBatis 日志')
 
 const fillExample = () => {
-  inputLog.value = defaultLogTemplate
+  inputLog.value = exampleLog
   outputSql.value = ''
   statusKind.value = 'idle'
   statusText.value = '示例已填充，点击「提取 SQL」或「美化 SQL」'
@@ -190,7 +190,7 @@ const copyOutput = async () => {
 }
 
 const clearAll = () => {
-  inputLog.value = defaultLogTemplate
+  inputLog.value = ''
   outputSql.value = ''
   statusKind.value = 'idle'
   statusText.value = '请先粘贴 MyBatis 日志'
