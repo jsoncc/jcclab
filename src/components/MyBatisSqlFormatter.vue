@@ -9,22 +9,28 @@
     </div>
 
     <label class="mbsf-label">Preparing</label>
-    <textarea
-      v-model="preparingLine"
-      class="mbsf-input"
-      spellcheck="false"
-      placeholder="粘贴 Preparing 行"
-      rows="3"
-    />
+    <div class="mbsf-input-row">
+      <span class="mbsf-prefix">[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==&gt; Preparing:</span>
+      <textarea
+        v-model="preparingLine"
+        class="mbsf-input"
+        spellcheck="false"
+        placeholder="输入或粘贴 SQL 模板"
+        rows="3"
+      />
+    </div>
 
     <label class="mbsf-label">Parameters</label>
-    <textarea
-      v-model="parametersLine"
-      class="mbsf-input"
-      spellcheck="false"
-      placeholder="粘贴 Parameters 行"
-      rows="2"
-    />
+    <div class="mbsf-input-row">
+      <span class="mbsf-prefix">[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==&gt; Parameters:</span>
+      <textarea
+        v-model="parametersLine"
+        class="mbsf-input"
+        spellcheck="false"
+        placeholder="输入或粘贴参数列表"
+        rows="2"
+      />
+    </div>
 
     <div class="mbsf-actions">
       <button type="button" class="mbsf-btn primary" :disabled="!canRun" @click="run('raw')">提取 SQL</button>
@@ -53,8 +59,8 @@ import { computed, ref } from 'vue'
 type Mode = 'raw' | 'pretty'
 type StatusKind = 'idle' | 'ok' | 'error'
 
-const examplePreparing = '[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Preparing: SELECT * FROM user WHERE id = ? AND name = ? AND status = ?'
-const exampleParameters = '[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Parameters: 1(Long), 张三(String), 1(Integer)'
+const examplePreparing = 'SELECT * FROM user WHERE id = ? AND name = ? AND status = ?'
+const exampleParameters = '1(Long), 张三(String), 1(Integer)'
 
 const preparingLine = ref('')
 const parametersLine = ref('')
@@ -266,12 +272,29 @@ const clearAll = () => {
   color: var(--text-secondary);
   margin-bottom: 2px;
 }
+.mbsf-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.mbsf-prefix {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 6px 12px;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  white-space: nowrap;
+  overflow-x: auto;
+}
 
 .mbsf-input,
 .mbsf-output {
   width: 100%;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 0 0 8px 8px;
   padding: 10px 12px;
   box-sizing: border-box;
   resize: vertical;
