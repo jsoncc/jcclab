@@ -72,8 +72,6 @@ const fillExample = () => {
   statusText.value = '示例已填充，点击「提取 SQL」或「美化 SQL」'
 }
 
-const canRun = computed(() => Boolean(inputLog.value.trim()))
-
 const splitParams = (paramsText: string): string[] => {
   const list: string[] = []
   let buf = ''
