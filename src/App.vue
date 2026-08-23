@@ -478,10 +478,12 @@ const groupKey = (name: string): string => {
   // 先判断 GitHub，避免被 Git 的 startsWith 拦截
   if (name.startsWith('GitHub')) return 'GitHub'
   if (name.startsWith('Git') || name.startsWith('GIT_')) return 'Git'
+  if (name.startsWith('DeepSeek')) return 'DeepSeek Harness'
   if (name.startsWith('OpenCode') || name.startsWith('opencode')) return 'OpenCode'
   if (name.startsWith('Hermes')) return 'Hermes'
   if (name.startsWith('Obsidian')) return 'Obsidian'
   if (name.startsWith('Chrome')) return 'Chrome'
+  if (name.includes('（AI版）')) return 'AI'
   return '综合'
 }
 

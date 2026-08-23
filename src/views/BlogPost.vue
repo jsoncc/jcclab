@@ -123,6 +123,8 @@ const goBack = () => {
   else if (name.startsWith('Hermes')) group = 'Hermes'
   else if (name.startsWith('Obsidian')) group = 'Obsidian'
   else if (name.startsWith('Chrome')) group = 'Chrome'
+  else if (name.startsWith('DeepSeek')) group = 'DeepSeek Harness'
+  else if (name.includes('（AI版）')) group = 'AI'
   router.push({ path: '/', query: { blogGroup: group } })
 }
 
