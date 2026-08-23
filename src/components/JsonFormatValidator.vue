@@ -261,13 +261,13 @@ const clearAll = () => {
   showExpandBtn.value = false
 }
 
-// 转义：实际字符 → 转义符
+// 转义：在特殊字符前加反斜杠
 const escapeText = () => {
   const raw = inputText.value
   if (!raw) return
   inputText.value = raw
-    .replace(/"/g, '\\"')       // " → \"
     .replace(/\\/g, '\\\\')     // \ → \\
+    .replace(/"/g, '\\"')       // " → \"
     .replace(/\n/g, '\\n')      // 换行 → \n
     .replace(/\r/g, '\\r')      // 回车 → \r
     .replace(/\t/g, '\\t')      // 制表符 → \t
@@ -275,16 +275,16 @@ const escapeText = () => {
   statusText.value = '已转义'
 }
 
-// 去除转义：转义符 → 实际字符
+// 去除转义：去掉反斜杠，还原为普通字符
 const unescapeText = () => {
   const raw = inputText.value
   if (!raw) return
   inputText.value = raw
     .replace(/\\\\/g, '\\')     // \\ → \
     .replace(/\\"/g, '"')       // \" → "
-    .replace(/\\n/g, '\n')      // \n → 换行
-    .replace(/\\r/g, '\r')      // \r → 回车
-    .replace(/\\t/g, '\t')      // \t → 制表符
+    .replace(/\\n/g, 'n')      // \n → n
+    .replace(/\\r/g, 'r')      // \r → r
+    .replace(/\\t/g, 't')      // \t → t
   statusKind.value = 'ok'
   statusText.value = '已去除转义'
 }
