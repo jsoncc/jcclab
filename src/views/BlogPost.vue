@@ -122,6 +122,7 @@ const goBack = () => {
   else if (name.startsWith('OpenCode') || name.startsWith('opencode')) group = 'OpenCode'
   else if (name.startsWith('Hermes')) group = 'Hermes'
   else if (name.startsWith('Obsidian')) group = 'Obsidian'
+  else if (name.startsWith('Chrome')) group = 'Chrome'
   router.push({ path: '/', query: { blogGroup: group } })
 }
 

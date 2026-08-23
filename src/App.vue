@@ -481,6 +481,7 @@ const groupKey = (name: string): string => {
   if (name.startsWith('OpenCode') || name.startsWith('opencode')) return 'OpenCode'
   if (name.startsWith('Hermes')) return 'Hermes'
   if (name.startsWith('Obsidian')) return 'Obsidian'
+  if (name.startsWith('Chrome')) return 'Chrome'
   return '综合'
 }
 
