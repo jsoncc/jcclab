@@ -5,23 +5,32 @@
         <p class="mbsf-guide-title">使用提示</p>
         <button type="button" class="mbsf-btn ghost" @click="fillExample">填充示例</button>
       </div>
-      <p class="mbsf-guide-text">把 MyBatis 日志里的 <code>Preparing</code> 和 <code>Parameters</code> 两行粘贴到输入框。</p>
-      <p class="mbsf-guide-text">点击「提取 SQL」还原单行 SQL，点击「美化 SQL」输出更易读的多行 SQL。</p>
+      <p class="mbsf-guide-text">从 MyBatis 日志中找到 <code>Preparing</code> 和 <code>Parameters</code> 两行，分别粘贴到下方对应输入框。</p>
     </div>
 
+    <label class="mbsf-label">Preparing</label>
     <textarea
-      v-model="inputLog"
+      v-model="preparingLine"
       class="mbsf-input"
       spellcheck="false"
-      placeholder="粘贴 MyBatis 日志（需包含 Preparing 与 Parameters 行）"
-      rows="8"
+      placeholder="粘贴 Preparing 行"
+      rows="3"
+    />
+
+    <label class="mbsf-label">Parameters</label>
+    <textarea
+      v-model="parametersLine"
+      class="mbsf-input"
+      spellcheck="false"
+      placeholder="粘贴 Parameters 行"
+      rows="2"
     />
 
     <div class="mbsf-actions">
       <button type="button" class="mbsf-btn primary" :disabled="!canRun" @click="run('raw')">提取 SQL</button>
       <button type="button" class="mbsf-btn primary" :disabled="!canRun" @click="run('pretty')">美化 SQL</button>
       <button type="button" class="mbsf-btn" :disabled="!outputSql" @click="copyOutput">复制结果</button>
-      <button type="button" class="mbsf-btn" :disabled="!inputLog && !outputSql" @click="clearAll">清空</button>
+      <button type="button" class="mbsf-btn" :disabled="!preparingLine && !parametersLine && !outputSql" @click="clearAll">清空</button>
       <span class="mbsf-status" :class="{ ok: statusKind === 'ok', error: statusKind === 'error' }">
         {{ statusText }}
       </span>
@@ -44,16 +53,20 @@ import { computed, ref } from 'vue'
 type Mode = 'raw' | 'pretty'
 type StatusKind = 'idle' | 'ok' | 'error'
 
-const exampleLog = `[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Preparing: SELECT * FROM user WHERE id = ? AND name = ? AND status = ?
-[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Parameters: 1(Long), 张三(String), 1(Integer)`
+const examplePreparing = '[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Preparing: SELECT * FROM user WHERE id = ? AND name = ? AND status = ?'
+const exampleParameters = '[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Parameters: 1(Long), 张三(String), 1(Integer)'
 
-const inputLog = ref('')
+const preparingLine = ref('')
+const parametersLine = ref('')
 const outputSql = ref('')
 const statusKind = ref<StatusKind>('idle')
-const statusText = ref('请先粘贴 MyBatis 日志')
+const statusText = ref('请粘贴 MyBatis 日志')
+
+const canRun = computed(() => Boolean(preparingLine.value.trim()))
 
 const fillExample = () => {
-  inputLog.value = exampleLog
+  preparingLine.value = examplePreparing
+  parametersLine.value = exampleParameters
   outputSql.value = ''
   statusKind.value = 'idle'
   statusText.value = '示例已填充，点击「提取 SQL」或「美化 SQL」'
@@ -133,21 +146,27 @@ const prettySql = (sql: string): string => {
   return text.endsWith(';') ? text : `${text};`
 }
 
-const parseSqlFromMyBatisLog = (logText: string, mode: Mode): string => {
-  const preparingMatch = logText.match(/==>\s*Preparing:\s*([\s\S]*?)(?:\r?\n|$)/i)
-  const paramsMatch = logText.match(/==>\s*Parameters:\s*([\s\S]*?)(?:\r?\n|$)/i)
-  if (!preparingMatch) throw new Error('未找到 Preparing 行，请确认日志格式')
+// 从单行文本中提取 Preparing:/Parameters: 后的内容
+const extractAfterLabel = (line: string, label: string): string => {
+  const m = line.match(new RegExp(`==>\\s*${label}:\\s*([\\s\\S]*?)$`, 'i'))
+  return m ? m[1].trim() : line.trim()
+}
 
-  const sqlTpl = preparingMatch[1].trim()
-  const paramList = paramsMatch ? splitParams(paramsMatch[1]) : []
+const parseSqlFromMyBatisLog = (mode: Mode): string => {
+  const sqlTpl = extractAfterLabel(preparingLine.value, 'Preparing')
+  if (!sqlTpl) throw new Error('请粘贴 Preparing 行')
+
+  const paramText = extractAfterLabel(parametersLine.value, 'Parameters')
+  const paramList = paramText ? splitParams(paramText) : []
   const injected = injectParams(sqlTpl, paramList)
-  return mode === 'pretty' ? prettySql(injected) : injected
+  if (mode === 'pretty') return prettySql(injected)
+  return injected.endsWith(';') ? injected : `${injected};`
 }
 
 const run = (mode: Mode) => {
   if (!canRun.value) return
   try {
-    outputSql.value = parseSqlFromMyBatisLog(inputLog.value, mode)
+    outputSql.value = parseSqlFromMyBatisLog(mode)
     statusKind.value = 'ok'
     statusText.value = mode === 'pretty' ? '已美化 SQL' : '已提取 SQL'
   } catch (e) {
@@ -190,10 +209,11 @@ const copyOutput = async () => {
 }
 
 const clearAll = () => {
-  inputLog.value = ''
+  preparingLine.value = ''
+  parametersLine.value = ''
   outputSql.value = ''
   statusKind.value = 'idle'
-  statusText.value = '请先粘贴 MyBatis 日志'
+  statusText.value = '请粘贴 MyBatis 日志'
 }
 </script>
 
@@ -242,6 +262,12 @@ const clearAll = () => {
   border-radius: 4px;
   padding: 1px 4px;
 }
+.mbsf-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
 
 .mbsf-input,
 .mbsf-output {
@@ -251,12 +277,13 @@ const clearAll = () => {
   padding: 10px 12px;
   box-sizing: border-box;
   resize: vertical;
-  min-height: 180px;
   font-size: 13px;
   line-height: 1.55;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   background: var(--bg-card);
 }
+.mbsf-input { min-height: 80px; }
+.mbsf-output { min-height: 120px; }
 
 .mbsf-actions {
   display: flex;
