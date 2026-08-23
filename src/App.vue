@@ -199,18 +199,35 @@
                     class="blog-page-btn"
                     :disabled="blogCurrentPage <= 1"
                     @click="blogCurrentPage--"
-                  >
-                    上一页
-                  </button>
-                  <span class="blog-page-info">{{ blogCurrentPage }} / {{ blogPageCount }}</span>
+                  >‹</button>
+                  <template v-for="(p, i) in blogPageNumbers" :key="i">
+                    <span v-if="p === '...'" class="blog-page-dots">…</span>
+                    <button
+                      v-else
+                      type="button"
+                      class="blog-page-num"
+                      :class="{ active: p === blogCurrentPage }"
+                      @click="blogCurrentPage = p as number"
+                    >{{ p }}</button>
+                  </template>
                   <button
                     type="button"
                     class="blog-page-btn"
                     :disabled="blogCurrentPage >= blogPageCount"
                     @click="blogCurrentPage++"
-                  >
-                    下一页
-                  </button>
+                  >›</button>
+                  <span class="blog-page-total">共 {{ blogTotalCount }} 条</span>
+                  <span class="blog-page-jump">
+                    跳至
+                    <input
+                      v-model="jumpPageInput"
+                      class="blog-page-input"
+                      type="number"
+                      :min="1"
+                      :max="blogPageCount"
+                      @keyup.enter="jumpToPage"
+                    />页
+                  </span>
                 </div>
               </template>
             </template>
@@ -522,10 +539,30 @@ const blogGroups = computed((): BlogGroup[] => {
 /* —— 博客列表分页（主内容区混排分页，保留分组标题）—— */
 const BLOG_PAGE_SIZE = 10
 const blogCurrentPage = ref(1)
-const blogPageCount = computed(() => {
-  const total = blogGroups.value.reduce((n, g) => n + g.items.length, 0)
-  return Math.max(1, Math.ceil(total / BLOG_PAGE_SIZE))
+const jumpPageInput = ref('')
+const blogTotalCount = computed(() => blogGroups.value.reduce((n, g) => n + g.items.length, 0))
+const blogPageCount = computed(() => Math.max(1, Math.ceil(blogTotalCount.value / BLOG_PAGE_SIZE)))
+// 生成页码数组（含省略号）
+const blogPageNumbers = computed(() => {
+  const total = blogPageCount.value
+  const cur = blogCurrentPage.value
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const pages: (number | string)[] = [1]
+  if (cur > 3) pages.push('...')
+  const start = Math.max(2, cur - 1)
+  const end = Math.min(total - 1, cur + 1)
+  for (let i = start; i <= end; i++) pages.push(i)
+  if (cur < total - 2) pages.push('...')
+  pages.push(total)
+  return pages
 })
+const jumpToPage = () => {
+  const n = parseInt(jumpPageInput.value, 10)
+  if (n >= 1 && n <= blogPageCount.value) {
+    blogCurrentPage.value = n
+    jumpPageInput.value = ''
+  }
+}
 /** 按当前页切片，保留分组标题结构（跨页时每页只含涉及的分组） */
 const blogPagedGroups = computed((): BlogGroup[] => {
   const start = (blogCurrentPage.value - 1) * BLOG_PAGE_SIZE
