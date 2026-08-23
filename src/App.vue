@@ -1073,7 +1073,8 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
       blogCurrentPage.value = 1
       const blogName = stemFromGlobPath(value, 'md')
       if (blogName) {
-        router.push({ name: 'blog-post', params: { name: blogName } })
+        // 空格转 - 让 URL 更干净（中文保留）
+        router.push({ name: 'blog-post', params: { name: blogName.replace(/\s+/g, '-') } })
       }
       break
     // case 'command':

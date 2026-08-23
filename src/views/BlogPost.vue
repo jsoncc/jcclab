@@ -44,7 +44,16 @@ const route = useRoute()
 const router = useRouter()
 const { getBlogMdContent, renderMarkdown } = useBlogData()
 const htmlContent = ref('')
-const blogName = computed(() => (route.params.name as string) || '')
+// 路由参数里空格被替换为 -，需要还原
+const resolveSlug = (slug: string): string => {
+  // 先试原名（处理文件名本身含 - 的情况，如 opencode-skills-guide）
+  const direct = decodeURIComponent(slug)
+  if (getBlogMdContent(direct)) return direct
+  // 再把 - 还原为空格试一次
+  return direct.replace(/-/g, ' ')
+}
+
+const blogName = computed(() => resolveSlug(route.params.name as string || ''))
 interface Heading { id: string; text: string; level: number }
 const headings = ref<Heading[]>([])
 const activeId = ref('')
@@ -85,7 +94,7 @@ function addHeadingIds(html: string): { html: string; items: Heading[] } {
 }
 
 const processMarkdown = () => {
-  const mdText = getBlogMdContent(decodeURIComponent(blogName.value))
+  const mdText = getBlogMdContent(blogName.value)
   if (!mdText) {
     htmlContent.value = ''
     return
@@ -129,7 +138,7 @@ const goBack = () => {
 }
 
 const copyContent = async () => {
-  const mdText = getBlogMdContent(decodeURIComponent(blogName.value))
+  const mdText = getBlogMdContent(blogName.value)
   if (!mdText) {
     alert('没有可复制的内容')
     return
