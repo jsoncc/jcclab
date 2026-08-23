@@ -506,7 +506,13 @@ const blogGroups = computed((): BlogGroup[] => {
     items.sort((a, b) => a.name.localeCompare(b.name))
   }
   return Array.from(groups.entries())
-    .sort((a, b) => (groupOrder[a[0]] ?? 99) - (groupOrder[b[0]] ?? 99))
+    .sort((a, b) => {
+      // 综合始终排最前
+      if (a[0] === '综合') return -1
+      if (b[0] === '综合') return 1
+      // 其余按分类名字母升序
+      return a[0].localeCompare(b[0])
+    })
     .map(([label, items]) => ({ label, items }))
 })
 
