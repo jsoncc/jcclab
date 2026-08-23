@@ -1,12 +1,12 @@
 <template>
   <div class="mbsf">
     <div class="mbsf-guide" role="note" aria-label="使用说明">
-      <p class="mbsf-guide-title">使用提示</p>
+      <div class="mbsf-guide-header">
+        <p class="mbsf-guide-title">使用提示</p>
+        <button type="button" class="mbsf-btn ghost" @click="fillExample">填充示例</button>
+      </div>
       <p class="mbsf-guide-text">把 MyBatis 日志里的 <code>Preparing</code> 和 <code>Parameters</code> 两行粘贴到输入框。</p>
-      <p class="mbsf-guide-text">点击“原样”可还原单行 SQL，点击“格式化”可输出更易读的多行 SQL。</p>
-      <p class="mbsf-guide-sample">
-        示例：<code>Preparing: select * from user where id = ?</code> + <code>Parameters: 1(Long)</code>
-      </p>
+      <p class="mbsf-guide-text">点击「提取 SQL」还原单行 SQL，点击「美化 SQL」输出更易读的多行 SQL。</p>
     </div>
 
     <textarea
@@ -18,8 +18,8 @@
     />
 
     <div class="mbsf-actions">
-      <button type="button" class="mbsf-btn primary" :disabled="!canRun" @click="run('raw')">原样</button>
-      <button type="button" class="mbsf-btn primary" :disabled="!canRun" @click="run('pretty')">格式化</button>
+      <button type="button" class="mbsf-btn primary" :disabled="!canRun" @click="run('raw')">提取 SQL</button>
+      <button type="button" class="mbsf-btn primary" :disabled="!canRun" @click="run('pretty')">美化 SQL</button>
       <button type="button" class="mbsf-btn" :disabled="!outputSql" @click="copyOutput">复制结果</button>
       <button type="button" class="mbsf-btn" :disabled="!inputLog && !outputSql" @click="clearAll">清空</button>
       <span class="mbsf-status" :class="{ ok: statusKind === 'ok', error: statusKind === 'error' }">
@@ -44,13 +44,20 @@ import { computed, ref } from 'vue'
 type Mode = 'raw' | 'pretty'
 type StatusKind = 'idle' | 'ok' | 'error'
 
-const defaultLogTemplate = `[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Preparing: 
-[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Parameters: `
+const defaultLogTemplate = `[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Preparing: SELECT * FROM user WHERE id = ? AND name = ? AND status = ?
+[2020-01-10 15:00:00] [DEBUG] getUserList.debug(159) - ==> Parameters: 1(Long), 张三(String), 1(Integer)`
 
 const inputLog = ref(defaultLogTemplate)
 const outputSql = ref('')
 const statusKind = ref<StatusKind>('idle')
 const statusText = ref('请先粘贴 MyBatis 日志')
+
+const fillExample = () => {
+  inputLog.value = defaultLogTemplate
+  outputSql.value = ''
+  statusKind.value = 'idle'
+  statusText.value = '示例已填充，点击「提取 SQL」或「美化 SQL」'
+}
 
 const canRun = computed(() => Boolean(inputLog.value.trim()))
 
@@ -142,7 +149,7 @@ const run = (mode: Mode) => {
   try {
     outputSql.value = parseSqlFromMyBatisLog(inputLog.value, mode)
     statusKind.value = 'ok'
-    statusText.value = mode === 'pretty' ? '已格式化输出 SQL' : '已提取原样 SQL'
+    statusText.value = mode === 'pretty' ? '已美化 SQL' : '已提取 SQL'
   } catch (e) {
     outputSql.value = ''
     statusKind.value = 'error'
@@ -203,6 +210,12 @@ const clearAll = () => {
   border-radius: 8px;
   padding: 10px 12px;
 }
+.mbsf-guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
 
 .mbsf-guide-title {
   margin: 0 0 4px;
@@ -220,13 +233,6 @@ const clearAll = () => {
 
 .mbsf-guide-text + .mbsf-guide-text {
   margin-top: 2px;
-}
-
-.mbsf-guide-sample {
-  margin: 6px 0 0;
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--text-secondary);
 }
 
 .mbsf-guide code {
@@ -279,6 +285,16 @@ const clearAll = () => {
 .mbsf-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.mbsf-btn.ghost {
+  background: transparent;
+  border-color: var(--link-hover);
+  color: var(--link-hover);
+  font-size: 12px;
+  padding: 4px 10px;
+}
+.mbsf-btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .mbsf-status {
