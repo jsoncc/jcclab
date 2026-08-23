@@ -15,163 +15,62 @@ CLI 命令 · TUI 快捷键 · 实用技巧
 
 ## 💻 CLI 常用命令
 
-💡 提示
-
-直接在终端运行 `opencode` 启动 TUI 界面，无参数时默认进入交互模式。
+> 💡 **提示**：直接在终端运行 `opencode` 启动 TUI 界面，无参数时默认进入交互模式。
 
 ### 启动与运行
 
-opencode
-
-启动 TUI 界面（当前目录）
-
-opencode /path/to/project
-
-启动 TUI 并指定项目目录
-
-opencode run "问题内容"
-
-非交互模式，直接运行单次查询
-
-opencode run -c
-
-继续上一次会话
+| 命令 | 说明 |
+| --- | --- |
+| `opencode` | 启动 TUI 界面（当前目录） |
+| `opencode /path/to/project` | 启动 TUI 并指定项目目录 |
+| `opencode run "问题内容"` | 非交互模式，直接运行单次查询 |
+| `opencode run -c` | 继续上一次会话 |
 
 ### 会话管理
 
-opencode session list
-
-列出所有会话
-
-会话管理
-
-opencode session delete <ID>
-
-删除指定会话
-
-会话管理
-
-opencode export \[sessionID\]
-
-导出会话为 JSON
-
-导出
-
-opencode import <file>
-
-从 JSON 文件或分享链接导入会话
-
-导入
+| 命令 | 说明 | 分类 |
+| --- | --- | --- |
+| `opencode session list` | 列出所有会话 | 会话管理 |
+| `opencode session delete <ID>` | 删除指定会话 | 会话管理 |
+| `opencode export [sessionID]` | 导出会话为 JSON | 导出 |
+| `opencode import <file>` | 从 JSON 文件或分享链接导入会话 | 导入 |
 
 ### 模型与 Provider
 
-opencode models
-
-列出所有可用模型
-
-模型查询
-
-opencode models anthropic
-
-查看指定 Provider 的模型
-
-模型查询
-
-opencode models --refresh
-
-刷新模型缓存
-
-模型查询
-
-opencode auth login
-
-登录 Provider 并配置 API Key
-
-认证
-
-opencode auth list
-
-查看已保存的凭证
-
-认证
-
-opencode auth logout
-
-登出 Provider
-
-认证
+| 命令 | 说明 | 分类 |
+| --- | --- | --- |
+| `opencode models` | 列出所有可用模型 | 模型查询 |
+| `opencode models anthropic` | 查看指定 Provider 的模型 | 模型查询 |
+| `opencode models --refresh` | 刷新模型缓存 | 模型查询 |
+| `opencode auth login` | 登录 Provider 并配置 API Key | 认证 |
+| `opencode auth list` | 查看已保存的凭证 | 认证 |
+| `opencode auth logout` | 登出 Provider | 认证 |
 
 ### MCP 服务器
 
-opencode mcp add
-
-添加 MCP 服务器
-
-MCP 管理
-
-opencode mcp list
-
-列出已配置的 MCP 服务器
-
-MCP 管理
-
-opencode mcp auth \[name\]
-
-认证 OAuth 启用的 MCP 服务器
-
-MCP 认证
-
-opencode mcp logout \[name\]
-
-移除 MCP 服务器的 OAuth 凭证
-
-MCP 认证
+| 命令 | 说明 | 分类 |
+| --- | --- | --- |
+| `opencode mcp add` | 添加 MCP 服务器 | MCP 管理 |
+| `opencode mcp list` | 列出已配置的 MCP 服务器 | MCP 管理 |
+| `opencode mcp auth [name]` | 认证 OAuth 启用的 MCP 服务器 | MCP 认证 |
+| `opencode mcp logout [name]` | 移除 MCP 服务器的 OAuth 凭证 | MCP 认证 |
 
 ### Agent 管理
 
-opencode agent create
-
-创建自定义 Agent
-
-Agent
-
-opencode agent list
-
-列出所有可用 Agent
-
-Agent
+| 命令 | 说明 | 分类 |
+| --- | --- | --- |
+| `opencode agent create` | 创建自定义 Agent | Agent |
+| `opencode agent list` | 列出所有可用 Agent | Agent |
 
 ### 实用工具
 
-opencode stats
-
-查看 Token 用量和成本统计
-
-统计
-
-opencode stats --days 7
-
-查看最近 7 天统计
-
-统计
-
-opencode plugin <module>
-
-安装插件
-
-插件
-
-opencode github install
-
-在仓库中安装 GitHub Agent
-
-GitHub
-
-opencode pr <number>
-
-Fetch 并 checkout GitHub PR 分支
-
-GitHub
+| 命令 | 说明 | 分类 |
+| --- | --- | --- |
+| `opencode stats` | 查看 Token 用量和成本统计 | 统计 |
+| `opencode stats --days 7` | 查看最近 7 天统计 | 统计 |
+| `opencode plugin <module>` | 安装插件 | 插件 |
+| `opencode github install` | 在仓库中安装 GitHub Agent | GitHub |
+| `opencode pr <number>` | Fetch 并 checkout GitHub PR 分支 | GitHub |
 
 ### 服务器模式
 
@@ -183,29 +82,12 @@ GitHub
 
 ### 系统命令
 
-opencode upgrade
-
-升级到最新版本
-
-系统
-
-opencode upgrade v0.1.48
-
-升级到指定版本
-
-系统
-
-opencode uninstall
-
-卸载 OpenCode
-
-系统
-
-opencode db path
-
-查看数据库路径
-
-调试
+| 命令 | 说明 | 分类 |
+| --- | --- | --- |
+| `opencode upgrade` | 升级到最新版本 | 系统 |
+| `opencode upgrade v0.1.48` | 升级到指定版本 | 系统 |
+| `opencode uninstall` | 卸载 OpenCode | 系统 |
+| `opencode db path` | 查看数据库路径 | 调试 |
 
 ### 全局 Flags
 
@@ -219,123 +101,46 @@ opencode db path
 
 ## 🖥️ TUI 斜杠命令
 
-💡 使用方式
-
-在 TUI 中输入 `/` 后接命令名，或使用对应的快捷键。
+> 💡 **使用方式**：在 TUI 中输入 `/` 后接命令名，或使用对应的快捷键。
 
 ### 会话操作
 
-/new
-
-开始新会话（别名：/clear）
-
-Ctrl+X N
-
-/sessions
-
-列出并切换会话（别名：/resume, /continue）
-
-Ctrl+X L
-
-/exit
-
-退出 OpenCode（别名：/quit, /q）
-
-Ctrl+X Q
+| 命令 | 快捷键 | 说明 |
+| --- | --- | --- |
+| `/new` | `Ctrl+X N` | 开始新会话（别名：/clear） |
+| `/sessions` | `Ctrl+X L` | 列出并切换会话（别名：/resume, /continue） |
+| `/exit` | `Ctrl+X Q` | 退出 OpenCode（别名：/quit, /q） |
 
 ### 撤销与重做
 
-/undo
+| 命令 | 快捷键 | 说明 |
+| --- | --- | --- |
+| `/undo` | `Ctrl+X U` | 撤销最后一条消息和文件更改 |
+| `/redo` | `Ctrl+X R` | 重做之前撤销的操作 |
 
-撤销最后一条消息和文件更改
-
-Ctrl+X U
-
-/redo
-
-重做之前撤销的操作
-
-Ctrl+X R
-
-⚠️ 注意
-
-`/undo` 和 `/redo` 需要项目是 Git 仓库，因为内部使用 Git 管理文件更改。
+> ⚠️ **注意**：`/undo` 和 `/redo` 需要项目是 Git 仓库，因为内部使用 Git 管理文件更改。
 
 ### 模型与主题
 
-/models
-
-列出可用模型
-
-Ctrl+X M
-
-/themes
-
-列出可用主题
-
-Ctrl+X T
-
-/connect
-
-添加 Provider 和 API Key
-
-认证设置
+| 命令 | 快捷键 | 说明 |
+| --- | --- | --- |
+| `/models` | `Ctrl+X M` | 列出可用模型 |
+| `/themes` | `Ctrl+X T` | 列出可用主题 |
+| `/connect` |  | 添加 Provider 和 API Key |
 
 ### 实用工具
 
-/compact
-
-压缩当前会话（别名：/summarize）
-
-Ctrl+X C
-
-/share
-
-分享当前会话
-
-分享
-
-/unshare
-
-取消分享会话
-
-分享
-
-/export
-
-导出对话为 Markdown
-
-Ctrl+X X
-
-/init
-
-创建或更新 AGENTS.md
-
-初始化
-
-/help
-
-显示帮助对话框
-
-帮助
-
-/details
-
-切换工具执行详情显示
-
-视图
-
-/thinking
-
-切换思考/推理块显示
-
-视图
-
-/editor
-
-使用外部编辑器编写消息
-
-Ctrl+X E
+| 命令 | 快捷键 | 说明 |
+| --- | --- | --- |
+| `/compact` | `Ctrl+X C` | 压缩当前会话（别名：/summarize） |
+| `/share` |  | 分享当前会话 |
+| `/unshare` |  | 取消分享会话 |
+| `/export` | `Ctrl+X X` | 导出对话为 Markdown |
+| `/init` |  | 创建或更新 AGENTS.md |
+| `/help` |  | 显示帮助对话框 |
+| `/details` |  | 切换工具执行详情显示 |
+| `/thinking` |  | 切换思考/推理块显示 |
+| `/editor` | `Ctrl+X E` | 使用外部编辑器编写消息 |
 
 ## ⚡ 常用快捷键
 
@@ -343,46 +148,29 @@ Ctrl+X E
 
 | 快捷键 | 功能 | 对应命令 |
 | --- | --- | --- |
-| Ctrl+X N | 新建会话 | `/new` |
-| Ctrl+X L | 列出/切换会话 | `/sessions` |
-| Ctrl+X U | 撤销 | `/undo` |
-| Ctrl+X R | 重做 | `/redo` |
-| Ctrl+X M | 选择模型 | `/models` |
-| Ctrl+X T | 选择主题 | `/themes` |
-| Ctrl+X C | 压缩会话 | `/compact` |
-| Ctrl+X E | 外部编辑器 | `/editor` |
-| Ctrl+X X | 导出对话 | `/export` |
-| Ctrl+X Q | 退出 | `/exit` |
+| `Ctrl+X N` | 新建会话 | `/new` |
+| `Ctrl+X L` | 列出/切换会话 | `/sessions` |
+| `Ctrl+X U` | 撤销 | `/undo` |
+| `Ctrl+X R` | 重做 | `/redo` |
+| `Ctrl+X M` | 选择模型 | `/models` |
+| `Ctrl+X T` | 选择主题 | `/themes` |
+| `Ctrl+X C` | 压缩会话 | `/compact` |
+| `Ctrl+X E` | 外部编辑器 | `/editor` |
+| `Ctrl+X X` | 导出对话 | `/export` |
+| `Ctrl+X Q` | 退出 | `/exit` |
 
 ### 其他快捷键
 
-Ctrl + P
+| 快捷键 | 说明 |
+| --- | --- |
+| `Ctrl + P` | 打开命令面板（搜索命令） |
+| `Ctrl + T` | 切换模型变体（推理强度） |
+| `Tab` | Plan / Build 模式切换 |
+| `@` | 模糊搜索并引用文件 |
+| `!` | 直接运行 Shell 命令 |
+| `/` | 打开斜杠命令列表 |
 
-打开命令面板（搜索命令）
-
-Ctrl + T
-
-切换模型变体（推理强度）
-
-Tab
-
-Plan / Build 模式切换
-
-@
-
-模糊搜索并引用文件
-
-!
-
-直接运行 Shell 命令
-
-/
-
-打开斜杠命令列表
-
-💡 Leader Timeout
-
-默认情况下，按下 `Ctrl+X` 后有 2000ms 时间按下第二个键。可在 `tui.json` 中通过 `leader_timeout` 调整。
+> 💡 **Leader Timeout**：默认情况下，按下 `Ctrl+X` 后有 2000ms 时间按下第二个键。可在 `tui.json` 中通过 `leader_timeout` 调整。
 
 ## 📁 文件引用与 Bash 命令
 
@@ -449,41 +237,23 @@ Add-Content $PROFILE '$env:EDITOR = "code --wait"'
 
 ## 💡 实用技巧
 
-技巧
+> **快速开始新项目**
+> 使用 `/init` 命令让 OpenCode 分析项目并生成 `AGENTS.md` 文件，帮助 AI 理解项目结构。
 
-### 快速开始新项目
+> **节省 Token**
+> 使用 `/compact` 压缩长会话，或使用 `opencode run` 进行简单查询而非启动完整 TUI。
 
-使用 `/init` 命令让 OpenCode 分析项目并生成 `AGENTS.md` 文件，帮助 AI 理解项目结构。
+> **多设备同步**
+> 使用 `/share` 生成分享链接，在另一台设备上用 `opencode import` 导入会话继续工作。
 
-技巧
+> **外部编辑器**
+> 长消息使用 `/editor` 在 VS Code 等编辑器中编写，体验更好。
 
-### 节省 Token
+> **避免冷启动**
+> 使用 `opencode serve` 后台运行服务器，多个 `opencode run --attach` 共享同一后端。
 
-使用 `/compact` 压缩长会话，或使用 `opencode run` 进行简单查询而非启动完整 TUI。
-
-技巧
-
-### 多设备同步
-
-使用 `/share` 生成分享链接，在另一台设备上用 `opencode import` 导入会话继续工作。
-
-技巧
-
-### 外部编辑器
-
-长消息使用 `/editor` 在 VS Code 等编辑器中编写，体验更好。
-
-技巧
-
-### 避免冷启动
-
-使用 `opencode serve` 后台运行服务器，多个 `opencode run --attach` 共享同一后端。
-
-技巧
-
-### 查看用量
-
-定期运行 `opencode stats --days 7` 查看最近用量，控制成本。
+> **查看用量**
+> 定期运行 `opencode stats --days 7` 查看最近用量，控制成本。
 
 ### 编辑器配置
 
@@ -498,11 +268,3 @@ Add-Content $PROFILE '$env:EDITOR = "code --wait"'
 | Windows Notepad | `set EDITOR=notepad` |
 
 * * *
-
-✅ 文档信息
-
-**版本：**v1.0  |  **最后更新：**2026 年 5 月 25 日  |  **适用版本：**OpenCode v0.1+
-
-📚 参考资源：
-
-[CLI 文档](https://opencode.ai/docs/cli) · [TUI 文档](https://opencode.ai/docs/tui) · [快捷键文档](https://opencode.ai/docs/keybinds) · [GitHub 仓库](https://github.com/anomalyco/opencode)
