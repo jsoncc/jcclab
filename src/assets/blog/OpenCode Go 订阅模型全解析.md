@@ -121,7 +121,19 @@ OpenCode Go 共包含 **30 个模型**，来自 8 家厂商，覆盖文本、代
 | ✅ 稳定可用 | deepseek-v4-flash, deepseek-v4-flash-vision-exp, deepseek-v4-pro, mimo-v2.5, mimo-v2.5-pro, qwen3.7-max, qwen3.7-plus, qwen3.6-plus, kimi-k3, kimi-k2.5, kimi-k2.6, kimi-k2.7-code, glm-5/5.1/5.2/5.3, minimax-m2.5, minimax-m3, hy3, longcat-2.0 |
 | ❌ 不稳定/不可用 | mimo-v2-omni, mimo-v2-pro, minimax-m2.7, gpt-5.6-luna, grok-4.5, hy3-preview, ox-alpha-free, qwen3.5-plus, qwen3.8-plus |
 
-## 五、注意事项
+
+## 六、定价信息
+
+| 时期 | 价格 | 说明 |
+|------|------|------|
+| 早期 | $5/月 | 首月优惠价（first-month discount） |
+| 2026-08-24 起 | **$10/月** | 正式定价，优惠已取消 |
+
+> 来源：changelog v1.18.22（2026-08-24）明确移除了 "first-month discount messaging and pricing"，当前 opencode.ai/go 官网标价 $10/month。
+
+所有模型共用同一配额，不限调用次数（有速率限制）。取消订阅后立即停止访问。
+
+## 七、注意事项
 
 1. **模型名称必须裸名**：如 `deepseek-v4-flash`，不能写 `deepseek/deepseek-v4-flash`
 2. **共享配额**：所有模型共用同一个订阅配额，高频使用需注意额度
