@@ -1,3 +1,10 @@
+---
+title: opencode Skills 完整使用指南
+tags:
+  - OpenCode
+  - Skills
+  - 指南
+---
 # opencode Skills 完整使用指南
 
 ## 什么是 Skills

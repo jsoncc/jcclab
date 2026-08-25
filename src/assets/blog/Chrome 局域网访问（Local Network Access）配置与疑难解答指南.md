@@ -1,3 +1,12 @@
+---
+title: Chrome 局域网访问（Local Network Access）配置与疑难解答指南
+tags:
+  - Chrome
+  - 浏览器
+  - 网络
+  - 配置
+---
+
 # Chrome 局域网访问（Local Network Access）配置与疑难解答指南
 
 本指南用于解决现代 Chrome/Edge 浏览器出于安全限制（如局域网访问限制及跨域/混合内容拦截），导致网页无法正常调起本地硬件设备或本地服务（如 `127.0.0.1` / 局域网 IP）的问题。

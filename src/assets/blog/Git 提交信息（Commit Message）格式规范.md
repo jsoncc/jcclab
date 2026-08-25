@@ -1,3 +1,11 @@
+---
+title: Git 提交信息（Commit Message）格式规范
+tags:
+  - Git
+  - 规范
+  - Commit
+---
+
 # Git 提交信息（Commit Message）格式规范
 
 **业界最标准、最通用、Cursor / GitHub / 团队开发都认可的格式**

@@ -1,3 +1,11 @@
+---
+title: Hermes Agent 安装配置使用指南
+tags:
+  - Hermes
+  - Agent
+  - 安装
+---
+
 # Hermes Agent 安装配置使用指南
 
 > 环境：Windows 10 22H2（build 19045）+ WSL2 + Ubuntu 26.04 LTS

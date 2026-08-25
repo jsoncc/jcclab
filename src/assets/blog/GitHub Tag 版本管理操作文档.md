@@ -1,3 +1,11 @@
+---
+title: GitHub Tag 版本管理操作文档
+tags:
+  - GitHub
+  - Tag
+  - 版本管理
+---
+
 # GitHub Tag 版本管理操作文档
 适用于：项目版本标记、发布记录、版本迭代管理
 

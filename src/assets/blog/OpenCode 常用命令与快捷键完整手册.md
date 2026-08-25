@@ -1,3 +1,11 @@
+---
+title: ⌨️ OpenCode 命令与快捷键手册
+tags:
+  - OpenCode
+  - 命令
+  - 快捷键
+---
+
 # ⌨️ OpenCode 命令与快捷键手册
 
 CLI 命令 · TUI 快捷键 · 实用技巧

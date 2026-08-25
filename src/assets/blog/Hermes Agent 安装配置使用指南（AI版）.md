@@ -1,3 +1,12 @@
+---
+title: Hermes Agent 安装配置使用指南（AI 可执行版）
+tags:
+  - Hermes
+  - Agent
+  - 安装
+  - AI
+---
+
 # Hermes Agent 安装配置使用指南（AI 可执行版）
 
 > 适用场景：全新安装的 Windows 10 专业版 + WSL2 + Ubuntu

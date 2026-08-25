@@ -1,3 +1,11 @@
+---
+title: OpenCode + OpenRouter + OpenCode Go 完整配置与选型指南
+tags:
+  - OpenCode
+  - 配置
+  - 选型
+---
+
 # OpenCode + OpenRouter + OpenCode Go 完整配置与选型指南
 
 ---

@@ -1,3 +1,11 @@
+---
+title: OpenCode Skills 全局配置完整操作文档
+tags:
+  - OpenCode
+  - Skills
+  - 配置
+---
+
 # OpenCode Skills 全局配置完整操作文档
 
 **📌 本文档用途：**记录如何在 Windows 上配置 OpenCode Skills 全局路径，让所有项目都能使用同一套 Skills，且内容存储在 D 盘不占用 C 盘空间。

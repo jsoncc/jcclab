@@ -1,3 +1,12 @@
+---
+title: GitHub Pages 更换地址后翻译与统计失效：原因与修复全流程
+tags:
+  - GitHub
+  - Pages
+  - 部署
+  - 排障
+---
+
 # GitHub Pages 更换地址后翻译与统计失效：原因与修复全流程
  
 > 适用场景：`GitHub Pages + Cloudflare Worker + 前端 VITE 环境变量`。
