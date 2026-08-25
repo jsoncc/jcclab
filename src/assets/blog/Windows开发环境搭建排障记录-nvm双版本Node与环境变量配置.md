@@ -1,3 +1,13 @@
+---
+title: Windows 开发环境搭建排障记录：nvm 双版本 Node + Git/JDK/Python 环境变量配置
+tags:
+  - Windows
+  - nvm
+  - Node.js
+  - 排障
+  - 环境配置
+---
+
 # Windows 开发环境搭建排障记录：nvm 双版本 Node + Git/JDK/Python 环境变量配置
 
 > 会话日期：2026-08-15 ｜ 环境：Windows 10 22H2 (19045) + WSL 2.7.11 (Ubuntu) + Hermes Agent (CLI)

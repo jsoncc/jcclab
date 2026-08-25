@@ -1,3 +1,12 @@
+---
+title: Windows/WSL 环境配置与排障全记录
+tags:
+  - Windows
+  - WSL
+  - 环境配置
+  - 排障
+---
+
 # Windows/WSL 环境配置与排障全记录
 
 > 会话日期：2026-08-14 ｜ 环境：Windows 10 22H2 (19045.3803) + WSL 2.7.11 (Ubuntu) + Hermes Agent (CLI)
