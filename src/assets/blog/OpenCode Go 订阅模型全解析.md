@@ -32,7 +32,7 @@ OpenCode Go 共包含 **30 个模型**，来自 8 家厂商，覆盖文本、代
 | 模型 | 类型 | 上下文 | 视觉 | 特点 |
 |------|------|--------|------|------|
 | deepseek-v4-flash | 文本 | 128K | ❌ | 速度快、性价比高，日常首选 |
-| deepseek-v4-flash-vision-exp | 多模态 | 128K | ✅ | 支持图片理解，本订阅唯一可用的视觉模型 |
+| deepseek-v4-flash-vision-exp | 多模态 | 128K | ✅ | 支持图片理解，视觉模型之一 |
 | deepseek-v4-pro | 文本 | 128K | ❌ | 能力更强，复杂任务推荐 |
 
 ### Qwen（通义千问）系列
@@ -49,10 +49,10 @@ OpenCode Go 共包含 **30 个模型**，来自 8 家厂商，覆盖文本、代
 
 | 模型 | 类型 | 上下文 | 视觉 | 特点 |
 |------|------|--------|------|------|
-| kimi-k2.5 | 文本 | 128K | ❌ | 基础版 |
-| kimi-k2.6 | 文本 | 128K | ❌ | 升级版 |
+| kimi-k2.5 | 多模态 | 128K | ✅ | 基础版，支持图片理解 |
+| kimi-k2.6 | 多模态 | 128K | ✅ | 升级版，支持图片理解 |
 | kimi-k2.7-code | 代码 | 128K | ❌ | 代码专项优化 |
-| kimi-k3 | 文本 | **1M** | ❌ | 旗舰，超长上下文 |
+| kimi-k3 | 多模态 | **1M** | ✅ | 旗舰，超长上下文，支持图片理解 |
 
 ### GLM（智谱）系列
 
@@ -69,7 +69,7 @@ OpenCode Go 共包含 **30 个模型**，来自 8 家厂商，覆盖文本、代
 |------|------|--------|------|------|
 | minimax-m2.5 | 文本 | 128K | ❌ | 基础版 |
 | minimax-m2.7 | 文本 | 128K | ❌ | 升级版（测试时 500 错误） |
-| minimax-m3 | 文本 | 128K | ❌ | 旗舰版 |
+| minimax-m3 | 多模态 | 128K | ✅ | 旗舰版，支持图片理解（输出含思考过程） |
 
 ### Mimo 系列
 
@@ -103,8 +103,8 @@ OpenCode Go 共包含 **30 个模型**，来自 8 家厂商，覆盖文本、代
 - 代码专项优化，理解能力强
 
 ### 图片识别/视觉任务
-**推荐**：`deepseek-v4-flash-vision-exp`
-- 本订阅唯一可用的视觉模型
+**推荐**：`kimi-k3` / `deepseek-v4-flash-vision-exp` / `kimi-k2.6` / `kimi-k2.5` / `minimax-m3`
+- 共 5 个模型支持图片理解，按需选择即可
 
 ### 长文档/大上下文
 **推荐**：`kimi-k3`（1M 上下文）
@@ -118,8 +118,8 @@ OpenCode Go 共包含 **30 个模型**，来自 8 家厂商，覆盖文本、代
 
 | 状态 | 模型 |
 |------|------|
-| ✅ 稳定可用 | deepseek-v4-flash, deepseek-v4-flash-vision-exp, deepseek-v4-pro, mimo-v2.5, mimo-v2.5-pro, qwen3.7-max, qwen3.7-plus, qwen3.6-plus, kimi-k3, kimi-k2.5, kimi-k2.6, kimi-k2.7-code, glm-5/5.1/5.2/5.3, minimax-m2.5, minimax-m3, hy3, longcat-2.0 |
-| ❌ 不稳定/不可用 | mimo-v2-omni, mimo-v2-pro, minimax-m2.7, gpt-5.6-luna, grok-4.5, hy3-preview, ox-alpha-free, qwen3.5-plus, qwen3.8-plus |
+| ✅ 稳定可用 | deepseek-v4-flash, deepseek-v4-flash-vision-exp, deepseek-v4-pro, mimo-v2.5, mimo-v2.5-pro, qwen3.7-max, qwen3.7-plus, qwen3.6-plus, kimi-k3, kimi-k2.5, kimi-k2.6, kimi-k2.7-code, glm-5/5.1/5.2/5.3, minimax-m2.5, minimax-m3 |
+| ❌ 不稳定/不可用 | mimo-v2-omni, mimo-v2-pro, minimax-m2.7, gpt-5.6-luna, grok-4.5, hy3, longcat-2.0, hy3-preview, ox-alpha-free, qwen3.5-plus, qwen3.8-max |
 
 
 ## 六、定价信息
