@@ -49,3 +49,4 @@ Desktop.ini
 
 # 博客图片（本地文件，不提交）
 src/assets/blog/picture/
+src/assets/search-index.json

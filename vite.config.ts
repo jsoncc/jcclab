@@ -4,8 +4,10 @@
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Socket } from 'node:net'
+import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import searchIndexPlugin from './vite-plugins/search-index-plugin'
 
 type ProxyWithError = {
   on(
@@ -46,8 +48,13 @@ const baiduTranslateProxy = {
 }
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), searchIndexPlugin()],
   base: './',
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  },
   build: {
     rollupOptions: {
       output: {

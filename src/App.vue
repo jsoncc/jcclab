@@ -20,25 +20,51 @@
       <div class="header-right">
         <div class="header-search">
           <input
-            v-model="headerSearchKeyword"
+            v-model="siteSearch.keyword.value"
             class="header-search-input"
             type="search"
             placeholder="搜索站内内容、文档与工具"
             @focus="onHeaderSearchFocus"
             @blur="onHeaderSearchBlur"
-            @keydown.enter.prevent="runHeaderSearchEnter"
+            @keydown.enter.prevent="onSearchEnter"
+            @keydown.down.prevent="onSearchArrow('down')"
+            @keydown.up.prevent="onSearchArrow('up')"
+            @keydown.esc="closeSearchPanel"
           />
-          <div v-if="showHeaderSearchPanel" class="header-search-panel" role="listbox" aria-label="全站速查建议">
-            <button
-              v-for="item in headerSearchResults"
-              :key="item.key"
-              type="button"
-              class="header-search-item"
-              @mousedown.prevent="applyHeaderSearchItem(item)"
-            >
-              <span class="header-search-item-title">{{ item.title }}</span>
-              <span class="header-search-item-meta">{{ item.meta }}</span>
-            </button>
+          <div v-if="showHeaderSearchPanel" class="header-search-panel" role="listbox" aria-label="全站搜索结果">
+            <!-- 博客结果 -->
+            <div v-if="siteSearch.groupedResults.value.blog.length" class="header-search-group">
+              <div class="header-search-group-title">📄 博客（{{ siteSearch.groupedResults.value.blog.length }}）</div>
+              <button
+                v-for="(item, i) in siteSearch.groupedResults.value.blog"
+                :key="`b-${item.id}`"
+                type="button"
+                class="header-search-item"
+                :class="{ active: siteSearch.activeIndex.value === getFlatIndex('blog', i) }"
+                @mousedown.prevent="applySearchItem(item)"
+              >
+                <div class="header-search-item-title" v-html="siteSearch.highlight(item.title, siteSearch.keyword.value)"></div>
+                <div class="header-search-item-snippet" v-html="getSnippet(item)"></div>
+              </button>
+            </div>
+            <!-- 工具结果 -->
+            <div v-if="siteSearch.groupedResults.value.tool.length" class="header-search-group">
+              <div class="header-search-group-title">🔧 工具（{{ siteSearch.groupedResults.value.tool.length }}）</div>
+              <button
+                v-for="(item, i) in siteSearch.groupedResults.value.tool"
+                :key="`t-${item.id}`"
+                type="button"
+                class="header-search-item"
+                :class="{ active: siteSearch.activeIndex.value === getFlatIndex('tool', i) }"
+                @mousedown.prevent="applySearchItem(item)"
+              >
+                <div class="header-search-item-title" v-html="siteSearch.highlight(item.title, siteSearch.keyword.value)"></div>
+              </button>
+            </div>
+            <!-- 无结果 -->
+            <div v-if="!siteSearch.results.value.length" class="header-search-empty">
+              未找到与「{{ siteSearch.keyword.value }}」相关的内容
+            </div>
           </div>
         </div>
       </div>
@@ -441,6 +467,7 @@ import homeIcon from '@iconify-icons/mdi/home-outline'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
 import CryptoJS from 'crypto-js'
 import { marked } from './utils/markedConfig'
+import { useSiteSearch } from '@/composables/useSiteSearch'
 const MarkdownViewer = defineAsyncComponent(() => import('./components/MarkdownViewer.vue'))
 import JsonFormatValidator from './components/JsonFormatValidator.vue'
 import UuidGenerator from './components/UuidGenerator.vue'
@@ -1016,14 +1043,6 @@ interface ListModule {
   items: { key: string; label: string; value: string; href: string }[]
 }
 
-type HeaderSearchItem = {
-  key: string
-  title: string
-  meta: string
-  tags: string[]
-  action: () => void
-}
-
 /** 侧栏列表的数据：blog（history 模块已隐藏，command 已拆分，vpn 已隐藏，hotnews 已隐藏） */
 const listModules = computed((): ListModule[] => [
   // {
@@ -1115,9 +1134,10 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
   }
 }
 
-const headerSearchKeyword = ref('')
 const headerSearchFocused = ref(false)
 const headerSearchBlurTimer = ref(0)
+
+const siteSearch = useSiteSearch()
 
 const toTool = (tool: ActiveToolKey) => {
   footerCollapsed.value = true
@@ -1125,102 +1145,9 @@ const toTool = (tool: ActiveToolKey) => {
   activeTool.value = tool
 }
 
-const headerSearchCandidates = computed<HeaderSearchItem[]>(() => [
-  {
-    key: 'tool-json',
-    title: '工具：JSON格式化校验',
-    meta: '工具集合',
-    tags: ['json', '格式化', '校验', '工具'],
-    action: () => toTool('formatCheck')
-  },
-  {
-    key: 'tool-uuid',
-    title: '工具：UUID在线生成',
-    meta: '工具集合',
-    tags: ['uuid', '工具', '生成'],
-    action: () => toTool('uuid')
-  },
-  {
-    key: 'tool-mybatis',
-    title: '工具：MyBatis SQL日志格式化',
-    meta: '工具集合',
-    tags: ['mybatis', 'sql', '日志', '工具'],
-    action: () => toTool('mybatisSql')
-  },
-  {
-    key: 'tool-base64',
-    title: '工具：在线Base64编解码工具',
-    meta: '工具集合',
-    tags: ['base64', '解码', '编码', 'base64解码', 'base64编码', '在线base64编解码工具', '工具'],
-    action: () => toTool('base64Decode')
-  },
-  {
-    key: 'tool-base64-file',
-    title: '工具：Base64转文件',
-    meta: '工具集合',
-    tags: ['base64', '文件', '转文件', '文件转base64', '编码', '下载', '工具'],
-    action: () => toTool('base64File')
-  },
-  {
-    key: 'tool-pdf',
-    title: '工具：PDF转换（转图片 / 转Word）',
-    meta: '工具集合',
-    tags: ['pdf', '转图片', '转word', 'png', 'jpeg', 'docx', '转换', '格式转换', '工具'],
-    action: () => toTool('pdfTools')
-  },
-  // ...dateList.value.slice(0, 30).map((item) => ({
-  //   key: `history-${item.date}`,
-  //   title: `历史上的今天：${item.date}`,
-  //   meta: '历史模块',
-  //   tags: ['历史', 'history', item.date],
-  //   action: () => openModuleItem('history', item.date)
-  // })), // 已隐藏
-  // 隐藏今日热榜模块（2026-07-19）
-  // ...hotnewsList.value.slice(0, 40).map((item) => ({
-  //   key: `hotnews-${item.path}`,
-  //   title: `今日热榜：${item.name}`,
-  //   meta: '热榜模块',
-  //   tags: ['热榜', 'hotnews', item.name],
-  //   action: () => openModuleItem('hotnews', item.path)
-  // })),
-  ...blogGroups.value.flatMap(g => g.items).slice(0, 40).map((item) => ({
-    key: `blog-${item.path}`,
-    title: `博客：${item.name}`,
-    meta: '博客模块',
-    tags: ['博客', 'blog', item.name],
-    action: () => openModuleItem('blog', item.path)
-  })),
-  // ...commandList.value.slice(0, 40).map((item) => ({
-  //   key: `command-${item.path}`,
-  //   title: `命令：${item.name}`,
-  //   meta: '命令模块',
-  //   tags: ['命令', 'command', item.name],
-  //   action: () => openModuleItem('command', item.path)
-  // })), // 已移除，内容已拆分到博客模块
-  // ...vpnList.value.slice(0, 40).map((item) => ({
-  //   key: `vpn-${item.path}`,
-  //   title: `科学上网：${item.name}`,
-  //   meta: '科学上网模块',
-  //   tags: ['科学上网', 'vpn', item.name],
-  //   action: () => openModuleItem('vpn', item.path)
-  // })) // 已隐藏
-])
-
-const headerSearchResults = computed(() => {
-  const kw = headerSearchKeyword.value.trim().toLowerCase()
-  if (!kw) return headerSearchCandidates.value.slice(0, 8)
-  return headerSearchCandidates.value
-    .filter((item) => {
-      const bag = [item.title, item.meta, ...item.tags].join(' ').toLowerCase()
-      return bag.includes(kw)
-    })
-    .slice(0, 8)
-})
-
 const showHeaderSearchPanel = computed(
-  () => headerSearchFocused.value && headerSearchResults.value.length > 0
+  () => headerSearchFocused.value && siteSearch.keyword.value.trim().length > 0
 )
-
 const onHeaderSearchFocus = () => {
   if (headerSearchBlurTimer.value) window.clearTimeout(headerSearchBlurTimer.value)
   headerSearchFocused.value = true
@@ -1233,14 +1160,71 @@ const onHeaderSearchBlur = () => {
   }, 120)
 }
 
-const applyHeaderSearchItem = (item: HeaderSearchItem) => {
-  item.action()
+/** 工具 action 映射（从 search-index.json 的 action 字段到 toTool） */
+const toolActionMap: Record<string, ActiveToolKey> = {
+  'tool:formatCheck': 'formatCheck',
+  'tool:uuid': 'uuid',
+  'tool:mybatisSql': 'mybatisSql',
+  'tool:base64Decode': 'base64Decode',
+  'tool:base64File': 'base64File',
+  'tool:pdfTools': 'pdfTools'
+}
+
+/** 候选条目扁平化（用于键盘导航） */
+const flatResults = computed(() => [
+  ...siteSearch.groupedResults.value.blog,
+  ...siteSearch.groupedResults.value.tool
+])
+
+const getFlatIndex = (type: 'blog' | 'tool', i: number) => {
+  if (type === 'blog') return i
+  return siteSearch.groupedResults.value.blog.length + i
+}
+
+const getSnippet = (item: any) => {
+  if (!item.body) return ''
+  const kw = siteSearch.keyword.value
+  // 找到关键词附近 40 字作为摘要
+  const lower = item.body.toLowerCase()
+  const idx = kw ? lower.indexOf(kw.toLowerCase()) : 0
+  const start = Math.max(0, idx - 20)
+  const end = Math.min(item.body.length, idx + kw.length + 40)
+  const snippet = (start > 0 ? '…' : '') + item.body.slice(start, end) + (end < item.body.length ? '…' : '')
+  return siteSearch.highlight(snippet, kw)
+}
+
+const applySearchItem = (item: any) => {
+  if (item.type === 'tool') {
+    const toolKey = toolActionMap[item.action]
+    if (toolKey) toTool(toolKey)
+  } else if (item.type === 'blog' && item.path) {
+    openModuleItem('blog', item.path)
+  }
+  siteSearch.activeIndex.value = 0
+  siteSearch.keyword.value = ''
   headerSearchFocused.value = false
 }
 
-const runHeaderSearchEnter = () => {
-  const first = headerSearchResults.value[0]
-  if (first) applyHeaderSearchItem(first)
+const onSearchEnter = () => {
+  const flat = flatResults.value
+  const idx = Math.min(siteSearch.activeIndex.value, flat.length - 1)
+  if (flat[idx]) applySearchItem(flat[idx])
+}
+
+const onSearchArrow = (dir: 'up' | 'down') => {
+  const len = flatResults.value.length
+  if (len === 0) return
+  if (dir === 'down') {
+    siteSearch.activeIndex.value = (siteSearch.activeIndex.value + 1) % len
+  } else {
+    siteSearch.activeIndex.value = (siteSearch.activeIndex.value - 1 + len) % len
+  }
+}
+
+const closeSearchPanel = () => {
+  headerSearchFocused.value = false
+  siteSearch.keyword.value = ''
+  siteSearch.activeIndex.value = 0
 }
 
 const closeViewer = () => {

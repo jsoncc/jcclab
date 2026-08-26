@@ -1,5 +1,4 @@
 {
-  // Vue 源码、Vite 配置、scripts 与 workers：供 vue-tsc / IDE 统一类型检查
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
@@ -12,7 +11,11 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": [
     "src/**/*.ts",
