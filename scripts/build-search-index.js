@@ -31,13 +31,13 @@ const TOOLS = [
 
 /**
  * 清理 markdown 文本，提取适合搜索的纯文本
+ * 注意：保留代码块内容（代码是搜索的重要来源），只去掉格式标记
  */
 function cleanMarkdown(text) {
   return text
-    // 移除代码块
-    .replace(/```[\s\S]*?```/g, ' ')
-    // 移除行内代码
-    .replace(/`[^`]*`/g, ' ')
+    // 保留代码块内容，只去掉围栏标记
+    .replace(/```[a-z]*\n?/g, ' ')
+    .replace(/```/g, ' ')
     // 移除图片
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
     // 移除链接保留文字
