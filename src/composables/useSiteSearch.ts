@@ -37,11 +37,14 @@ const activeIndex = ref(0)
 const results = computed(() => {
   const kw = keyword.value.trim()
   if (!kw) return [] as any[]
-  return ms.search(kw, {
-    fuzzy: 0.2,
+  const all = ms.search(kw, {
+    fuzzy: false,      // 不用模糊匹配，只做精确/前缀匹配
     prefix: true,
-    boost: { title: 3, tags: 2 }
+    combineWith: 'AND',
+    boost: { title: 5, tags: 3 }
   })
+  // 过滤掉分数太低的弱匹配（score < 1）
+  return all.filter((r: any) => r.score >= 1)
 })
 
 // 按类型分组
