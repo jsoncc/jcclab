@@ -1198,7 +1198,11 @@ const applySearchItem = (item: any) => {
     const toolKey = toolActionMap[item.action]
     if (toolKey) toTool(toolKey)
   } else if (item.type === 'blog' && item.path) {
-    openModuleItem('blog', item.path)
+    // 搜索结果的 path 是文章名（如"Git 代码提交与同步指南"），直接路由跳转
+    footerCollapsed.value = true
+    blogCurrentPage.value = 1
+    activeModule.value = 'blog'
+    router.push({ name: 'blog-post', params: { name: item.path.replace(/\s+/g, '-') } })
   }
   siteSearch.activeIndex.value = 0
   siteSearch.keyword.value = ''
