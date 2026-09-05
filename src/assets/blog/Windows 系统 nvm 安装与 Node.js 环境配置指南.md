@@ -55,7 +55,7 @@ nvm install 18.0.0
 ```
 #### [node版本查看地址](https://nodejs.org/en/download)
 
-![[nvm-guide-1.png]]
+![nvm-guide-1](images/blog/nvm-guide-1.png)
 ### 2.3 查看已安装的版本列表
 
 ```cmd
@@ -97,7 +97,7 @@ npm -v
 v22.14.0
 10.9.0
 ```
-![[nvm-guide-2.png]]
+![nvm-guide-2](images/blog/nvm-guide-2.png)
 ---
 
 ## 🔧 四、重装系统后的环境恢复
@@ -176,8 +176,8 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 输入 `Y` 确认后，重启 VS Code 即可。
 
-![[nvm-guide-3.png]]
-![[nvm-guide-4.png]]
+![nvm-guide-3](images/blog/nvm-guide-3.png)
+![nvm-guide-4](images/blog/nvm-guide-4.png)
 
 > 💡 **原理**：PowerShell 默认禁止运行未签名的脚本，`RemoteSigned` 策略允许运行本地脚本，是从网络下载的脚本才需要签名，兼顾安全与便利。
 

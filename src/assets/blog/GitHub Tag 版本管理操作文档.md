@@ -119,7 +119,7 @@ git push origin v1.1.0
 
 5. 点击 **Publish release** 完成
    
-![[git-tag.png]]
+![git-tag](images/blog/git-tag.png)
 
 ---
 
