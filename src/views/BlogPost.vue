@@ -46,11 +46,17 @@ const { getBlogMdContent, renderMarkdown } = useBlogData()
 const htmlContent = ref('')
 // 路由参数里空格被替换为 -，需要还原
 const resolveSlug = (slug: string): string => {
-  // 先试原名（处理文件名本身含 - 的情况，如 opencode-skills-guide）
+  // 先试原名；路由参数可能已被编码，但不能盲目把文件名中的连字符还原为空格。
   const direct = decodeURIComponent(slug)
   if (getBlogMdContent(direct)) return direct
-  // 再把 - 还原为空格试一次
-  return direct.replace(/-/g, ' ')
+  // 兼容旧链接：只尝试将连字符逐个替换为空格，不影响原名直接命中的文件。
+  const candidates = [direct.replace(/-/g, ' ')]
+  let candidate = direct
+  while (candidate.includes('-')) {
+    candidate = candidate.replace('-', ' ')
+    candidates.push(candidate)
+  }
+  return candidates.find(name => getBlogMdContent(name)) || direct
 }
 
 const blogName = computed(() => resolveSlug(route.params.name as string || ''))
