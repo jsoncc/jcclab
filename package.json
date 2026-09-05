@@ -10,6 +10,8 @@
     "dev": "vite",
     "dev:full": "concurrently \"npm run dev\" \"npm run workers:dev\"",
     "build": "vue-tsc --noEmit && vite build",
+    "sync:blog": "powershell -ExecutionPolicy Bypass -File scripts/sync-obsidian-blog.ps1",
+    "sync:blog:dry": "powershell -ExecutionPolicy Bypass -File scripts/sync-obsidian-blog.ps1 -DryRun",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run",

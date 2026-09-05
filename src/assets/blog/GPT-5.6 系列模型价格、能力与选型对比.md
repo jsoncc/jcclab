@@ -1,3 +1,26 @@
+---
+title: GPT-5.6 系列模型价格、能力与选型对比
+date: 2026-09-04
+tags:
+  - GPT-5.6
+  - OpenAI
+  - API
+  - 模型选型
+  - Agent
+category: 模型与开发工具
+models:
+  - GPT-5.6 Sol
+  - GPT-5.6 Terra
+  - GPT-5.6 Luna
+scenarios:
+  - OpenAI API
+  - Codex
+  - OpenCode
+  - Hermes Agent
+aliases:
+  - GPT-5.6 模型对比
+  - GPT-5.6 价格与能力
+---
 
 
 # GPT-5.6 系列模型价格、能力与选型对比
