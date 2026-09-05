@@ -1,5 +1,6 @@
 ---
 title: Windows/WSL 环境配置与排障全记录
+category: dev-environment
 tags:
   - Windows
   - WSL

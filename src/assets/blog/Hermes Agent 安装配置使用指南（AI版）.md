@@ -1,5 +1,6 @@
 ---
 title: Hermes Agent 安装配置使用指南（AI 可执行版）
+category: ai-agent
 tags:
   - Hermes
   - Agent
@@ -349,5 +350,4 @@ hermes -z "回复OK两个字"
 ---
 
 *文档结束。执行中遇到本指南未覆盖的问题，把报错原文发给 AI 协助处理。*
-
 

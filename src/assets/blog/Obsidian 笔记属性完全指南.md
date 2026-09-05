@@ -1,5 +1,6 @@
 ---
 title: Obsidian 笔记属性完全指南
+category: dev-environment
 tags:
   - Obsidian
   - 属性

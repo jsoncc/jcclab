@@ -1,5 +1,6 @@
 ---
 title: OpenCode + OpenRouter + OpenCode Go 完整配置与选型指南
+category: ai-agent
 tags:
   - OpenCode
   - 配置

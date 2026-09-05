@@ -1,5 +1,6 @@
 ---
 title: Chrome 局域网访问（Local Network Access）配置与疑难解答指南
+category: dev-environment
 tags:
   - Chrome
   - 浏览器

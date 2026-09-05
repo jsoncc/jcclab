@@ -25,7 +25,7 @@ function tokenize(text: string): string[] {
 // 初始化 MiniSearch
 const ms = new MiniSearch({
   fields: ['title', 'body', 'tags'],
-  storeFields: ['title', 'type', 'module', 'path', 'action'],
+  storeFields: ['title', 'type', 'module', 'path', 'action', 'category'],
   tokenize,
   processTerm: (term) => (term ? term.toLowerCase() : null)
 })

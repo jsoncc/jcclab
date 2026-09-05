@@ -1,5 +1,6 @@
 ---
 title: GitHub Tag 版本管理操作文档
+category: code-collaboration
 tags:
   - GitHub
   - Tag

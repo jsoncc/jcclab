@@ -1,5 +1,6 @@
 ---
 title: Windows 10 专业版开发环境安装指引（AI 可执行版）
+category: dev-environment
 tags:
   - Windows
   - 开发环境

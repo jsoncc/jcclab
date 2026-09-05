@@ -1,5 +1,6 @@
 ---
 title: Obsidian Tasks 使用指南
+category: dev-environment
 tags:
   - Obsidian
   - 插件

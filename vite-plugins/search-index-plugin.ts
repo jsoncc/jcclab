@@ -9,6 +9,7 @@ import { join } from 'node:path'
 export default function searchIndexPlugin(): Plugin {
   const script = join(process.cwd(), 'scripts/build-search-index.js')
   const blogDir = join(process.cwd(), 'src/assets/blog')
+  const categoryFile = join(process.cwd(), 'src/data/blog-categories.json')
 
   /**
    * 搜索索引是被应用源码静态导入的；异步生成会让 dev 首次加载读到旧索引。
@@ -33,7 +34,7 @@ export default function searchIndexPlugin(): Plugin {
       // 仅 HMR 无法把新文件加入该清单，必须重启 server 后才能正常打开文章。
       let restarting = false
       const refreshBlogFiles = (file: string) => {
-        if (restarting || !file.startsWith(blogDir)) return
+        if (restarting || (!file.startsWith(blogDir) && file !== categoryFile)) return
         restarting = true
         try {
           buildIndex()
@@ -44,6 +45,7 @@ export default function searchIndexPlugin(): Plugin {
       }
       server.watcher.on('add', refreshBlogFiles)
       server.watcher.on('unlink', refreshBlogFiles)
+      server.watcher.on('change', refreshBlogFiles)
     }
   }
 }

@@ -3,7 +3,7 @@
  * 在 vite build 时自动执行，扫描 src/assets/blog/ 下所有 md 文件
  * 输出到 src/assets/search-index.json
  */
-import { readdirSync, readFileSync, writeFileSync, statSync, existsSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import matter from 'gray-matter'
@@ -12,6 +12,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 const BLOG_DIR = join(ROOT, 'src/assets/blog')
 const OUT_FILE = join(ROOT, 'src/assets/search-index.json')
+const CATALOG_FILE = join(ROOT, 'src/assets/blog-catalog.json')
+const CATEGORY_FILE = join(ROOT, 'src/data/blog-categories.json')
+
+const categoryDefinitions = JSON.parse(readFileSync(CATEGORY_FILE, 'utf-8'))
+const validCategoryIds = new Set(categoryDefinitions.map((category) => category.id))
 
 // 工具候选池（与 App.vue headerSearchCandidates 中的工具保持一致）
 const TOOLS = [
@@ -67,25 +72,34 @@ function processBlog(filename) {
   const fullPath = join(BLOG_DIR, filename)
   if (!existsSync(fullPath)) return null
   const raw = readFileSync(fullPath, 'utf-8')
-  // 解析 frontmatter，失败时用空数据 + 整篇作为 body
-  let data = {}
-  let content = raw
+  let parsed
   try {
-    const parsed = matter(raw)
-    data = parsed.data || {}
-    content = parsed.content || raw
+    parsed = matter(raw)
   } catch (e) {
-    // frontmatter 解析失败时回退：把整篇作为 body
-    console.warn(`[search-index] frontmatter parse failed for ${filename}, fallback to raw`)
-    content = raw.replace(/^---[\s\S]*?---\n?/, '')
+    throw new Error(`[blog-catalog] frontmatter parse failed for ${filename}: ${e instanceof Error ? e.message : e}`)
   }
+  const data = parsed.data || {}
+  const content = parsed.content || ''
   const id = filename.replace(/\.md$/, '')
-  return {
+  const category = String(data.category || '')
+  if (!validCategoryIds.has(category)) {
+    throw new Error(`[blog-catalog] ${filename} must declare a valid category; received: ${category || '(missing)'}`)
+  }
+  const title = String(data.title || id)
+  const tags = Array.isArray(data.tags) ? data.tags.map(String) : []
+  const plainBody = cleanMarkdown(content)
+  const catalogItem = {
     id,
+    title,
+    path: id,
+    category,
+    tags,
+    excerpt: plainBody.slice(0, 160)
+  }
+  return {
+    ...catalogItem,
     type: 'blog',
-    title: data.title || id,
-    tags: data.tags || [],
-    body: cleanMarkdown(content).slice(0, 5000),
+    body: plainBody.slice(0, 5000),
     module: 'blog',
     path: id
   }
@@ -99,11 +113,13 @@ function buildIndex() {
     console.warn(`[search-index] blog dir not found: ${BLOG_DIR}`)
     return
   }
-  const files = readdirSync(BLOG_DIR).filter(f => f.endsWith('.md'))
-  const blogs = files.map(processBlog).filter(Boolean)
+  const files = readdirSync(BLOG_DIR).filter(f => f.endsWith('.md')).sort()
+  const blogs = files.map(processBlog)
+  const catalog = blogs.map(({ body, type, module, ...item }) => item)
 
   const allDocs = [...blogs, ...TOOLS]
   writeFileSync(OUT_FILE, JSON.stringify(allDocs), 'utf-8')
+  writeFileSync(CATALOG_FILE, JSON.stringify(catalog), 'utf-8')
   console.log(`[search-index] built ${allDocs.length} docs (${blogs.length} blogs + ${TOOLS.length} tools) -> ${OUT_FILE}`)
 }
 

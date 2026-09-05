@@ -1,5 +1,6 @@
 ---
 title: GPT-5.6 系列模型价格、能力与选型对比
+category: ai-agent
 date: 2026-09-04
 tags:
   - GPT-5.6
@@ -7,7 +8,6 @@ tags:
   - API
   - 模型选型
   - Agent
-category: 模型与开发工具
 models:
   - GPT-5.6 Sol
   - GPT-5.6 Terra

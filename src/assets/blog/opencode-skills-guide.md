@@ -1,5 +1,6 @@
 ---
 title: opencode Skills 完整使用指南
+category: ai-agent
 tags:
   - OpenCode
   - Skills

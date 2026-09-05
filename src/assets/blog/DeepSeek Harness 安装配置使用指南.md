@@ -1,5 +1,6 @@
 ---
 title: DeepSeek Harness 安装配置使用指南
+category: ai-agent
 date: 2026-08-22
 tags:
   - DeepSeek

@@ -1,5 +1,6 @@
 ---
 title: Chrome浏览器内存优化指南
+category: dev-environment
 tags:
   - Chrome
   - 浏览器

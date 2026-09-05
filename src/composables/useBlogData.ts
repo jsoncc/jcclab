@@ -1,5 +1,7 @@
 import { marked } from '../utils/markedConfig'
 import { rawFromGlob } from '../utils/sharedGlob'
+import blogCatalog from '../assets/blog-catalog.json'
+import type { BlogCatalogItem } from '../types/blog'
 
 type GlobRawModule = string | { default: string }
 type RawMdMap = Record<string, GlobRawModule>
@@ -11,6 +13,7 @@ const blogFiles = import.meta.glob('../assets/blog/*.md', {
 }) as RawMdMap
 
 export function useBlogData() {
+  const catalog = blogCatalog as BlogCatalogItem[]
   const getBlogMdContent = (name: string): string | null => {
     const targetPath = `../assets/blog/${name}.md`
     const mod = blogFiles[targetPath]
@@ -33,6 +36,9 @@ export function useBlogData() {
     return null
   }
 
+  const getBlogCatalogItem = (id: string): BlogCatalogItem | null =>
+    catalog.find((item) => item.id === id) || null
+
   const renderMarkdown = (mdText: string): string => {
     const cleaned = mdText.replace(/^---[\s\S]*?---\s*/, '')
     return String(marked.parse(cleaned))
@@ -42,6 +48,7 @@ export function useBlogData() {
     blogFiles,
     getBlogMdContent,
     getBlogNameFromLegacySlug,
+    getBlogCatalogItem,
     renderMarkdown
   }
 }

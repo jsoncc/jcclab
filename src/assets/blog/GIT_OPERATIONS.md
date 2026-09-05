@@ -1,5 +1,6 @@
 ---
 title: 查看分支（常用）
+category: code-collaboration
 tags:
   - Git
   - 命令
@@ -146,5 +147,4 @@ git checkout -b 新分支名
 git checkout main
 git merge dev
 ```
-
 

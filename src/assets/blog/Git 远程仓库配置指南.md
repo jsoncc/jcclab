@@ -1,5 +1,6 @@
 ---
 title: Git 远程仓库配置指南
+category: code-collaboration
 tags:
   - Git
   - 远程

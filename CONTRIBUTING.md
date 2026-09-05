@@ -1,5 +1,25 @@
 # jcclab 贡献指南
 
+## 博客文章分类
+
+`src/assets/blog/` 下的每篇 Markdown 必须在 frontmatter 中声明 `category`。构建阶段会校验该字段，缺失、拼写错误或 frontmatter 无法解析都会使构建失败。
+
+```yaml
+---
+title: 文章标题
+category: ai-agent
+tags:
+  - 示例
+---
+```
+
+可用分类：
+
+- `ai-agent`：AI 与 Agent
+- `code-collaboration`：代码协作
+- `dev-environment`：开发环境与效率工具
+- `site-engineering`：站点工程与自动化
+
 ## Commit message 规范
 
 提交信息采用 Conventional Commits 风格。第一行是必填项，正文和附加区块按需填写。

@@ -1,5 +1,6 @@
 ---
 title: Git 代码提交与同步指南
+category: code-collaboration
 tags:
   - Git
   - 基础

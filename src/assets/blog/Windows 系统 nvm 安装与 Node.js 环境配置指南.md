@@ -1,5 +1,6 @@
 ---
-title: > 适用场景：Windows 10 / Windows 11 | nvm-windows | Node.js ≥ 18.0.0（推荐 LTS）
+title: Windows 系统 nvm 安装与 Node.js 环境配置指南
+category: dev-environment
 tags:
   - Windows
   - nvm

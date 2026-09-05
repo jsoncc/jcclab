@@ -190,35 +190,66 @@
               <div class="inline-md-content" v-html="latestVpnHtml" />
             </div>
             <template v-else-if="module.key === 'blog'">
-              <!-- 首页「全部」视图：仅展示分类导航，点击跳到博客 tab 对应分组 -->
+              <!-- 首页「全部」视图：主题分类入口 -->
               <template v-if="activeModule === 'all'">
                 <div class="blog-categories">
                   <button
-                    v-for="group in blogGroups"
-                    :key="group.label"
+                    v-for="category in blogCategorySummaries"
+                    :key="category.id"
                     type="button"
                     class="blog-category"
-                    @click="openBlogGroup(group.label)"
+                    :style="{ '--category-color': category.color }"
+                    @click="openBlogCategory(category.id)"
                   >
-                    <span class="blog-category-label">{{ group.label }}</span>
-                    <span class="blog-category-count">{{ group.items.length }} 篇</span>
+                    <span class="blog-category-icon" aria-hidden="true">{{ category.icon }}</span>
+                    <span class="blog-category-label">{{ category.label }}</span>
+                    <span class="blog-category-description">{{ category.description }}</span>
+                    <span class="blog-category-count">{{ category.count }} 篇</span>
                   </button>
                 </div>
               </template>
-              <!-- 博客 tab 单视图：完整分组列表 + 分页 -->
+              <!-- 博客 tab 单视图：分类筛选 + 文章卡片 -->
               <template v-else>
-                <template v-for="group in blogPagedGroups" :key="group.label">
-                  <h3 :id="`blog-group-${group.label}`" class="list-group-title">{{ group.label }}</h3>
-                  <div class="list-item" v-for="item in group.items" :key="item.path">
-                    <a
-                      :href="`#/blog/${item.name}`"
-                      class="date-link"
-                      @click.prevent="openModuleItem('blog', item.path)"
-                    >
-                      {{ item.name }}
-                    </a>
+                <div class="blog-browser-header">
+                  <div>
+                    <p class="blog-browser-eyebrow">知识库</p>
+                    <h3 class="blog-browser-title">{{ selectedBlogCategoryLabel }}</h3>
+                    <p class="blog-browser-count">共 {{ blogTotalCount }} 篇文章</p>
                   </div>
-                </template>
+                  <div class="blog-category-filters" role="tablist" aria-label="博客分类">
+                    <button
+                      v-for="category in blogFilterCategories"
+                      :key="category.id"
+                      type="button"
+                      class="blog-category-filter"
+                      :class="{ active: activeBlogCategory === category.id }"
+                      role="tab"
+                      :aria-selected="activeBlogCategory === category.id"
+                      @click="selectBlogCategory(category.id)"
+                    >
+                      {{ category.label }} <span>{{ category.count }}</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="blog-article-grid">
+                  <article v-for="item in blogPagedItems" :key="item.id" class="blog-article-card">
+                    <a
+                      :href="`#/blog/${encodeURIComponent(item.id)}`"
+                      class="blog-article-link"
+                      @click.prevent="openBlog(item.id)"
+                    >
+                      <span class="blog-article-category" :style="{ '--category-color': getCategoryMeta(item.category)?.color }">
+                        {{ getCategoryMeta(item.category)?.label }}
+                      </span>
+                      <h3>{{ item.title }}</h3>
+                      <p>{{ item.excerpt }}</p>
+                      <span v-if="item.tags.length" class="blog-article-tags">
+                        <span v-for="tag in item.tags.slice(0, 3)" :key="tag">{{ tag }}</span>
+                      </span>
+                    </a>
+                  </article>
+                </div>
+                <p v-if="!blogPagedItems.length" class="blog-article-empty">该分类暂时没有文章。</p>
                 <div class="blog-pagination" v-if="blogPageCount > 1">
                   <button
                     type="button"
@@ -477,6 +508,10 @@ import Base64FileTool from './components/Base64FileTool.vue'
 const PdfTools = defineAsyncComponent(() => import('./components/PdfTools.vue'))
 const PerpetualCalendar = defineAsyncComponent(() => import('./components/PerpetualCalendar.vue'))
 import homeQrcodeImg from './assets/images/home/qrcode.png'
+import blogCatalog from './assets/blog-catalog.json'
+import { BLOG_CATEGORIES, getBlogCategory, type BlogCategoryId } from './data/blogCategories'
+import type { BlogCatalogItem } from './types/blog'
+import { BLOG_PAGE_SIZE, filterBlogItems, paginateBlogItems } from './utils/blogCatalog'
 import { rawFromGlob, stemFromGlobPath } from './utils/sharedGlob'
 const BlogPost = defineAsyncComponent(() => import('./views/BlogPost.vue'))
 
@@ -489,12 +524,6 @@ type ActiveToolKey = 'formatCheck' | 'uuid' | 'mybatisSql' | 'base64Decode' | 'b
 
 // —— Markdown 原始文件（构建期打包；key 为形如 ./assets/... 的路径）——
 const historyFiles = import.meta.glob('./assets/history/*.md', {
-  eager: true,
-  query: '?raw',
-  import: 'default'
-}) as RawMdMap
-
-const blogFiles = import.meta.glob('./assets/blog/*.md', {
   eager: true,
   query: '?raw',
   import: 'default'
@@ -513,58 +542,31 @@ const vpnFiles = import.meta.glob('./assets/vpn/*.md', {
 //   import: 'default'
 // }) as RawMdMap
 
-type BlogGroup = { label: string; items: { name: string; path: string }[] }
 type MdStemItem = { name: string; path: string }
 
-const groupKey = (name: string): string => {
-  // 先判断 GitHub，避免被 Git 的 startsWith 拦截
-  if (name.startsWith('GitHub')) return 'GitHub'
-  if (name.startsWith('Git') || name.startsWith('GIT_')) return 'Git'
-  if (name.startsWith('DeepSeek')) return 'DeepSeek Harness'
-  if (name.startsWith('OpenCode') || name.startsWith('opencode')) return 'OpenCode'
-  if (name.startsWith('Hermes')) return 'Hermes'
-  if (name.startsWith('Obsidian')) return 'Obsidian'
-  if (name.startsWith('Chrome')) return 'Chrome'
-  if (name.includes('（AI版）')) return 'AI'
-  return '综合'
-}
+const blogItems = (blogCatalog as BlogCatalogItem[])
+  .slice()
+  .sort((a, b) => a.title.localeCompare(b.title, 'zh-CN'))
+const activeBlogCategory = ref<BlogCategoryId | 'all'>('all')
+const getCategoryMeta = (id: string) => getBlogCategory(id)
+const blogCategorySummaries = computed(() => BLOG_CATEGORIES.map(category => ({
+  ...category,
+  count: blogItems.filter(item => item.category === category.id).length
+})))
+const blogFilterCategories = computed(() => [
+  { id: 'all' as const, label: '全部', count: blogItems.length },
+  ...blogCategorySummaries.value
+])
+const selectedBlogCategoryLabel = computed(() =>
+  activeBlogCategory.value === 'all'
+    ? '全部文章'
+    : getBlogCategory(activeBlogCategory.value)?.label || '博客'
+)
+const filteredBlogItems = computed(() => filterBlogItems(blogItems, activeBlogCategory.value))
 
-const groupOrder: Record<string, number> = {
-  '综合': 0,
-  'Git': 1,
-  'GitHub': 2,
-  'OpenCode': 3,
-  'Hermes': 4,
-  'Obsidian': 5
-}
-
-const blogGroups = computed((): BlogGroup[] => {
-  const groups = new Map<string, { name: string; path: string }[]>()
-  for (const path of Object.keys(blogFiles)) {
-    const name = stemFromGlobPath(path, 'md')
-    if (!name) continue
-    const key = groupKey(name)
-    if (!groups.has(key)) groups.set(key, [])
-    groups.get(key)!.push({ name, path })
-  }
-  for (const items of groups.values()) {
-    items.sort((a, b) => a.name.localeCompare(b.name))
-  }
-  return Array.from(groups.entries())
-    .sort((a, b) => {
-      // 综合始终排最前
-      if (a[0] === '综合') return -1
-      if (b[0] === '综合') return 1
-      // 其余按分类名字母升序
-      return a[0].localeCompare(b[0])
-    })
-    .map(([label, items]) => ({ label, items }))
-})
-
-/* —— 博客列表分页（主内容区混排分页，保留分组标题）—— */
-const BLOG_PAGE_SIZE = 10
+/* —— 博客列表分页：仅对当前筛选分类生效 —— */
 const blogCurrentPage = ref(1)
-const blogTotalCount = computed(() => blogGroups.value.reduce((n, g) => n + g.items.length, 0))
+const blogTotalCount = computed(() => filteredBlogItems.value.length)
 const blogPageCount = computed(() => Math.max(1, Math.ceil(blogTotalCount.value / BLOG_PAGE_SIZE)))
 // 生成页码数组（含省略号）
 const blogPageNumbers = computed(() => {
@@ -580,41 +582,20 @@ const blogPageNumbers = computed(() => {
   pages.push(total)
   return pages
 })
-/** 按当前页切片，保留分组标题结构（跨页时每页只含涉及的分组） */
-const blogPagedGroups = computed((): BlogGroup[] => {
-  const start = (blogCurrentPage.value - 1) * BLOG_PAGE_SIZE
-  const end = start + BLOG_PAGE_SIZE
-  const result: BlogGroup[] = []
-  let index = 0
-  for (const group of blogGroups.value) {
-    const sliced = group.items.filter(() => {
-      const i = index++
-      return i >= start && i < end
-    })
-    if (sliced.length) result.push({ label: group.label, items: sliced })
-  }
-  return result
+const blogPagedItems = computed(() => {
+  return paginateBlogItems(filteredBlogItems.value, blogCurrentPage.value)
 })
 
-/** 首页「全部」→ 博客分类：切到博客 tab，跳到该分类标题所在页并滚动定位到标题 */
-const openBlogGroup = async (label: string) => {
+const selectBlogCategory = (category: BlogCategoryId | 'all') => {
+  activeBlogCategory.value = category
+  blogCurrentPage.value = 1
+}
+
+/** 首页主题卡片 → 博客页对应筛选 */
+const openBlogCategory = async (category: BlogCategoryId) => {
   activeModule.value = 'blog'
-  await nextTick() // 等 activeModule 的 watch 把分页重置为第 1 页并渲染
-  // 计算该分类首个条目所在的页码（分页按条目顺序切片）
-  let index = 0
-  let page = 1
-  for (const group of blogGroups.value) {
-    if (group.label === label) {
-      page = Math.floor(index / BLOG_PAGE_SIZE) + 1
-      break
-    }
-    index += group.items.length
-  }
-  blogCurrentPage.value = page
-  await nextTick() // 等目标分页渲染完成
-  document
-    .getElementById(`blog-group-${label}`)
-    ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  await nextTick()
+  selectBlogCategory(category)
 }
 
 const vpnList = computed((): MdStemItem[] =>
@@ -674,22 +655,45 @@ const latestVpnHtml = computed(() => {
 const route = useRoute()
 const router = useRouter()
 const isBlogPost = computed(() => route.name === 'blog-post')
+const legacyBlogGroupCategory: Record<string, BlogCategoryId | 'all'> = {
+  '综合': 'all',
+  Git: 'code-collaboration',
+  GitHub: 'code-collaboration',
+  OpenCode: 'ai-agent',
+  Hermes: 'ai-agent',
+  'DeepSeek Harness': 'ai-agent',
+  Chrome: 'dev-environment',
+  Obsidian: 'dev-environment',
+  AI: 'dev-environment'
+}
+const requestedBlogCategory = computed<BlogCategoryId | 'all' | null>(() => {
+  const category = route.query.blogCategory
+  if (typeof category === 'string' && (category === 'all' || getBlogCategory(category))) {
+    return category as BlogCategoryId | 'all'
+  }
+  const legacyGroup = route.query.blogGroup
+  return typeof legacyGroup === 'string' ? legacyBlogGroupCategory[legacyGroup] || null : null
+})
 
-// 从博客文章返回时，自动切到博客模块并定位到对应分组。
-// blogGroup 只是一次性的定位指令：消费后立即从 URL 清除，避免刷新或后续导航重复触发。
+// 从文章页返回时，自动切到博客模块并恢复对应分类。
+// blogCategory 只是一次性的定位指令：消费后立即从 URL 清除。
 watch(
-  () => route.query.blogGroup,
-  async (group) => {
-    if (group && typeof group === 'string' && !isBlogPost.value) {
+  requestedBlogCategory,
+  async (category) => {
+    if (
+      category &&
+      !isBlogPost.value
+    ) {
       await nextTick()
       activeModule.value = 'blog'
       await nextTick()
-      await openBlogGroup(group)
+      selectBlogCategory(category as BlogCategoryId | 'all')
 
-      // 使用 replace 而非 push：不污染浏览器历史，也不保留 ?blogGroup=…。
+      // 使用 replace 而非 push：不污染浏览器历史，也不保留 ?blogCategory=…。
       // 若用户在定位期间已经导航到其他地址，则不覆盖其新导航。
-      if (route.query.blogGroup === group) {
+      if (requestedBlogCategory.value === category) {
         const query = { ...route.query }
+        delete query.blogCategory
         delete query.blogGroup
         await router.replace({ name: 'home', query })
       }
@@ -1083,14 +1087,7 @@ const listModules = computed((): ListModule[] => [
   {
     key: 'blog',
     title: '博客',
-    items: blogGroups.value.flatMap(group =>
-      group.items.map(item => ({
-        key: item.path,
-        label: item.name,
-        value: item.path,
-        href: `#/blog/${item.name}`
-      }))
-    )
+    items: []
   },
   // {
   //   key: 'command',
@@ -1124,13 +1121,7 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
     //   openMdFromMap(hotnewsFiles, value)
     //   break
     case 'blog':
-      footerCollapsed.value = true
-      blogCurrentPage.value = 1
-      const blogName = stemFromGlobPath(value, 'md')
-      if (blogName) {
-        // 保留原始文件名；Vue Router 会负责 URL 编码，避免混淆原名中的 - 与空格。
-        router.push({ name: 'blog-post', params: { name: blogName } })
-      }
+      openBlog(value)
       break
     // case 'command':
     //   openMdFromMap(commandFiles, value)
@@ -1141,6 +1132,11 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
     default:
       break
   }
+}
+
+const openBlog = (id: string) => {
+  footerCollapsed.value = true
+  router.push({ name: 'blog-post', params: { name: id } })
 }
 
 const headerSearchFocused = ref(false)
@@ -1211,7 +1207,7 @@ const applySearchItem = (item: any) => {
     footerCollapsed.value = true
     blogCurrentPage.value = 1
     activeModule.value = 'blog'
-    router.push({ name: 'blog-post', params: { name: item.path } })
+    openBlog(item.path)
   }
   siteSearch.activeIndex.value = 0
   siteSearch.keyword.value = ''

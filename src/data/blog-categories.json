@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ai-agent",
+    "label": "AI 与 Agent",
+    "description": "模型选型、智能体与 AI 开发工具",
+    "icon": "✦",
+    "color": "#7c3aed"
+  },
+  {
+    "id": "code-collaboration",
+    "label": "代码协作",
+    "description": "版本控制、代码托管与团队协作",
+    "icon": "⌘",
+    "color": "#0969da"
+  },
+  {
+    "id": "dev-environment",
+    "label": "开发环境与效率工具",
+    "description": "系统配置、浏览器与知识管理工具",
+    "icon": "⚙",
+    "color": "#0f766e"
+  },
+  {
+    "id": "site-engineering",
+    "label": "站点工程与自动化",
+    "description": "本站功能、部署、统计与自动化实践",
+    "icon": "◇",
+    "color": "#c2410c"
+  }
+]

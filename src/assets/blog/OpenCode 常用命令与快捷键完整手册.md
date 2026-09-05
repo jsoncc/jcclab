@@ -1,5 +1,6 @@
 ---
 title: ⌨️ OpenCode 命令与快捷键手册
+category: ai-agent
 tags:
   - OpenCode
   - 命令

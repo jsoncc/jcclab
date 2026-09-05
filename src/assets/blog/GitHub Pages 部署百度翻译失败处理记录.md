@@ -1,5 +1,6 @@
 ---
 title: GitHub Pages 部署百度翻译失败处理记录
+category: code-collaboration
 tags:
   - GitHub
   - Pages
@@ -147,4 +148,3 @@ Wrangler 等待 OAuth 回调（localhost）超时，常见于浏览器授权未�
 2. CI 构建环境必须显式注入变量，不能依赖本机 `.env`。
 3. `.env.example` 应保留模板并去敏感信息。
 4. 对不支持 CORS 的接口，静态站应使用 Worker/后端代理转发。
-

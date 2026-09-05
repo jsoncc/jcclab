@@ -1,5 +1,6 @@
 ---
 title: 📄 GitHub SSH 密钥配置标准操作文档
+category: code-collaboration
 tags:
   - GitHub
   - SSH
@@ -175,4 +176,3 @@ git remote set-url origin git@github.com:jsoncc/today-history.git
 # 删除本地 SSH 密钥（如需重新配置）
 rm ~/.ssh/id_ed25519 ~/.ssh/id_ed25519.pub
 ```
-

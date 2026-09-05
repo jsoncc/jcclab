@@ -1,5 +1,6 @@
 ---
 title: GitHub Pages 更换地址后翻译与统计失效：原因与修复全流程
+category: code-collaboration
 tags:
   - GitHub
   - Pages
@@ -156,4 +157,3 @@ npm run workers:deploy
 4. Worker 名称、脚本默认名、文档是否一致
 
 做到这四步，类似问题基本可以一次解决。
-

@@ -1,5 +1,6 @@
 ---
 title: OpenCode Go 订阅模型全解析
+category: ai-agent
 tags:
   - OpenCode
   - 模型

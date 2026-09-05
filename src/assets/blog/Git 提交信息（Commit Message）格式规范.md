@@ -1,5 +1,6 @@
 ---
 title: Git 提交信息（Commit Message）格式规范
+category: code-collaboration
 tags:
   - Git
   - 规范
