@@ -1,6 +1,6 @@
 ---
-title: OpenCode Skills 全局配置完整操作文档
 category: ai-agent
+title: OpenCode Skills 全局配置完整操作文档
 tags:
   - OpenCode
   - Skills

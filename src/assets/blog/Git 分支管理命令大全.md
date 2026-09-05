@@ -1,6 +1,6 @@
 ---
-title: Git 分支管理命令大全
 category: code-collaboration
+title: Git 分支管理命令大全
 tags:
   - Git
   - 分支
@@ -8,11 +8,9 @@ tags:
 
 # Git 分支管理命令大全
 
-常用 Git 分支操作速查，覆盖查看、切换、合并与删除分支等日常命令。
-
 ## 查看分支
 
-```bash
+```
 # 查看本地所有分支
 git branch
 
@@ -28,7 +26,7 @@ git branch -vv
 
 ## 切换分支
 
-```bash
+```
 # 切换分支
 git checkout 分支名
 
@@ -41,7 +39,7 @@ git checkout -b 分支名
 
 ## 合并与删除分支
 
-```bash
+```
 # 合并分支（比如把 dev 合并到 main）
 git merge 分支名
 

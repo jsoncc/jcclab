@@ -1,6 +1,6 @@
 ---
-title: VS Code 个人配置同步完整操作文档
 category: code-collaboration
+title: VS Code 个人配置同步完整操作文档
 tags:
   - VSCode
   - 同步

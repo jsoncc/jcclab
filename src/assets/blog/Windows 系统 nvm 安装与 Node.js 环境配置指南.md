@@ -1,6 +1,6 @@
 ---
-title: Windows 系统 nvm 安装与 Node.js 环境配置指南
 category: dev-environment
+title: Windows 系统 nvm 安装与 Node.js 环境配置指南
 tags:
   - Windows
   - nvm

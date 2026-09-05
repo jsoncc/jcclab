@@ -1,6 +1,6 @@
 ---
-title: Hermes Agent 安装配置使用指南
 category: ai-agent
+title: Hermes Agent 安装配置使用指南
 tags:
   - Hermes
   - Agent

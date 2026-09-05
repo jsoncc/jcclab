@@ -19,7 +19,11 @@ function Get-RelativeFiles($root, $filter) {
   }
 }
 
-function Normalize-Images($text, $fileName) {
+function Normalize-Images {
+  param(
+    [string]$text,
+    [string]$relativePath
+  )
   $text = [regex]::Replace($text, '!\[\[([^\]|]+)(?:\|([^\]]+))?\]\]', {
     param($m)
     $image = $m.Groups[1].Value.Trim()
@@ -27,6 +31,25 @@ function Normalize-Images($text, $fileName) {
     "![$alt](images/blog/$image)"
   })
   return $text
+}
+
+function Ensure-Category {
+  param(
+    [string]$text
+  )
+  $category = 'dev-environment'
+  $frontmatter = [regex]::Match($text, '\A---\r?\n(?<body>[\s\S]*?)\r?\n---(?:\r?\n|\z)')
+  if ($frontmatter.Success) {
+    $body = $frontmatter.Groups['body'].Value
+    if ($body -match '(?m)^category\s*:\s*(ai-agent|code-collaboration|dev-environment|site-engineering)\s*$') { return $text }
+    if ($body -match '(?m)^category\s*:') {
+      $body = [regex]::Replace($body, '(?m)^category\s*:.*$', "category: $category", 1)
+    } else {
+      $body = "category: $category`r`n$body"
+    }
+    return "---`r`n$body`r`n---`r`n" + $text.Substring($frontmatter.Length)
+  }
+  return "---`r`ncategory: $category`r`n---`r`n`r`n$text"
 }
 
 function Get-Hash($path) {
@@ -45,8 +68,20 @@ $targetOnly = @(Get-RelativeFiles $targetBlog '*.md' | Where-Object { -not $sour
 foreach ($rel in $blogFiles) {
   $src = Join-Path $sourceBlog $rel
   $dst = Join-Path $targetBlog $rel
-  $content = Normalize-Images ([IO.File]::ReadAllText($src)) $rel
+  $content = [IO.File]::ReadAllText($src)
   $old = if (Test-Path -LiteralPath $dst) { [IO.File]::ReadAllText($dst) } else { $null }
+  $content = Normalize-Images -text $content -relativePath $rel
+  $content = Ensure-Category -text $content
+  if ($old) {
+    $existingCategory = [regex]::Match($old, '(?m)^category\s*:\s*(ai-agent|code-collaboration|dev-environment|site-engineering)\s*$')
+    if ($existingCategory.Success) {
+      $content = [regex]::Replace($content, '(?m)^category\s*:.*$', "category: $($existingCategory.Groups[1].Value)", 1)
+    }
+    $existingTitle = [regex]::Match($old, '(?m)^title:\s*(?<value>\S.*)$')
+    if ($existingTitle.Success -and $content -match '(?m)^title:\s*(?:>|)$') {
+      $content = [regex]::Replace($content, '(?m)^title:.*$', "title: $($existingTitle.Groups['value'].Value)", 1)
+    }
+  }
   if ($old -ne $content) { $changes += "Markdown: $rel"; if (-not $DryRun) { New-Item -ItemType Directory -Force (Split-Path $dst) | Out-Null; [IO.File]::WriteAllText($dst, $content, [Text.UTF8Encoding]::new($false)) } }
 }
 

@@ -1,6 +1,6 @@
 ---
-title: Windows 开发环境搭建排障记录：nvm 双版本 Node + Git/JDK/Python 环境变量配置
 category: dev-environment
+title: Windows 开发环境搭建排障记录：nvm 双版本 Node + Git/JDK/Python 环境变量配置
 tags:
   - Windows
   - nvm

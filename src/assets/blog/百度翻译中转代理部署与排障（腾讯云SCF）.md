@@ -1,6 +1,6 @@
 ---
-title: 百度翻译中转代理部署与排障（腾讯云SCF）
 category: site-engineering
+title: 百度翻译中转代理部署与排障（腾讯云SCF）
 tags:
   - 百度翻译
   - 腾讯云
