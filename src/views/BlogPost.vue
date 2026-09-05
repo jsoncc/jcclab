@@ -42,21 +42,18 @@ import { useBlogData } from '../composables/useBlogData'
 
 const route = useRoute()
 const router = useRouter()
-const { getBlogMdContent, renderMarkdown } = useBlogData()
+const { getBlogMdContent, getBlogNameFromLegacySlug, renderMarkdown } = useBlogData()
 const htmlContent = ref('')
-// 路由参数里空格被替换为 -，需要还原
+// 新链接保留原文章名；同时兼容旧版“空格 → -”链接。
 const resolveSlug = (slug: string): string => {
-  // 先试原名；路由参数可能已被编码，但不能盲目把文件名中的连字符还原为空格。
-  const direct = decodeURIComponent(slug)
-  if (getBlogMdContent(direct)) return direct
-  // 兼容旧链接：只尝试将连字符逐个替换为空格，不影响原名直接命中的文件。
-  const candidates = [direct.replace(/-/g, ' ')]
-  let candidate = direct
-  while (candidate.includes('-')) {
-    candidate = candidate.replace('-', ' ')
-    candidates.push(candidate)
+  let direct = slug
+  try {
+    direct = decodeURIComponent(slug)
+  } catch {
+    return ''
   }
-  return candidates.find(name => getBlogMdContent(name)) || direct
+  if (getBlogMdContent(direct)) return direct
+  return getBlogNameFromLegacySlug(direct) || direct
 }
 
 const blogName = computed(() => resolveSlug(route.params.name as string || ''))

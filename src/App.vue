@@ -675,7 +675,8 @@ const route = useRoute()
 const router = useRouter()
 const isBlogPost = computed(() => route.name === 'blog-post')
 
-// 从博客文章返回时，自动切到博客模块并定位到对应分组
+// 从博客文章返回时，自动切到博客模块并定位到对应分组。
+// blogGroup 只是一次性的定位指令：消费后立即从 URL 清除，避免刷新或后续导航重复触发。
 watch(
   () => route.query.blogGroup,
   async (group) => {
@@ -683,7 +684,15 @@ watch(
       await nextTick()
       activeModule.value = 'blog'
       await nextTick()
-      openBlogGroup(group)
+      await openBlogGroup(group)
+
+      // 使用 replace 而非 push：不污染浏览器历史，也不保留 ?blogGroup=…。
+      // 若用户在定位期间已经导航到其他地址，则不覆盖其新导航。
+      if (route.query.blogGroup === group) {
+        const query = { ...route.query }
+        delete query.blogGroup
+        await router.replace({ name: 'home', query })
+      }
     }
   },
   { immediate: true }
@@ -1119,8 +1128,8 @@ const openModuleItem = (moduleKey: ListModuleKey, value: string) => {
       blogCurrentPage.value = 1
       const blogName = stemFromGlobPath(value, 'md')
       if (blogName) {
-        // 空格转 - 让 URL 更干净（中文保留）
-        router.push({ name: 'blog-post', params: { name: blogName.replace(/\s+/g, '-') } })
+        // 保留原始文件名；Vue Router 会负责 URL 编码，避免混淆原名中的 - 与空格。
+        router.push({ name: 'blog-post', params: { name: blogName } })
       }
       break
     // case 'command':
@@ -1202,7 +1211,7 @@ const applySearchItem = (item: any) => {
     footerCollapsed.value = true
     blogCurrentPage.value = 1
     activeModule.value = 'blog'
-    router.push({ name: 'blog-post', params: { name: item.path.replace(/\s+/g, '-') } })
+    router.push({ name: 'blog-post', params: { name: item.path } })
   }
   siteSearch.activeIndex.value = 0
   siteSearch.keyword.value = ''
