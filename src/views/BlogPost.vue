@@ -233,17 +233,26 @@ onUnmounted(() => observer?.disconnect())
 <style>
 /* ===== 组件布局 ===== */
 .blog-post-page {
+  /* 作为 .module-container 的子项时必须占满可用空间，避免按内容宽度收缩。 */
+  flex: 1 1 100%;
+  width: 100%;
+  box-sizing: border-box;
   padding: 24px 16px;
   max-width: 1400px;
   margin: 0 auto;
 }
 .blog-layout {
   display: grid;
-  grid-template-columns: 48px 1fr 220px;
+  grid-template-columns: 48px minmax(0, 760px) 220px;
   gap: 24px;
+  width: 100%;
+  justify-content: center;
   align-items: start;
 }
-.blog-main { min-width: 0; }
+.blog-main {
+  min-width: 0;
+  width: 100%;
+}
 
 /* ===== 左栏操作按钮 ===== */
 .blog-actions {
