@@ -99,6 +99,7 @@ npm run preview  # 本地预览 dist
 
 ## 更多文档
 
+- [贡献指南与提交规范](CONTRIBUTING.md) — Commit message 格式、类型和提交检查规则
 - [开发者指南](docs/DEVELOPMENT.md) — 技术栈、仓库结构、部署配置、内容维护等详细说明
 - [每日历史邮件配置](docs/history-mail-setup.md) — 定时任务与 SMTP 配置（已暂停）
 - [Cloudflare Worker 说明](workers/README.md) — KV 绑定、部署与调试
