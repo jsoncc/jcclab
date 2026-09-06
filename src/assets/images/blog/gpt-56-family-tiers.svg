@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">GPT-5.6 Family Model Selection</title>
+  <desc id="desc">A comparison of GPT-5.6 Sol, Terra, and Luna by capability, typical tasks, and cost orientation.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#172554"/></linearGradient>
+    <linearGradient id="sol" x1="0" x2="1"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#2563eb"/></linearGradient>
+    <linearGradient id="terra" x1="0" x2="1"><stop stop-color="#0891b2"/><stop offset="1" stop-color="#2563eb"/></linearGradient>
+    <linearGradient id="luna" x1="0" x2="1"><stop stop-color="#d97706"/><stop offset="1" stop-color="#db2777"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000" flood-opacity=".3"/></filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1400" cy="90" r="240" fill="#38bdf8" opacity=".08"/><circle cx="180" cy="820" r="300" fill="#a78bfa" opacity=".08"/>
+  <text x="100" y="105" fill="#f8fafc" font-family="Arial, sans-serif" font-size="48" font-weight="700">GPT-5.6 Family Model Selection</text>
+  <text x="102" y="150" fill="#94a3b8" font-family="Arial, sans-serif" font-size="24">Choose by task difficulty, not by price alone</text>
+  <text x="1380" y="230" fill="#bae6fd" font-family="Arial, sans-serif" font-size="22" text-anchor="middle">MORE CAPABILITY</text>
+  <path d="M1380 600 V260 M1380 260 l-18 28 M1380 260 l18 28" stroke="#7dd3fc" stroke-width="5" fill="none"/>
+  <text x="1380" y="690" fill="#fed7aa" font-family="Arial, sans-serif" font-size="22" text-anchor="middle">LOWER COST</text>
+  <path d="M1380 625 V770 M1380 770 l-18 -28 M1380 770 l18 -28" stroke="#fdba74" stroke-width="5" fill="none"/>
+  <g filter="url(#shadow)">
+    <rect x="160" y="205" width="1080" height="175" rx="24" fill="url(#sol)"/>
+    <rect x="160" y="415" width="1080" height="175" rx="24" fill="url(#terra)"/>
+    <rect x="160" y="625" width="1080" height="175" rx="24" fill="url(#luna)"/>
+  </g>
+  <g fill="#fff" font-family="Arial, sans-serif">
+    <text x="210" y="270" font-size="38" font-weight="700">GPT-5.6 Sol</text><text x="210" y="315" font-size="27" font-weight="600">Flagship</text><text x="590" y="270" font-size="25">Complex reasoning · architecture · hard bugs</text><text x="590" y="315" font-size="22" opacity=".85">Use when success rate matters most</text>
+    <text x="210" y="480" font-size="38" font-weight="700">GPT-5.6 Terra</text><text x="210" y="525" font-size="27" font-weight="600">Balanced</text><text x="590" y="480" font-size="25">Daily coding · multi-file work · general agents</text><text x="590" y="525" font-size="22" opacity=".85">Best default for most Codex tasks</text>
+    <text x="210" y="690" font-size="38" font-weight="700">GPT-5.6 Luna</text><text x="210" y="735" font-size="27" font-weight="600">Cost-sensitive</text><text x="590" y="690" font-size="25">Clear tasks · tests · batch execution</text><text x="590" y="735" font-size="22" opacity=".85">Fast, high-throughput execution</text>
+  </g>
+  <text x="100" y="855" fill="#64748b" font-family="Arial, sans-serif" font-size="19">Illustration for the Codex Plus model-selection guide · positioning summary, not an official benchmark</text>
+</svg>
