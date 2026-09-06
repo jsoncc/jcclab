@@ -150,12 +150,12 @@
       "targetHash": "4c9bd817e3d51e2b2647d971ff068ce9cb4519e4c933f2675e3051354a9cf239"
     },
     "GPT-5.6 系列在 Codex Plus 中怎么选：Sol、Terra、Luna、推理档位与 Fast mode.md": {
-      "sourceHash": "34122c39cb5c3be7ac6ded8c44d84d4fd544e19aa7de33c31cdd13dcb844e47f",
-      "targetHash": "3706014c88045efde2d1d738799c2270d32dbce07242a00b72b3425631b80fd7"
+      "sourceHash": "06edfa6d4230b5e138d8ab0a0641d33c72b5871517bb5a024d08358088d69e3b",
+      "targetHash": "28a2562d658167e3eba36e9a001b731a8a9cfc7c6ec5b85d9e6b75fad10c46bb"
     },
     "GPT-6 Astra GPT-6 Pro 使用指南：前沿模型能力、限制与适用场景.md": {
-      "sourceHash": "5d9f77ab1394e9aa111fb7b6abfa980108d7375d65a510b6433a94513d092b1a",
-      "targetHash": "00098df45c30f0fc180bcc261535815ebbb391aec2a413c25a25dac5a651b601"
+      "sourceHash": "5c85ad5cfdcccad4cc73eb8911d05a2a618d1f47bcd16bf7862dadcdd57eaf80",
+      "targetHash": "5f380097b4c0d8f471148855d111622b3b49f95387efcc84622f9fb4ba033193"
     }
   },
   "images": {
@@ -198,6 +198,18 @@
     "vscode-sync-2.png": {
       "sourceHash": "ee29b99d6255325e8d7dd0ff568f62dde222848f7a9c2071127d35396a60d433",
       "targetHash": "ee29b99d6255325e8d7dd0ff568f62dde222848f7a9c2071127d35396a60d433"
+    },
+    "codex-reasoning-fast-mode.png": {
+      "sourceHash": "7175e28e38a90ae787b5c220f26bb911f30b2c0d62d72e8016b82ce6d2394472",
+      "targetHash": "7175e28e38a90ae787b5c220f26bb911f30b2c0d62d72e8016b82ce6d2394472"
+    },
+    "gpt-56-family-tiers.png": {
+      "sourceHash": "acef16b0615240fa220a02462d58a88f1f32f5f33d772b0317716ff5363d90be",
+      "targetHash": "acef16b0615240fa220a02462d58a88f1f32f5f33d772b0317716ff5363d90be"
+    },
+    "gpt-56-family-tiers.svg": {
+      "sourceHash": "5ac57c1b79065e1caa6ab17d1bfdb944c513f6ab140fe95df1d2b101fb6bac5c",
+      "targetHash": "5ac57c1b79065e1caa6ab17d1bfdb944c513f6ab140fe95df1d2b101fb6bac5c"
     }
   }
 }
