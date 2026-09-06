@@ -15,7 +15,7 @@
         <article class="markdown-content" v-html="htmlContent" />
       </div>
       <!-- 右栏：目录 -->
-      <aside v-if="headings.length" class="blog-toc">
+      <aside v-if="headings.length" ref="tocRef" class="blog-toc">
         <div class="toc-title">目录</div>
         <nav class="toc-list">
           <a v-for="h in headings" :key="h.id" :href="'#' + h.id"
@@ -60,6 +60,7 @@ const blogName = computed(() => resolveSlug(route.params.name as string || ''))
 interface Heading { id: string; text: string; level: number }
 const headings = ref<Heading[]>([])
 const activeId = ref('')
+const tocRef = ref<HTMLElement | null>(null)
 
 const imageFiles = import.meta.glob('../assets/images/**/*', {
   eager: true,
@@ -80,16 +81,29 @@ const resolveMarkdownImage = (rawUrl: string) => {
   return imageFiles[key] || url
 }
 
-// 给标题加 id，提取目录
+// 给标题加 id，提取目录。
+// 部分历史文章将后续一级章节写成 h1；首个 h1 是文章标题，不进目录，
+// 其余 h1 及后代需要保留，避免子标题脱离实际层级。
 function addHeadingIds(html: string): { html: string; items: Heading[] } {
   const items: Heading[] = []
   let counter = 0
+  let firstH1Seen = false
+  let nestedUnderSectionH1 = false
   const result = html.replace(
-    /<h([23])[^>]*>([\s\S]*?)<\/h\1>/g,
+    /<h([1-3])[^>]*>([\s\S]*?)<\/h\1>/g,
     (_m, lvl, inner) => {
+      const rawLevel = Number(lvl)
       const text = inner.replace(/<[^>]+>/g, '').trim()
       const id = `heading-${counter++}`
-      items.push({ id, text, level: Number(lvl) })
+      if (rawLevel === 1 && !firstH1Seen) {
+        firstH1Seen = true
+        nestedUnderSectionH1 = false
+        return `<h${lvl} id="${id}">${inner}</h${lvl}>`
+      }
+
+      if (rawLevel === 1) nestedUnderSectionH1 = true
+      const level = rawLevel === 1 ? 2 : rawLevel + (nestedUnderSectionH1 ? 1 : 0)
+      items.push({ id, text, level })
       return `<h${lvl} id="${id}">${inner}</h${lvl}>`
     }
   )
@@ -121,6 +135,7 @@ const processMarkdown = () => {
   const { html, items } = addHeadingIds(rendered)
   htmlContent.value = html
   headings.value = items
+  activeId.value = ''
 }
 
 watch(() => route.params.name, processMarkdown, { immediate: true })
@@ -225,7 +240,12 @@ function injectCodeHeaders(): void {
   })
 }
 
-watch(htmlContent, async () => { await nextTick(); injectCodeHeaders(); setupObserver() })
+watch(htmlContent, async () => {
+  await nextTick()
+  tocRef.value?.scrollTo({ top: 0 })
+  injectCodeHeaders()
+  setupObserver()
+})
 onMounted(async () => { await nextTick(); injectCodeHeaders(); setupObserver() })
 onUnmounted(() => observer?.disconnect())
 </script>
@@ -315,6 +335,7 @@ onUnmounted(() => observer?.disconnect())
   transition: all 0.2s;
 }
 .toc-l3 { padding-left: 24px; font-size: 12px; }
+.toc-l4 { padding-left: 38px; font-size: 12px; }
 .toc-item:hover { color: var(--accent-blue); }
 .toc-item.active {
   color: var(--accent-blue);
