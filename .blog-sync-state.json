@@ -140,6 +140,22 @@
     "终端区别与复制粘贴速查.md": {
       "sourceHash": "4526b5795e5d5f5bb683635415add7d1f9ff3f4c7505e4ce5f8cb1583c605554",
       "targetHash": "2959a6a3def21663c02804f1171d265b25790656a7e68febeefb2ada74e0225e"
+    },
+    "GPT 模型家族选型总览：GPT-6、GPT-5.6、GPT-5.5 与 GPT-5.4.md": {
+      "sourceHash": "671a815121c558fc16d9fca40d204e7be6d1e0a8f25abab40efdffbe804e6258",
+      "targetHash": "14d612068f21d4a68ad0313fcc3aeb93ea228cd991fa1d38e91533509d9f5a84"
+    },
+    "GPT-5.5 与 GPT-5.4 Mini 还值得用吗：上一代主力模型的能力、速度与选型.md": {
+      "sourceHash": "12f78d6e70ebf0a2856afea7de965521a508f2ad5cdbac5fb43474bd72d09f76",
+      "targetHash": "4c9bd817e3d51e2b2647d971ff068ce9cb4519e4c933f2675e3051354a9cf239"
+    },
+    "GPT-5.6 系列在 Codex Plus 中怎么选：Sol、Terra、Luna、推理档位与 Fast mode.md": {
+      "sourceHash": "34122c39cb5c3be7ac6ded8c44d84d4fd544e19aa7de33c31cdd13dcb844e47f",
+      "targetHash": "3706014c88045efde2d1d738799c2270d32dbce07242a00b72b3425631b80fd7"
+    },
+    "GPT-6 Astra GPT-6 Pro 使用指南：前沿模型能力、限制与适用场景.md": {
+      "sourceHash": "5d9f77ab1394e9aa111fb7b6abfa980108d7375d65a510b6433a94513d092b1a",
+      "targetHash": "00098df45c30f0fc180bcc261535815ebbb391aec2a413c25a25dac5a651b601"
     }
   },
   "images": {
