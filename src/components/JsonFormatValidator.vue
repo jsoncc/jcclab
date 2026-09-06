@@ -164,47 +164,60 @@ const modalLineCount = computed(() => Math.max(1, String(inputText.value || '').
 /** 语法高亮：为 JSON 的不同类型添加不同的样式 */
 const highlightJson = (text: string): string => {
   if (!text) return ''
-  
-  // 先转义 HTML 特殊字符
-  let result = text
+
+  const escapeHtml = (value: string) => value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-  
-  // 分步处理，避免相互干扰
-  // 1. 先处理键（带冒号的字符串）
-  result = result.replace(/"([^"\\]|\\.)*"(?=\s*:)/g, (match) => {
-    return `<span class="jfv-json-key">${match}</span>`
-  })
-  
-  // 2. 处理字符串值（冒号后的字符串）- 引号和内部内容分开样式
-  // 使用更精确的正则，只匹配冒号后的字符串
-  result = result.replace(/:\s*"((?:[^"\\]|\\.)*)"/g, (match, inner) => {
-    const whitespace = match.match(/:\s*/)?.[0]?.slice(1) || ''
-    return `:${whitespace}<span class="jfv-quote">"</span><span class="jfv-json-string-value">${inner}</span><span class="jfv-quote">"</span>`
-  })
-  
-  // 3. 处理布尔值
-  result = result.replace(/\btrue\b/g, '<span class="jfv-json-boolean">true</span>')
-  result = result.replace(/\bfalse\b/g, '<span class="jfv-json-boolean">false</span>')
-  
-  // 4. 处理 null
-  result = result.replace(/\bnull\b/g, '<span class="jfv-json-null">null</span>')
-  
-  // 5. 处理数字（对象中的数字值）
-  result = result.replace(/:(\s*-?\d+(?:\.\d*)?(?:[eE][+\-]?[0-9]+)?)/g, (match, num) => {
-    return `:<span class="jfv-json-number">${num}</span>`
-  })
-  
-  // 6. 处理数组中的数字
-  result = result.replace(/\[(\s*-?\d+(?:\.\d*)?(?:[eE][+\-]?[0-9]+)?)(\s*[\],])/g, (match, num, end) => {
-    return `[<span class="jfv-json-number">${num}</span>${end}`
-  })
 
-  // 7. 处理数组中的字符串值（关键修复）
-  result = result.replace(/\[(\s*)"((?:[^"\\]|\\.)*)"(\s*[\],])/g, (match, ws, inner, end) => {
-    return `[${ws}<span class="jfv-quote">"</span><span class="jfv-json-string-value">${inner}</span><span class="jfv-quote">"</span>${end}`
-  })
+  let result = ''
+  let index = 0
+
+  // 单次扫描原始 JSON。字符串一旦识别便整体输出，后续 token 不会进入字符串内容。
+  while (index < text.length) {
+    const char = text[index]
+
+    if (char === '"') {
+      let end = index + 1
+      while (end < text.length) {
+        if (text[end] === '\\') { end += 2; continue }
+        if (text[end] === '"') { end++; break }
+        end++
+      }
+      const rawString = text.slice(index, end)
+      let next = end
+      while (/\s/.test(text[next] || '')) next++
+      if (text[next] === ':') {
+        result += `<span class="jfv-json-key">${escapeHtml(rawString)}</span>`
+      } else {
+        result += `<span class="jfv-quote">"</span><span class="jfv-json-string-value">${escapeHtml(rawString.slice(1, -1))}</span><span class="jfv-quote">"</span>`
+      }
+      index = end
+      continue
+    }
+
+    const number = text.slice(index).match(/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?/)
+    if (number && (char === '-' || /\d/.test(char))) {
+      result += `<span class="jfv-json-number">${number[0]}</span>`
+      index += number[0].length
+      continue
+    }
+
+    if (text.startsWith('true', index) || text.startsWith('false', index)) {
+      const value = text.startsWith('true', index) ? 'true' : 'false'
+      result += `<span class="jfv-json-boolean">${value}</span>`
+      index += value.length
+      continue
+    }
+    if (text.startsWith('null', index)) {
+      result += '<span class="jfv-json-null">null</span>'
+      index += 4
+      continue
+    }
+
+    result += escapeHtml(char)
+    index++
+  }
 
   return result
 }

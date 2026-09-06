@@ -71,4 +71,21 @@ describe('JsonFormatValidator', () => {
     expect(textarea.element.value).toBe('{"a":1,"b":[true,null]}')
     expect(wrapper.text()).toContain('已压缩为一行')
   })
+
+  it('高亮不会把时间和端口字符串中的数字误识别为 JSON 数字', async () => {
+    const mod = await import('./JsonFormatValidator.vue')
+    const wrapper = mount(mod.default)
+    const textarea = wrapper.find('textarea')
+    await textarea.setValue('{"timestamp":"2026-08-28 16:18:04","url":"http://localhost:3000","literal":"true null"}')
+    await wrapper.findAll('button').find((button) => button.text().includes('格式化校验'))!.trigger('click')
+    await nextTick()
+
+    const highlight = wrapper.find('.jfv-highlight')
+    expect(highlight.exists()).toBe(true)
+    expect(highlight.findAll('.jfv-json-string-value')).toHaveLength(3)
+    expect(highlight.findAll('.jfv-json-number')).toHaveLength(0)
+    expect(highlight.findAll('.jfv-json-boolean')).toHaveLength(0)
+    expect(highlight.findAll('.jfv-json-null')).toHaveLength(0)
+    expect(highlight.text()).toContain('2026-08-28 16:18:04')
+  })
 })
