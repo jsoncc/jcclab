@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "files": {
+    "ChatGPT Plus 国内订阅完整操作文档.md": {
+      "sourceHash": "f4a031cd4f31411964f02a87766077309b4f416fabcf9708db809355afa03a8a",
+      "targetHash": "d25616c2bfa7255d65019b2c411e418961c22dc332a3c0755526fc8561bb7cd0"
+    },
+    "Chrome 局域网访问（Local Network Access）配置与疑难解答指南.md": {
+      "sourceHash": "1b1d8e2c78e5d4d57b378c93977b297d8d0cc6eb634f4f0a59f90ceb7674b44e",
+      "targetHash": "33061dfe6d96112426376ef06ee3ec7b6eaef7d9c42420526f513f1987f5ff68"
+    },
+    "Chrome浏览器内存优化指南.md": {
+      "sourceHash": "78c24b33ab3ff788a69bdded1633c8758a99aaee9992e81fec4901ec43cb1e77",
+      "targetHash": "4bd4ba698db364a3f6ddba322c16f17784b8d178c4cc4775e9525aa5a988a0f1"
+    },
+    "DeepSeek Harness 安装配置使用指南.md": {
+      "sourceHash": "89b3cedb2b48174735ca06266bc1cbc53dad0320abc3d6e9b040a9ce0b6538f3",
+      "targetHash": "3b412ae88bad58cf63efd9513f07576166f2d9b456066f73d118cd9ec79f5383"
+    },
+    "Git 代码提交与同步指南.md": {
+      "sourceHash": "94ef0a3a6b23d70057cc68cc19e278092d7e99a34586c581c0f1c2b8796a9eaa",
+      "targetHash": "b8a3a86abae18634140a4b1acad7114a7c2f2350169d0d1c31d5cb28bf9e18f9"
+    },
+    "Git 分支管理命令大全.md": {
+      "sourceHash": "001eb4be4719423a5d510d90390581a1e3b47f656eae7cc1e0126a616683b1dd",
+      "targetHash": "d097e8b6f92397384862daf7236320f32a905f17e2b902708b0f9603fb28d9f7"
+    },
+    "Git 提交信息（Commit Message）格式规范.md": {
+      "sourceHash": "2912738b4001bcae05566a0cc37fe2cc51d3f2c08e9af98f4a3860a1877a47da",
+      "targetHash": "78e2df9ebd3df5310c9862034541229ed253c6d200b57915440c3cd6131388b9"
+    },
+    "Git 远程仓库配置指南.md": {
+      "sourceHash": "2b35e1416ad3c1aba57c0a3ee13a9db7771e65e579abf3a357a64c2a73b6714a",
+      "targetHash": "7ca228436115dff39c4fab3e7f8e70c376bfce9c62629872382aeac945019a45"
+    },
+    "GitHub Pages 更换地址后翻译与统计失效：原因与修复全流程.md": {
+      "sourceHash": "78d87bb6a853fdb055047e1f951cefbc5f9ffb888bcf50d462f41629b71007a9",
+      "targetHash": "e02179b1a615af1dca7e532f11d7d39a0d08c9af92feba0ec2b8899847cc9d66"
+    },
+    "GitHub Pages 部署百度翻译失败处理记录.md": {
+      "sourceHash": "a8e8a38106cab927b1657f50f13dbe3038145c27b73fad510cb88cbb49e04c91",
+      "targetHash": "234c97035a182c041e3a7dae4f9f4b829a229a706c385e43f350bc10a6514a13"
+    },
+    "GitHub SSH 密钥配置标准操作文档.md": {
+      "sourceHash": "3e574cbf8e50ffd0a0bb067a2530564969d8c67888329b5ee2a3af4a82984823",
+      "targetHash": "5ba0db5deeb313576d71577bca0e5bc353ec438ab85fa29fb9542fdfe0c11200"
+    },
+    "GitHub Tag 版本管理操作文档.md": {
+      "sourceHash": "e3fd86ac604da90d294d0fe9937553dc6053d27840d239c98b5381c967ae5b1c",
+      "targetHash": "3aed23cb4b5c07b3e95cd871f1dc8a3ee97fa8e8208c740e06ba5f49f6994aea"
+    },
+    "GIT_OPERATIONS.md": {
+      "sourceHash": "554c09a2b5231de8b392d0e042c1f05d005d2101c2405e778d29a64f99049331",
+      "targetHash": "f1e24431cf27a7292b3cb52594c6fbb7a313e68118e41f0ce09122fee069a430"
+    },
+    "GPT-5.6 系列模型价格、能力与选型对比.md": {
+      "sourceHash": "c495662d56e3bac65902ca2ed657d0373fef786ef5a546bc7f5b8fdd0c7f1c58",
+      "targetHash": "73d16400610edcb07be6814b3b2869d5bd5e5a64ed60485ae41ac4ee0dc163ed"
+    },
+    "Hermes Agent 安装配置使用指南.md": {
+      "sourceHash": "5a1ac6c6fee876d4f4f1647f5e202c790453ba04c0817e251134871678979cf9",
+      "targetHash": "e0c78b3e2e35232eb32e3dc00705b295c03bd4e6333d7701cac20578cb12af29"
+    },
+    "Hermes Agent 安装配置使用指南（AI版）.md": {
+      "sourceHash": "2353567dede10651461e689db2520d608fb64dfc4730a70378303e9f800240ae",
+      "targetHash": "d94d351bc4cfdd0617e001eabb8b8f7173ac91323e55d674d4a69b559a6f5b24"
+    },
+    "Obsidian Tasks 使用指南.md": {
+      "sourceHash": "c632667af49ed3c60403bd1d167edd0ddfa05966d1c768814bdb5b937e627996",
+      "targetHash": "d00b6cf5fb63f0e2ac6ddddfcce8e3628ac39afd9f75cc2dca04a2da343d5e6b"
+    },
+    "Obsidian 笔记属性完全指南.md": {
+      "sourceHash": "bd2f52d6a6d38790c9c3079336e2d156b25aec3b56171562637d94fddcdf937a",
+      "targetHash": "ee92f009856b834e3f34f06b689d22b6c4e5e57761de32ba5d26ce4e8e9c29f9"
+    },
+    "OpenCode + OpenRouter + OpenCode Go 完整配置与选型指南.md": {
+      "sourceHash": "84123313b7695a9d0b633610ae022ff9f5c12e71364982727b20df71d6d3f153",
+      "targetHash": "2af622616a988befa70c3e43a6fb0aab486318248ba748def1ce77bfa2e71670"
+    },
+    "OpenCode Go 订阅模型全解析.md": {
+      "sourceHash": "3020fb0bdffaeab6c5019516800cbfd58638b0fad88933784d324421501eaf2f",
+      "targetHash": "447f1c5631fadad0310377ea27400044d2d10f8e8a14992f6ded73565302d2cf"
+    },
+    "OpenCode Skills 全局配置完整操作文档.md": {
+      "sourceHash": "4a59f4ea69c41d72765d10750a5fd61ed2123ac74776cbd20325aabd70ce7a7a",
+      "targetHash": "030631f308657d86d514393f5de403bcf2d6edeb114d9b20f1d69394c2f5f6d3"
+    },
+    "OpenCode 常用命令与快捷键完整手册.md": {
+      "sourceHash": "9e27026db74781951f04c18184ce36c6effe9120d625a1c624f2baaf164c0b28",
+      "targetHash": "a692c96ea300197bc70e1ca65f253c4e99b276a3c36fd8c5bb64d134e9f2c6bd"
+    },
+    "opencode-skills-guide.md": {
+      "sourceHash": "b3be60238635def01b9021c0eb2cdae42099613e5cae8a4d98b43b10370a6e04",
+      "targetHash": "f734b43baca65f64e8bbd3be652c370881d9b97cf31e56cf41f7012cec5388be"
+    },
+    "PDF转图片工具开发记录.md": {
+      "sourceHash": "e42d206b5d25dbae0a9add2d76973e99fd929790beb29ce85bceadedb84998d9",
+      "targetHash": "79f1cc12ef52ac96a813e2a13fcb5139cca91bd2344a7962de6f2f6d2b811ba0"
+    },
+    "VSCode 个人配置同步完整操作.md": {
+      "sourceHash": "4125b051ac9bd1e537c451c5124a10924eb40da00a7744349c177c262565dd67",
+      "targetHash": "c48d6807a5f891d72bbf44bb884579f3a8a3e68466ea463fe142b1914542adf6"
+    },
+    "Windows 10 专业版开发环境安装指引（AI版）.md": {
+      "sourceHash": "c88eb3f39c1de17fc58c0a1f0954b100593c85766f800cee046ad534f5a19723",
+      "targetHash": "90342dda8a924d570a855dacbcb2e62dfbd1dc685564e52c867c468d0f279884"
+    },
+    "Windows 系统 nvm 安装与 Node.js 环境配置指南.md": {
+      "sourceHash": "c15d8eb7929bfa22d4de417bb5f7ac5de52f88e3cd017e2578434cbc93dbda32",
+      "targetHash": "df3092475cef32db563f391d8bd1bebdfb17878749c3da8723982a5a2a2cdaa3"
+    },
+    "Windows-WSL环境配置与排障记录.md": {
+      "sourceHash": "d5cb68ca72886b9648b4c18d3f52f7d22c490970a57237da64965c0134c5992e",
+      "targetHash": "5cca671cdff1e7e3058ae7408c5761e229deda8b1eb1bf614cd06dbb0a8075e1"
+    },
+    "Windows开发环境搭建排障记录-nvm双版本Node与环境变量配置.md": {
+      "sourceHash": "5ccf7562cf72d3400fc6227f4b52bb71448ef9622e5c8ab40f784eff3b095dc4",
+      "targetHash": "d03e58e8ad6f64714a8825103e2eb1368e53a148d7d2be2acfcae6425dc09ac6"
+    },
+    "互联网架构核心概念总结.md": {
+      "sourceHash": "7a92b3283787b550e9ac69b95f02aff1415a9c68535c4867e0fbba29db75fa3e",
+      "targetHash": "b5465da3867e78262bc2728e5e98bebe496e0d864f27baa0b69a0a8797f80ffb"
+    },
+    "历史上的今天·定时生成与邮件发送全流程.md": {
+      "sourceHash": "5f5861862f45bc44bc4301346093cc2b6339d5923cf7f81f79a9603e8a2e25e1",
+      "targetHash": "3b49d2642472c7696297701434ca19dd26c4f6e1644d3b2126463ddcb4368f7f"
+    },
+    "新增万年历日历.md": {
+      "sourceHash": "f9a7a29bbc0e0a98659b1ea2e381b917a8c7c337ad7ef212fc3eee0a474ae207",
+      "targetHash": "fd3be5e2373e5b5bdf3ed35085753023cc0ad482aa801a21596df92b7953b8c3"
+    },
+    "本站总访问量与总访客统计实现说明.md": {
+      "sourceHash": "93c57870da43e5f227d060fc06635d1a27912ab4f03d8fde8c2ddc4447bec07f",
+      "targetHash": "9e71e94ab7dd8e4c568c98a05bc93d580d952f57de5526456992ea4421baea49"
+    },
+    "百度翻译中转代理部署与排障（腾讯云SCF）.md": {
+      "sourceHash": "f30a7e891ea24cc43b444fbac2260bb1d8987076ecec78d8f5983c7ff0d717be",
+      "targetHash": "4d4b107db1ee13b5363187ca04a6b2ddeb71d376a8e788b3eaa5cd3b597e06f0"
+    },
+    "终端区别与复制粘贴速查.md": {
+      "sourceHash": "4526b5795e5d5f5bb683635415add7d1f9ff3f4c7505e4ce5f8cb1583c605554",
+      "targetHash": "2959a6a3def21663c02804f1171d265b25790656a7e68febeefb2ada74e0225e"
+    }
+  },
+  "images": {
+    "baidu-fanyi-fix.png": {
+      "sourceHash": "cb5cee45f8437fa8f97d03ff574ca92c46773943daa7f8fdd3e8bcc254ea61e3",
+      "targetHash": "cb5cee45f8437fa8f97d03ff574ca92c46773943daa7f8fdd3e8bcc254ea61e3"
+    },
+    "git-tag.png": {
+      "sourceHash": "e36b067b78c9d6f4b31141c5c4d9187719ff8272c359461d0c08f470ff3bbf7b",
+      "targetHash": "e36b067b78c9d6f4b31141c5c4d9187719ff8272c359461d0c08f470ff3bbf7b"
+    },
+    "history-mail-1.png": {
+      "sourceHash": "b8d37f6124916d643ff24a0ea2386bbd50829a6d20754a9a74af8507f21e0aa2",
+      "targetHash": "b8d37f6124916d643ff24a0ea2386bbd50829a6d20754a9a74af8507f21e0aa2"
+    },
+    "history-mail-2.png": {
+      "sourceHash": "e39ec3ba83237f609e390094b2129bb22ef12a7d86a04d893e8cbf1fbb396c65",
+      "targetHash": "e39ec3ba83237f609e390094b2129bb22ef12a7d86a04d893e8cbf1fbb396c65"
+    },
+    "nvm-guide-1.png": {
+      "sourceHash": "bfd874258d4e764d59865461db28c6f3278be907a454f17ae9498ad433f08e3a",
+      "targetHash": "bfd874258d4e764d59865461db28c6f3278be907a454f17ae9498ad433f08e3a"
+    },
+    "nvm-guide-2.png": {
+      "sourceHash": "c5316ff089f09656eec0a53e5cb51a55791af052ba8aa43b0c963f77d902e1b0",
+      "targetHash": "c5316ff089f09656eec0a53e5cb51a55791af052ba8aa43b0c963f77d902e1b0"
+    },
+    "nvm-guide-3.png": {
+      "sourceHash": "ee631a726b2eb975ec234552e4576a65e5894cb19ee439d40548a3c03aa90c8c",
+      "targetHash": "ee631a726b2eb975ec234552e4576a65e5894cb19ee439d40548a3c03aa90c8c"
+    },
+    "nvm-guide-4.png": {
+      "sourceHash": "171ed8061959475c1a5abe5434fdca5c04b07ef19681db1ab2d712c97797ce61",
+      "targetHash": "171ed8061959475c1a5abe5434fdca5c04b07ef19681db1ab2d712c97797ce61"
+    },
+    "vscode-sync-1.png": {
+      "sourceHash": "838f21c028457d51b4be65ae733b346f195add0e7cca6d5d40699d89b77343f3",
+      "targetHash": "838f21c028457d51b4be65ae733b346f195add0e7cca6d5d40699d89b77343f3"
+    },
+    "vscode-sync-2.png": {
+      "sourceHash": "ee29b99d6255325e8d7dd0ff568f62dde222848f7a9c2071127d35396a60d433",
+      "targetHash": "ee29b99d6255325e8d7dd0ff568f62dde222848f7a9c2071127d35396a60d433"
+    }
+  }
+}
