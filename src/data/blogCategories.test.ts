@@ -16,7 +16,7 @@ describe('博客分类目录', () => {
   })
 
   it('每篇文章都有有效分类，且分类数量符合目录约定', () => {
-    expect(catalog).toHaveLength(35)
+    expect(catalog).toHaveLength(38)
     for (const item of catalog) {
       expect(getBlogCategory(item.category)).toBeDefined()
       expect(item.title).not.toHaveLength(0)
@@ -28,7 +28,7 @@ describe('博客分类目录', () => {
       return result
     }, {})
     expect(counts).toEqual({
-      'ai-agent': 10,
+      'ai-agent': 13,
       'code-collaboration': 10,
       'dev-environment': 9,
       'site-engineering': 6
@@ -36,7 +36,7 @@ describe('博客分类目录', () => {
   })
 
   it('将 GPT-5.6 归入 AI 与 Agent，而非按标题前缀推断', () => {
-    const gpt = catalog.find(item => item.id === 'GPT-5.6 系列模型价格、能力与选型对比')
+    const gpt = catalog.find(item => item.id === 'GPT-5.6 系列在 Codex Plus 中怎么选：Sol、Terra、Luna、推理档位与 Fast mode')
     expect(gpt?.category).toBe('ai-agent')
   })
 })

@@ -1,4 +1,4 @@
-import { marked } from '../utils/markedConfig'
+import { renderBlogMarkdown, stripBlogFrontmatter } from '../utils/blogMarkdown'
 import { rawFromGlob } from '../utils/sharedGlob'
 import blogCatalog from '../assets/blog-catalog.json'
 import type { BlogCatalogItem } from '../types/blog'
@@ -40,8 +40,7 @@ export function useBlogData() {
     catalog.find((item) => item.id === id) || null
 
   const renderMarkdown = (mdText: string): string => {
-    const cleaned = mdText.replace(/^---[\s\S]*?---\s*/, '')
-    return String(marked.parse(cleaned))
+    return renderBlogMarkdown(mdText).html
   }
 
   return {
@@ -49,6 +48,8 @@ export function useBlogData() {
     getBlogMdContent,
     getBlogNameFromLegacySlug,
     getBlogCatalogItem,
-    renderMarkdown
+    renderMarkdown,
+    renderBlogMarkdown,
+    stripBlogFrontmatter
   }
 }

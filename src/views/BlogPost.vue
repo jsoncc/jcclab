@@ -1,6 +1,6 @@
 <template>
   <div class="blog-post-page">
-    <div v-if="htmlContent" class="blog-layout">
+    <div v-if="htmlContent" class="blog-layout" :style="layoutStyle">
       <!-- 左栏：操作按钮 -->
       <div class="blog-actions">
         <button class="action-btn" @click="goBack" title="返回博客列表">
@@ -12,10 +12,21 @@
       </div>
       <!-- 中间：正文 -->
       <div class="blog-main">
-        <article class="markdown-content" v-html="htmlContent" />
+        <div class="reader-toolbar" aria-label="文章阅读设置">
+          <div class="reader-mode-switch" role="group" aria-label="阅读模式">
+            <button :class="{ active: viewMode === 'reading' }" @click="viewMode = 'reading'">阅读</button>
+            <button :class="{ active: viewMode === 'source' }" @click="viewMode = 'source'">原文</button>
+          </div>
+          <div class="reader-width-switch" role="group" aria-label="正文宽度">
+            <button :class="{ active: readingWidth === 'comfortable' }" @click="readingWidth = 'comfortable'">舒适</button>
+            <button :class="{ active: readingWidth === 'wide' }" @click="readingWidth = 'wide'">宽代码</button>
+          </div>
+        </div>
+        <article v-if="viewMode === 'reading'" ref="markdownRef" class="markdown-content" v-html="htmlContent" />
+        <pre v-else class="markdown-source">{{ rawContent }}</pre>
       </div>
       <!-- 右栏：目录 -->
-      <aside v-if="headings.length" ref="tocRef" class="blog-toc">
+      <aside v-if="viewMode === 'reading' && headings.length" ref="tocRef" class="blog-toc">
         <div class="toc-title">目录</div>
         <nav class="toc-list">
           <a v-for="h in headings" :key="h.id" :href="'#' + h.id"
@@ -33,17 +44,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, watch, computed, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import arrowLeftIcon from '@iconify-icons/radix-icons/arrow-left'
 import contentCopyIcon from '@iconify-icons/mdi/content-copy'
 import { useBlogData } from '../composables/useBlogData'
+import type { BlogHeading } from '../utils/blogMarkdown'
+import { parseReadingWidth, READING_WIDTH_STORAGE_KEY, type ReadingWidth } from '../utils/readerPreferences'
 
 const route = useRoute()
 const router = useRouter()
-const { getBlogMdContent, getBlogNameFromLegacySlug, getBlogCatalogItem, renderMarkdown } = useBlogData()
+const { getBlogMdContent, getBlogNameFromLegacySlug, getBlogCatalogItem, renderBlogMarkdown, stripBlogFrontmatter } = useBlogData()
 const htmlContent = ref('')
+const rawContent = ref('')
 // 新链接保留原文章名；同时兼容旧版“空格 → -”链接。
 const resolveSlug = (slug: string): string => {
   let direct = slug
@@ -57,10 +71,18 @@ const resolveSlug = (slug: string): string => {
 }
 
 const blogName = computed(() => resolveSlug(route.params.name as string || ''))
-interface Heading { id: string; text: string; level: number }
-const headings = ref<Heading[]>([])
+const headings = ref<BlogHeading[]>([])
+const hasMermaid = ref(false)
 const activeId = ref('')
 const tocRef = ref<HTMLElement | null>(null)
+const markdownRef = ref<HTMLElement | null>(null)
+const viewMode = ref<'reading' | 'source'>('reading')
+const readingWidth = ref<ReadingWidth>(parseReadingWidth(localStorage.getItem(READING_WIDTH_STORAGE_KEY)))
+const layoutStyle = computed(() => ({
+  '--blog-content-width': readingWidth.value === 'wide' ? '960px' : '760px'
+}))
+
+watch(readingWidth, (value) => localStorage.setItem(READING_WIDTH_STORAGE_KEY, value))
 
 const imageFiles = import.meta.glob('../assets/images/**/*', {
   eager: true,
@@ -81,39 +103,13 @@ const resolveMarkdownImage = (rawUrl: string) => {
   return imageFiles[key] || url
 }
 
-// 给标题加 id，提取目录。
-// 部分历史文章将后续一级章节写成 h1；首个 h1 是文章标题，不进目录，
-// 其余 h1 及后代需要保留，避免子标题脱离实际层级。
-function addHeadingIds(html: string): { html: string; items: Heading[] } {
-  const items: Heading[] = []
-  let counter = 0
-  let firstH1Seen = false
-  let nestedUnderSectionH1 = false
-  const result = html.replace(
-    /<h([1-3])[^>]*>([\s\S]*?)<\/h\1>/g,
-    (_m, lvl, inner) => {
-      const rawLevel = Number(lvl)
-      const text = inner.replace(/<[^>]+>/g, '').trim()
-      const id = `heading-${counter++}`
-      if (rawLevel === 1 && !firstH1Seen) {
-        firstH1Seen = true
-        nestedUnderSectionH1 = false
-        return `<h${lvl} id="${id}">${inner}</h${lvl}>`
-      }
-
-      if (rawLevel === 1) nestedUnderSectionH1 = true
-      const level = rawLevel === 1 ? 2 : rawLevel + (nestedUnderSectionH1 ? 1 : 0)
-      items.push({ id, text, level })
-      return `<h${lvl} id="${id}">${inner}</h${lvl}>`
-    }
-  )
-  return { html: result, items }
-}
-
 const processMarkdown = () => {
   const mdText = getBlogMdContent(blogName.value)
   if (!mdText) {
     htmlContent.value = ''
+    rawContent.value = ''
+    headings.value = []
+    hasMermaid.value = false
     return
   }
   let cleaned = mdText.replace(/^---[\s\S]*?---\s*/, '')
@@ -122,20 +118,22 @@ const processMarkdown = () => {
     const resolved = resolveMarkdownImage(normalizedUrl)
     return `![${alt}](${resolved})`
   })
-  let rendered = String(renderMarkdown(cleaned))
-  rendered = rendered.replace(/<!-- (?:warning|success|highlight)-(?:start|end) -->\s*/g, '')
-  rendered = rendered.replace(
+  const rendered = renderBlogMarkdown(cleaned)
+  let html = rendered.html.replace(/<!-- (?:warning|success|highlight)-(?:start|end) -->\s*/g, '')
+  html = html.replace(
     /<blockquote>\s*<p>⚠️/g,
     '<blockquote class="warning"><p>⚠️'
   )
-  rendered = rendered.replace(
+  html = html.replace(
     /<blockquote>\s*<p>✅/g,
     '<blockquote class="success"><p>✅'
   )
-  const { html, items } = addHeadingIds(rendered)
   htmlContent.value = html
-  headings.value = items
+  rawContent.value = stripBlogFrontmatter(cleaned)
+  headings.value = rendered.headings
+  hasMermaid.value = rendered.hasMermaid
   activeId.value = ''
+  viewMode.value = 'reading'
 }
 
 watch(() => route.params.name, processMarkdown, { immediate: true })
@@ -219,9 +217,9 @@ async function handleCopyCode(pre: HTMLElement, btn: HTMLButtonElement): Promise
 }
 
 function injectCodeHeaders(): void {
-  const container = document.querySelector('.markdown-content')
+  const container = markdownRef.value
   if (!container) return
-  container.querySelectorAll('pre').forEach((pre) => {
+  container.querySelectorAll('pre:not(.mermaid)').forEach((pre) => {
     if (pre.querySelector('.code-header')) return
     const code = pre.querySelector('code')
     const lang = code ? extractLanguage(code) : ''
@@ -233,20 +231,58 @@ function injectCodeHeaders(): void {
     const copyBtn = document.createElement('button')
     copyBtn.className = 'code-copy-btn'
     copyBtn.textContent = '复制'
-    copyBtn.addEventListener('click', () => handleCopyCode(pre, copyBtn))
+    copyBtn.addEventListener('click', () => handleCopyCode(pre as HTMLElement, copyBtn))
     header.appendChild(langLabel)
     header.appendChild(copyBtn)
     pre.prepend(header)
   })
 }
 
-watch(htmlContent, async () => {
+async function renderMermaid(): Promise<void> {
+  if (!hasMermaid.value) return
+  const container = markdownRef.value
+  const diagrams = container?.querySelectorAll<HTMLElement>('pre.mermaid')
+  if (!diagrams?.length) return
+
+  const { default: mermaid } = await import('mermaid')
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: 'strict',
+    theme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'default'
+  })
+  for (const diagram of diagrams) {
+    try {
+      await mermaid.run({ nodes: [diagram] })
+    } catch {
+      diagram.classList.add('mermaid-error')
+      const source = diagram.textContent || ''
+      diagram.replaceChildren()
+      const message = document.createElement('div')
+      message.className = 'mermaid-error-message'
+      message.textContent = 'Mermaid 图表无法渲染，以下为原始源码：'
+      const code = document.createElement('code')
+      code.textContent = source
+      diagram.append(message, code)
+    }
+  }
+}
+
+let renderVersion = 0
+async function refreshReadingContent(): Promise<void> {
+  const version = ++renderVersion
   await nextTick()
+  if (version !== renderVersion || viewMode.value !== 'reading') {
+    observer?.disconnect()
+    return
+  }
   tocRef.value?.scrollTo({ top: 0 })
   injectCodeHeaders()
+  await renderMermaid()
+  if (version !== renderVersion || viewMode.value !== 'reading') return
   setupObserver()
-})
-onMounted(async () => { await nextTick(); injectCodeHeaders(); setupObserver() })
+}
+
+watch([htmlContent, viewMode], refreshReadingContent, { flush: 'post' })
 onUnmounted(() => observer?.disconnect())
 </script>
 
@@ -263,7 +299,7 @@ onUnmounted(() => observer?.disconnect())
 }
 .blog-layout {
   display: grid;
-  grid-template-columns: 48px minmax(0, 760px) 220px;
+  grid-template-columns: 48px minmax(0, var(--blog-content-width)) 220px;
   gap: 24px;
   width: 100%;
   justify-content: center;
@@ -272,6 +308,54 @@ onUnmounted(() => observer?.disconnect())
 .blog-main {
   min-width: 0;
   width: 100%;
+}
+
+.reader-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+.reader-mode-switch,
+.reader-width-switch {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+.reader-toolbar button {
+  border: 0;
+  border-radius: 5px;
+  padding: 5px 9px;
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+.reader-toolbar button:hover { color: var(--accent-blue); }
+.reader-toolbar button.active {
+  color: var(--accent-blue);
+  background: var(--bg-card);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.markdown-source {
+  margin: 0;
+  padding: 18px 20px;
+  min-height: 360px;
+  box-sizing: border-box;
+  overflow: auto;
+  white-space: pre;
+  line-height: 1.65;
+  font: 14px/1.65 'SF Mono', 'Fira Code', Consolas, Monaco, monospace;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
 }
 
 /* ===== 左栏操作按钮 ===== */
@@ -348,6 +432,10 @@ onUnmounted(() => observer?.disconnect())
   .blog-layout { grid-template-columns: 1fr; }
   .blog-actions { display: none; }
   .blog-toc { display: none; }
+}
+
+@media (max-width: 480px) {
+  .reader-toolbar { align-items: flex-start; flex-direction: column; }
 }
 
 .blog-not-found {
@@ -490,6 +578,30 @@ onUnmounted(() => observer?.disconnect())
   overflow-x: auto;
   line-height: 1.6;
   position: relative;
+}
+.markdown-content pre.mermaid {
+  padding: 16px;
+  overflow-x: auto;
+  background: var(--bg-card);
+}
+.markdown-content pre.mermaid svg {
+  display: block;
+  min-width: 100%;
+  height: auto;
+}
+.markdown-content pre.mermaid-error {
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+.mermaid-error-message {
+  margin-bottom: 10px;
+  color: var(--accent-warning);
+  font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+.markdown-content pre.mermaid-error code {
+  padding: 0;
+  color: var(--text-primary);
+  white-space: pre;
 }
 
 .markdown-content pre code {

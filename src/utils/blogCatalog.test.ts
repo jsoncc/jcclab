@@ -15,6 +15,6 @@ describe('博客分类浏览', () => {
   it('分页只作用于当前筛选结果', () => {
     expect(paginateBlogItems(filterBlogItems(catalog, 'ai-agent'), 1)).toHaveLength(10)
     expect(paginateBlogItems(filterBlogItems(catalog, 'site-engineering'), 1)).toHaveLength(6)
-    expect(paginateBlogItems(catalog, 4, BLOG_PAGE_SIZE)).toHaveLength(5)
+    expect(paginateBlogItems(catalog, 4, BLOG_PAGE_SIZE)).toHaveLength(8)
   })
 })

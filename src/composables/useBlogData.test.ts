@@ -10,12 +10,13 @@ vi.mock('../utils/sharedGlob', () => ({
   stemFromGlobPath: () => null
 }))
 
-// Mock markedConfig：提供简单的 marked.parse，避免测试中触发 highlight.js 等副作用
-vi.mock('../utils/markedConfig', () => ({
-  configureMarked: () => {},
-  marked: {
-    parse: (text: string) => `<p>${text}</p>`
-  }
+vi.mock('../utils/blogMarkdown', () => ({
+  stripBlogFrontmatter: (text: string) => text.replace(/^---[\s\S]*?---\s*/, ''),
+  renderBlogMarkdown: (text: string) => ({
+    html: `<p>${text.replace(/^---[\s\S]*?---\s*/, '')}</p>`,
+    headings: [],
+    hasMermaid: false
+  })
 }))
 
 describe('useBlogData', () => {
