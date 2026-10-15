@@ -26,6 +26,7 @@
           :style="highlightStyle"
           placeholder="在此输入 JSON…"
           spellcheck="false"
+          @input="markContentEdited"
           @scroll="syncScroll"
         />
       </div>
@@ -54,18 +55,18 @@
 
     <div class="jfv-actionsbar">
       <button type="button" class="jfv-action primary" :disabled="!canRun" @click="run">格式化校验</button>
-      <button type="button" class="jfv-action" :disabled="!canRun" @click="compressAndCopy">压缩</button>
-      <button type="button" class="jfv-action" :disabled="!canRun" @click="escapeText">转义</button>
-      <button type="button" class="jfv-action" :disabled="!canRun" @click="unescapeText">去除转义</button>
       <button
         v-if="showExpandBtn"
         type="button"
         class="jfv-action"
-        title="展开"
+        title="展开格式化结果"
         @click="showExpanded = true"
       >
         展开
       </button>
+      <button type="button" class="jfv-action" :disabled="!canRun" @click="compressAndCopy">压缩</button>
+      <button type="button" class="jfv-action" :disabled="!canRun" @click="escapeText">转义</button>
+      <button type="button" class="jfv-action" :disabled="!canRun" @click="unescapeText">去除转义</button>
     </div>
 
     <div
@@ -150,6 +151,7 @@ const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const gutterRef = ref<HTMLDivElement | null>(null)
 const highlightRef = ref<HTMLElement | null>(null)
 const showExpanded = ref(false)
+/** 仅当当前文本由“格式化校验”成功生成时，才提供全屏查看。 */
 const showExpandBtn = ref(false)
 
 /** 与 gutter 单行高度一致，用于把错误行映射成 textarea 背景高亮条 */
@@ -272,6 +274,13 @@ const clearAll = () => {
   statusText.value = '请输入 JSON 后点击“格式化校验”'
   errorDetail.value = null
   showExpandBtn.value = false
+  showExpanded.value = false
+}
+
+/** 手动编辑后，当前内容不再是本次格式化所得的结果。 */
+const markContentEdited = () => {
+  showExpandBtn.value = false
+  showExpanded.value = false
 }
 
 // 转义：在特殊字符前加反斜杠
@@ -286,6 +295,8 @@ const escapeText = () => {
     .replace(/\t/g, '\\t')      // 制表符 → \t
   statusKind.value = 'ok'
   statusText.value = '已转义'
+  showExpandBtn.value = false
+  showExpanded.value = false
 }
 
 // 去除转义：去掉反斜杠，还原为普通字符
@@ -300,6 +311,8 @@ const unescapeText = () => {
     .replace(/\\t/g, 't')      // \t → t
   statusKind.value = 'ok'
   statusText.value = '已去除转义'
+  showExpandBtn.value = false
+  showExpanded.value = false
 }
 
 const compressAndCopy = () => {
@@ -324,6 +337,8 @@ const compressAndCopy = () => {
   inputText.value = compressed
   statusKind.value = 'ok'
   statusText.value = isJson ? '已压缩为一行' : '已压缩为一行（非 JSON，仅去除换行）'
+  showExpandBtn.value = false
+  showExpanded.value = false
   nextTick(() => syncScroll())
 }
 
@@ -375,6 +390,8 @@ const run = () => {
   const raw = inputText.value
   const trimmed = raw.trim()
   errorDetail.value = null
+  showExpandBtn.value = false
+  showExpanded.value = false
 
   if (!trimmed) {
     statusKind.value = 'idle'

@@ -72,6 +72,23 @@ describe('JsonFormatValidator', () => {
     expect(wrapper.text()).toContain('已压缩为一行')
   })
 
+  it('展开紧跟格式化校验，并且只保留给当前格式化结果', async () => {
+    const mod = await import('./JsonFormatValidator.vue')
+    const wrapper = mount(mod.default)
+    const textarea = wrapper.find('textarea')
+    await textarea.setValue('{"name":"张三"}')
+
+    await wrapper.findAll('button').find((button) => button.text().includes('格式化校验'))!.trigger('click')
+    await nextTick()
+
+    const actionLabels = wrapper.findAll('.jfv-action').map((button) => button.text())
+    expect(actionLabels).toEqual(['格式化校验', '展开', '压缩', '转义', '去除转义'])
+
+    await textarea.setValue('{"name":')
+    await nextTick()
+    expect(wrapper.findAll('.jfv-action').map((button) => button.text())).not.toContain('展开')
+  })
+
   it('高亮不会把时间和端口字符串中的数字误识别为 JSON 数字', async () => {
     const mod = await import('./JsonFormatValidator.vue')
     const wrapper = mount(mod.default)
