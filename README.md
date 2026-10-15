@@ -40,10 +40,10 @@ npm install
 复制 `.env.example` 为 `.env`，按需填写：
 
 ```env
-VITE_BAIDU_APP_ID=你的百度翻译_APP_ID
-VITE_BAIDU_SECRET=你的百度翻译密钥
-# 可选：本地模拟生产时填已部署的转发代理地址（当前生产为腾讯云 SCF 函数 URL，历史方案为 Cloudflare Worker）
+# 腾讯云 SCF 翻译函数 URL；百度密钥只设置在 SCF 环境变量中
 # VITE_BAIDU_TRANSLATE_URL=https://xxx.ap-guangzhou.tencentscf.com
+# Cloudflare Worker 统计地址（根 URL 或 /stats）
+# VITE_SITE_STATS_URL=https://xxx.workers.dev
 ```
 
 ### 4. 本地开发

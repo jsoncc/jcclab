@@ -496,7 +496,6 @@ import githubIcon from '@iconify-icons/mdi/github'
 import emailOutlineIcon from '@iconify-icons/mdi/email-outline'
 import homeIcon from '@iconify-icons/mdi/home-outline'
 import calendarClockOutlineIcon from '@iconify-icons/mdi/calendar-clock-outline'
-import CryptoJS from 'crypto-js'
 import { marked } from './utils/markedConfig'
 import { useSiteSearch } from '@/composables/useSiteSearch'
 const MarkdownViewer = defineAsyncComponent(() => import('./components/MarkdownViewer.vue'))
@@ -958,7 +957,7 @@ const formatNow = () => {
   return `${y}-${m}-${d} ${w} ${hh}:${mm}:${ss}`
 }
 
-/** 页脚全站 PV/UV：请求 Cloudflare Worker GET /stats（与翻译可共用同一 Worker） */
+/** 页脚全站 PV/UV：请求 Cloudflare Worker GET /stats。 */
 const footerStatsText = ref('全站访问统计加载中…')
 
 /**
@@ -973,14 +972,12 @@ const normalizeHttpUrl = (raw: string | undefined | null) => {
   return withProtocol.replace(/\/+$/, '')
 }
 
-/** 统计 URL 优先级：VITE_SITE_STATS_URL → VITE_BAIDU_TRANSLATE_URL + /stats → 开发环境 /site-stats（Vite 代理） */
+/** 统计必须使用独立的 Cloudflare Worker 地址，不能复用腾讯云翻译函数 URL。 */
 const buildStatsEndpoint = (): string | null => {
   const custom = normalizeHttpUrl(import.meta.env.VITE_SITE_STATS_URL)
   if (custom) {
     return custom.endsWith('/stats') ? custom : `${custom}/stats`
   }
-  const base = normalizeHttpUrl(import.meta.env.VITE_BAIDU_TRANSLATE_URL)
-  if (base) return base.endsWith('/stats') ? base : `${base}/stats`
   if (import.meta.env.DEV) return '/site-stats'
   return null
 }
@@ -989,7 +986,7 @@ const loadSiteStats = async () => {
   const url = buildStatsEndpoint()
   if (!url) {
     footerStatsText.value =
-      '全站统计未配置：生产环境请在 Secrets 填写 VITE_BAIDU_TRANSLATE_URL；统计为同 Worker 的 /stats（需 KV）'
+      '全站统计未配置：生产环境请在 Secrets 填写 VITE_SITE_STATS_URL（Cloudflare Worker 的 /stats 地址）'
     return
   }
   type StatsPayload = {
@@ -1242,30 +1239,19 @@ const closeViewer = () => {
   currentBlogHtml.value = ''
 }
 
-// —— 百度翻译（签名在前端；生产需 Worker 或同源代理，见 vite 配置 /baidu-fanyi）——
+// —— 百度翻译：浏览器只发送文本；腾讯云 SCF 在服务端持有密钥并生成签名。——
 const translateSource = ref('')
 const translateResult = ref('')
 const translateLoading = ref(false)
 const translateError = ref('')
 
-const baiduAppId = import.meta.env.VITE_BAIDU_APP_ID
-const baiduSecret = import.meta.env.VITE_BAIDU_SECRET
 const baiduTranslateUrlEnv = normalizeHttpUrl(import.meta.env.VITE_BAIDU_TRANSLATE_URL)
 
 const baiduTranslateConfigured = computed(
-  () => Boolean(String(baiduAppId || '').trim() && String(baiduSecret || '').trim())
+  () => Boolean(baiduTranslateUrlEnv)
 )
 
-/** 生产环境未配 VITE_BAIDU_TRANSLATE_URL 时浏览器无法直连百度域名 */
-const baiduTranslateNeedsProxy = computed(
-  () => import.meta.env.PROD && !baiduTranslateUrlEnv
-)
-
-const translateApiUrl = () => {
-  if (baiduTranslateUrlEnv) return baiduTranslateUrlEnv
-  if (import.meta.env.DEV) return '/baidu-fanyi'
-  return ''
-}
+const translateApiUrl = () => baiduTranslateUrlEnv
 
 /** 推断百度 API 的 target：中文为主 → 译成 en；英文为主 → 译成 zh */
 const inferTargetLang = (text: string): 'en' | 'zh' | null => {
@@ -1277,10 +1263,7 @@ const inferTargetLang = (text: string): 'en' | 'zh' | null => {
 
 const translateDetectMessage = computed(() => {
   if (!baiduTranslateConfigured.value) {
-    return '本地：复制 .env.example 为 .env 并填写密钥；线上：在 GitHub 仓库 Secrets 配置 VITE_BAIDU_APP_ID / VITE_BAIDU_SECRET'
-  }
-  if (baiduTranslateNeedsProxy.value) {
-    return '线上需在 GitHub Secrets 增加 VITE_BAIDU_TRANSLATE_URL（可用仓库 workers 目录部署 Cloudflare Worker 获得地址）'
+    return '未配置翻译服务地址：请设置 VITE_BAIDU_TRANSLATE_URL（腾讯云 SCF 函数 URL）'
   }
   const t = translateSource.value.trim()
   if (!t) return '输入内容后将自动判断中文或英文'
@@ -1291,7 +1274,6 @@ const translateDetectMessage = computed(() => {
 
 const translateDetectWarn = computed(() => {
   if (!baiduTranslateConfigured.value) return true
-  if (baiduTranslateNeedsProxy.value) return true
   const t = translateSource.value.trim()
   if (!t) return false
   return inferTargetLang(t) === null
@@ -1301,7 +1283,6 @@ const canTranslate = computed(() => {
   const t = translateSource.value.trim()
   return Boolean(
     baiduTranslateConfigured.value &&
-      !baiduTranslateNeedsProxy.value &&
       t &&
       inferTargetLang(t)
   )
@@ -1314,7 +1295,7 @@ const runTranslate = async () => {
   const text = translateSource.value.trim()
   if (!text) return
   if (!baiduTranslateConfigured.value) {
-    translateError.value = '未配置百度翻译 APP ID 或密钥'
+    translateError.value = '未配置翻译服务地址 VITE_BAIDU_TRANSLATE_URL'
     return
   }
   const to = inferTargetLang(text)
@@ -1334,18 +1315,10 @@ const runTranslate = async () => {
     if (!apiUrl) {
       throw new Error('未配置翻译接口地址：生产环境请设置 VITE_BAIDU_TRANSLATE_URL')
     }
-    const appid = String(baiduAppId).trim()
-    const secret = String(baiduSecret).trim()
-    const salt = String(Date.now())
-    const sign = CryptoJS.MD5(`${appid}${text}${salt}${secret}`).toString()
-
     const body = new URLSearchParams({
       q: text,
       from: 'auto',
-      to,
-      appid,
-      salt,
-      sign
+      to
     })
 
     const res = await fetch(apiUrl, {

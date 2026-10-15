@@ -1,10 +1,9 @@
-# Cloudflare Worker（翻译 + 全站统计）
+# Cloudflare Worker（全站统计）
 
 入口：`site-worker.ts`，配置：`wrangler.toml`（已绑定 KV `SITE_STATS`）。
 
 | 路径 | 方法 | 说明 |
 |------|------|------|
-| `/` 等 | `POST` | 转发百度翻译（与原先一致） |
 | `/stats` | `GET` | 总访问量（PV）与总访客（UV），数据存 **KV** |
 
 ## 推荐：在项目根目录用 npm 脚本
@@ -41,10 +40,10 @@ npm run workers:dev
 
 将 **Worker 根 URL**（`npm run workers:deploy` 成功后在终端输出的 `https://….workers.dev`，**不要**末尾斜杠）配置到：
 
-- 本地：`.env` 的 `VITE_BAIDU_TRANSLATE_URL`
-- CI：`VITE_BAIDU_TRANSLATE_URL`（仓库 Actions Secrets）
+- 本地：`.env` 的 `VITE_SITE_STATS_URL`
+- CI：`VITE_SITE_STATS_URL`（仓库 Actions Secrets）
 
-页脚统计使用 **同一 URL + `/stats`**，一般不必再配 `VITE_SITE_STATS_URL`。
+页脚统计使用 **该 URL + `/stats`**。翻译使用腾讯云 SCF，二者不再共用地址。
 
 ## 手动维护（可选）
 

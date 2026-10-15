@@ -8,10 +8,8 @@ declare module '*.vue' {
 }
 
 interface ImportMetaEnv {
-  readonly VITE_BAIDU_APP_ID?: string
-  readonly VITE_BAIDU_SECRET?: string
   readonly VITE_BAIDU_TRANSLATE_URL?: string
-  /** 可选：完整统计 URL（须以 /stats 结尾或 Worker 根由前端拼 /stats）。不填则用 VITE_BAIDU_TRANSLATE_URL + /stats */
+  /** Cloudflare Worker 的统计根 URL 或完整 /stats 地址。 */
   readonly VITE_SITE_STATS_URL?: string
 }
 

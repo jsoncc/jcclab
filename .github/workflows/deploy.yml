@@ -37,8 +37,6 @@ jobs:
       # 构建时注入 VITE_*，打进 dist，供前端 import.meta.env 读取（翻译与统计地址等）
       - name: Build project
         env:
-          VITE_BAIDU_APP_ID: ${{ secrets.VITE_BAIDU_APP_ID }}
-          VITE_BAIDU_SECRET: ${{ secrets.VITE_BAIDU_SECRET }}
           VITE_BAIDU_TRANSLATE_URL: ${{ secrets.VITE_BAIDU_TRANSLATE_URL }}
           VITE_SITE_STATS_URL: ${{ secrets.VITE_SITE_STATS_URL }}
         run: npm run build

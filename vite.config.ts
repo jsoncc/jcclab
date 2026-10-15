@@ -1,6 +1,6 @@
 /**
  * Vite 配置：base 为相对路径以适配 GitHub Pages 子目录；
- * 开发/预览时把 /baidu-fanyi 代理到百度翻译，避免本地跨域。
+ * 开发/预览时仅代理 Cloudflare 统计接口；翻译统一调用腾讯云 SCF。
  */
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Socket } from 'node:net'
@@ -17,11 +17,6 @@ type ProxyWithError = {
 }
 
 const baiduTranslateProxy = {
-  '/baidu-fanyi': {
-    target: 'https://fanyi-api.baidu.com',
-    changeOrigin: true,
-    rewrite: () => '/api/trans/vip/translate'
-  },
   /** 本地联调：须另开终端执行 `npm run workers:dev`（默认 8787），否则代理会连不上 */
   '/site-stats': {
     target: 'http://127.0.0.1:8787',
